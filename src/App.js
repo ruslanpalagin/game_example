@@ -39,26 +39,30 @@ class App extends React.Component {
             //console.log("loading: " + resource.name);
         })
         .load(() => {
+            view.worldContainer = new PIXI.Container();
             let m = new PIXI.Sprite(PIXI.loader.resources[mountainsUrl].texture);
             m.position.y = 100;
-            app.stage.addChild(m);
+            view.worldContainer.addChild(m);
 
             let t = new PIXI.Sprite(PIXI.loader.resources[treesUrl].texture);
             t.position.x = 100;
-            app.stage.addChild(t);
+            view.worldContainer.addChild(t);
 
-            let char = new PIXI.Sprite(PIXI.loader.resources[charUrl].texture);
-            char.anchor.x = 0.5;
-            char.anchor.y = 0.5;
-            char.position.set(110, 110);
-            app.stage.addChild(char);
+            view.char = new PIXI.Sprite(PIXI.loader.resources[charUrl].texture);
+            view.char.anchor.x = 0.5;
+            view.char.anchor.y = 0.5;
+            view.char.position.set(110, 110);
+            view.worldContainer.addChild(view.char);
+
+            app.stage.addChild(view.worldContainer);
 
             keyMouseActions.sub(window);
             app.ticker.add(() => {
-                uiActionGenerator.loop(keyMouseActions, {char});
+                uiActionGenerator.loop(keyMouseActions, view);
             });
+            keyMouseActions.on("rotateCamera", ({rad}) => viewCommander.rotateCamera(view, rad));
             uiActionGenerator.on("newChar", (newV) => {
-                viewCommander.draw(char, newV);
+                viewCommander.drawChar(view.char, newV);
             });
         });
     }

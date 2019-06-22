@@ -1,11 +1,18 @@
 import decorateWithEvents from "src/utils/decorateWithEvents";
 
+const CAMERA_X_PX_PER_RAD = 200;
+
 export default decorateWithEvents({
     sub(window) {
         window.addEventListener( "keydown", (e) => this.keyDown(e), false );
         window.addEventListener( "keyup", (e) => this.keyUp(e), false );
+        window.addEventListener( "contextmenu", (e) => this.contextmenu(e), false );
+        window.addEventListener( "mousedown", (e) => this.mouseDown(e), false );
+        window.addEventListener( "mouseup", (e) => this.mouseUp(e), false );
+        window.addEventListener( "mousemove", (e) => this.mouseMove(e), false );
     },
     pressed: {},
+    mouseMoveHistory: null,
     down(name){
         if (!this.pressed[name]) {
             this.emit("start", { name });
@@ -86,5 +93,29 @@ export default decorateWithEvents({
         }
 
         // console.log("up key.keyCode", key.keyCode);
+    },
+    mouseDown(e) {
+        if (e.button === 2) {
+            this.down("mouseRightButton");
+            this.mouseMoveHistory = { pageX: e.pageX, pageY: e.pageY };
+        }
+    },
+    mouseUp(e) {
+        if (e.button === 2) {
+            this.up("mouseRightButton");
+            this.mouseMoveHistory = null;
+        }
+    },
+    contextmenu(e) {
+        e.preventDefault();
+        return false;
+    },
+    mouseMove(e) {
+        if (this.pressed["mouseRightButton"]) {
+            const diff = e.pageX - this.mouseMoveHistory.pageX;
+            const rad = diff / CAMERA_X_PX_PER_RAD * Math.PI;
+            this.emit("rotateCamera", {rad});
+            this.mouseMoveHistory = { pageX: e.pageX, pageY: e.pageY };
+        }
     },
 });

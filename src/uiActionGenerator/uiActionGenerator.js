@@ -2,8 +2,9 @@ import decorateWithEvents from "src/utils/decorateWithEvents";
 
 export default decorateWithEvents({
     lastLoopTime: null,
-    loop(controls, {char}) {
+    loop(controls, view) {
         this.lastLoopTime = this.lastLoopTime || (new Date()).getTime();
+        const { char } = view;
         const MOVE_SPEED = 60;
         const ROTATION_SPEED = 3;
         const newV = {};
