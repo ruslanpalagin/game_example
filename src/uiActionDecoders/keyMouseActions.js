@@ -10,6 +10,7 @@ export default decorateWithEvents({
         window.addEventListener( "mousedown", (e) => this.mouseDown(e), false );
         window.addEventListener( "mouseup", (e) => this.mouseUp(e), false );
         window.addEventListener( "mousemove", (e) => this.mouseMove(e), false );
+        window.addEventListener( "resize", () => this.emit("resize"), false );
     },
     pressed: {},
     mouseMoveHistory: null,

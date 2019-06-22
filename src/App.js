@@ -9,6 +9,7 @@ import uiActionGenerator from "src/uiActionGenerator/uiActionGenerator";
 import viewCommander from "src/view/viewCommander";
 
 const view = {};
+window.view = view;
 
 class App extends React.Component {
 
@@ -51,19 +52,23 @@ class App extends React.Component {
             view.char = new PIXI.Sprite(PIXI.loader.resources[charUrl].texture);
             view.char.anchor.x = 0.5;
             view.char.anchor.y = 0.5;
-            view.char.position.set(110, 110);
             view.worldContainer.addChild(view.char);
 
             app.stage.addChild(view.worldContainer);
 
             keyMouseActions.sub(window);
+            keyMouseActions.on("rotateCamera", ({rad}) => viewCommander.rotateCamera(view, rad));
+            keyMouseActions.on("resize", () => viewCommander.resize(view));
+
             app.ticker.add(() => {
                 uiActionGenerator.loop(keyMouseActions, view);
             });
-            keyMouseActions.on("rotateCamera", ({rad}) => viewCommander.rotateCamera(view, rad));
+
             uiActionGenerator.on("newChar", (newV) => {
-                viewCommander.drawChar(view.char, newV);
+                viewCommander.drawChar(view, newV);
             });
+
+            uiActionGenerator.emit("newChar", { position: {x: 30, y: 30 }, rotation: 0.5 });
         });
     }
 
