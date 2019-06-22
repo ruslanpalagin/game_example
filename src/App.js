@@ -1,18 +1,15 @@
 import React from 'react';
 import './App.css';
 import PIXI from "./vendor/PIXI";
-import charUrl from "./textures/char.png";
-import mountainsUrl from "./textures/mountains.png";
-import treesUrl from "./textures/trees.png";
 import keyMouseActions from "src/uiActionDecoders/keyMouseActions";
 import uiActionGenerator from "src/uiActionGenerator/uiActionGenerator";
 import viewCommander from "src/view/viewCommander";
+import mapItems from "src/view/mapItems.js";
 
 const view = {};
 window.view = view;
 
 class App extends React.Component {
-
     componentDidMount = () => {
         const app = new PIXI.Application({
             antialias: true,    // default: false
@@ -23,36 +20,14 @@ class App extends React.Component {
         app.renderer.resize(window.innerWidth - 50, window.innerHeight - 50 );
         document.getElementById("game__main-frame").appendChild(app.view);
 
-        PIXI.loader = new PIXI.Loader();
-        PIXI.loader
-        .add([
-            charUrl,
-            mountainsUrl,
-            treesUrl,
-        ])
-        .on("progress", (loader, resource) => {
-            //Display the file `url` currently being loaded
-            console.log("loading: " + resource.url);
-            //Display the percentage of files currently loaded
-            console.log("progress: " + loader.progress + "%");
-            //If you gave your files names as the first argument
-            //of the `add` method, you can access them like this
-            //console.log("loading: " + resource.name);
-        })
-        .load(() => {
+        mapItems.load().then(({char, items}) => {
             view.worldContainer = new PIXI.Container();
-            let m = new PIXI.Sprite(PIXI.loader.resources[mountainsUrl].texture);
-            m.position.y = 100;
-            view.worldContainer.addChild(m);
+            items.forEach(item => view.worldContainer.addChild(item));
 
-            let t = new PIXI.Sprite(PIXI.loader.resources[treesUrl].texture);
-            t.position.x = 100;
-            view.worldContainer.addChild(t);
-
-            view.char = new PIXI.Sprite(PIXI.loader.resources[charUrl].texture);
+            view.char = char;
             view.char.anchor.x = 0.5;
             view.char.anchor.y = 0.5;
-            view.worldContainer.addChild(view.char);
+            view.worldContainer.addChild(char);
 
             app.stage.addChild(view.worldContainer);
 
@@ -68,7 +43,7 @@ class App extends React.Component {
                 viewCommander.drawChar(view, newV);
             });
 
-            uiActionGenerator.emit("newChar", { position: {x: 30, y: 30 }, rotation: 0.5 });
+            uiActionGenerator.emit("newChar", { position: {x: 0, y: -550 }, rotation: 0.5 });
         });
     }
 

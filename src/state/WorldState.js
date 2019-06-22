@@ -1,0 +1,6 @@
+class WorldState {
+    loadSave(data) {
+
+    }
+
+}
