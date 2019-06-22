@@ -4,6 +4,11 @@ import PIXI from "./vendor/PIXI";
 import charUrl from "./textures/char.png";
 import mountainsUrl from "./textures/mountains.png";
 import treesUrl from "./textures/trees.png";
+import keyMouseActions from "src/uiActionDecoders/keyMouseActions";
+import uiActionGenerator from "src/uiActionGenerator/uiActionGenerator";
+import viewCommander from "src/view/viewCommander";
+
+const view = {};
 
 class App extends React.Component {
 
@@ -13,10 +18,9 @@ class App extends React.Component {
             transparent: true, // default: false
             resolution: 1       // default: 1
         });
+        view.app = app;
         app.renderer.resize(window.innerWidth - 50, window.innerHeight - 50 );
         document.getElementById("game__main-frame").appendChild(app.view);
-
-        // app.ticker.add(delta => gameLoop(delta));
 
         PIXI.loader = new PIXI.Loader();
         PIXI.loader
@@ -49,48 +53,13 @@ class App extends React.Component {
             char.position.set(110, 110);
             app.stage.addChild(char);
 
-            document.addEventListener('keydown', (key) => {
-                // W Key is 87
-                // Up arrow is 87
-                if (key.keyCode === 87 || key.keyCode === 38) {
-                    char.position.x += Math.sin(char.rotation) * 10;
-                    char.position.y -= Math.cos(char.rotation) * 10;
-                }
-
-                // S Key is 83
-                // Down arrow is 40
-                if (key.keyCode === 83 || key.keyCode === 40) {
-                    char.position.x -= Math.sin(char.rotation) * 10;
-                    char.position.y += Math.cos(char.rotation) * 10;
-                }
-
-                // A Key is 65
-                // Left arrow is 37
-                if (key.keyCode === 65 || key.keyCode === 37) {
-                    char.position.x -= Math.cos(char.rotation) * 10;
-                    char.position.y -= Math.sin(char.rotation) * 10;
-                }
-
-                // D Key is 68
-                // Right arrow is 39
-                if (key.keyCode === 68 || key.keyCode === 39) {
-                    char.position.x += Math.cos(char.rotation) * 10;
-                    char.position.y += Math.sin(char.rotation) * 10;
-                }
-
-                // q
-                if (key.keyCode === 81) {
-                    char.rotation -= Math.PI / 10;
-                }
-
-                // e
-                if (key.keyCode === 69) {
-                    char.rotation += Math.PI / 10;
-                }
-                console.log("key.keyCode", key.keyCode);
+            keyMouseActions.sub(window);
+            app.ticker.add(() => {
+                uiActionGenerator.loop(keyMouseActions, {char});
             });
-
-
+            uiActionGenerator.on("newChar", (newV) => {
+                viewCommander.draw(char, newV);
+            });
         });
     }
 
