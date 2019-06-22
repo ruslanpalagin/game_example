@@ -43,7 +43,7 @@ class App extends React.Component {
                 viewCommander.drawChar(view, newV);
             });
 
-            uiActionGenerator.emit("newChar", { position: {x: 0, y: -550 }, rotation: 0.5 });
+            uiActionGenerator.emit("newChar", { position: {x: 0, y: 250 }, rotation: 0.5 });
         });
     }
 
