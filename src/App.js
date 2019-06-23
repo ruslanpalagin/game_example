@@ -1,49 +1,67 @@
 import React from 'react';
-import './App.css';
 import PIXI from "./vendor/PIXI";
 import keyMouseActions from "src/uiActionDecoders/keyMouseActions";
 import uiActionGenerator from "src/uiActionGenerator/uiActionGenerator";
-import viewCommander from "src/view/viewCommander";
+import View from "src/view/View";
 import mapItems from "src/view/mapItems.js";
+import WorldState from "src/state/WorldState.js";
+import ServerConnection from "src/server/ServerConnection.js";
 
-const view = {};
-window.view = view;
+const worldState = new WorldState();
+const serverConnection = new ServerConnection();
+const view = new View();
+const session = {
+    accountId: 1,
+};
 
 class App extends React.Component {
     componentDidMount = () => {
-        const app = new PIXI.Application({
+        // init
+        view.app = new PIXI.Application({
             antialias: true,    // default: false
             transparent: true, // default: false
             resolution: 1       // default: 1
         });
-        view.app = app;
-        app.renderer.resize(window.innerWidth - 50, window.innerHeight - 50 );
-        document.getElementById("game__main-frame").appendChild(app.view);
+        // view.app.renderer.resize(window.innerWidth - 50, window.innerHeight - 50 );
+        document.getElementById("game__main-frame").appendChild(view.app.view);
+        view.worldContainer = new PIXI.Container();
+        view.app.stage.addChild(view.worldContainer);
 
-        mapItems.load().then(({char, items}) => {
-            view.worldContainer = new PIXI.Container();
-            items.forEach(item => view.worldContainer.addChild(item));
+        // connect to server & get world
+        serverConnection.connect()
+        .then(() => serverConnection.loadWorldState())
+        .then((worldStateFromServer) => worldState.setState(worldStateFromServer))
 
-            view.char = char;
-            view.char.anchor.x = 0.5;
-            view.char.anchor.y = 0.5;
-            view.worldContainer.addChild(char);
+        // load view
+        .then(() => mapItems.loadSceneObjects(worldState.state.units))
+        .then((sceneObjects) => view.addItems(sceneObjects))
+        .then(() => {
+            // control character & set it to the center of the view
+            const controlledUnit = worldState.findUnit({accountId: session.accountId});
+            view.trackCenter(controlledUnit);
 
-            app.stage.addChild(view.worldContainer);
-
+            // bind keys & mouse
             keyMouseActions.sub(window);
-            keyMouseActions.on("rotateCamera", ({rad}) => viewCommander.rotateCamera(view, rad));
-            keyMouseActions.on("resize", () => viewCommander.resize(view));
+            // // keyMouseActions.on("rotateCamera", ({rad}) => viewCommander.rotateCamera(view, rad));
+            keyMouseActions.on("resize", () => view.resize());
 
-            app.ticker.add(() => {
-                uiActionGenerator.loop(keyMouseActions, view);
+            uiActionGenerator.on("moveUnit", (data) => serverConnection.toServer(session, "moveUnit", data));
+
+            serverConnection.onMessageFromServer((session, action, data) => {
+                // console.log("onMessageFromServer", session, action, data);
+                if (action === "moveUnit") {
+                    const updatedUnit = data;
+                    const unit = worldState.updUnitById(updatedUnit.id, {position: updatedUnit.position, rotation: updatedUnit.rotation});
+                    view.handleMoveUnit(unit);
+                }
             });
 
-            uiActionGenerator.on("newChar", (newV) => {
-                viewCommander.drawChar(view, newV);
+            // // game view loop
+            view.app.ticker.add(() => {
+                uiActionGenerator.loop(keyMouseActions, {controlledUnit});
             });
 
-            uiActionGenerator.emit("newChar", { position: {x: 0, y: 250 }, rotation: 0.5 });
+            view.resize();
         });
     }
 
