@@ -1,4 +1,6 @@
 function decorateWithEvents(classs) {
+    classs = classs.prototype || classs;
+
     classs.on = function (name, callback) {
         this.callbacks = this.callbacks || {};
         this.callbacks[name] = this.callbacks[name] || [];

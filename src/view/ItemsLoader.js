@@ -35,7 +35,7 @@ const initSprite = (unit) => {
     return sprite;
 };
 
-export default {
+class ItemsLoader {
     loadSceneObjects(units){
         return new Promise(resolve => {
             PIXI.loader = PIXI.loader || new PIXI.Loader();
@@ -56,4 +56,6 @@ export default {
             })
         });
     }
-};
+}
+
+export default ItemsLoader;

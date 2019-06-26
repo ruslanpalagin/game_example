@@ -1,4 +1,7 @@
 import find from "lodash/find";
+// import keyMouseActions from "src/uiActionDecoders/keyMouseActions";
+// import UiActionGenerator from "./UiActionGenerator";
+import ItemsLoader from "./ItemsLoader";
 
 export default class View {
     constructor() {
@@ -6,6 +9,11 @@ export default class View {
         this.items = [];
         this.worldContainer = null;
         this.centeredUnit = null;
+        this.itemsLoader = new ItemsLoader();
+    }
+
+    loadAndAddItems(units) {
+        return this.itemsLoader.loadSceneObjects(units).then(items => this._addItems(items));
     }
 
     handleMoveUnit(unit) {
@@ -36,7 +44,7 @@ export default class View {
         this.centralize();
     }
 
-    addItems(items) {
+    _addItems(items) {
         this.items = items;
         items.forEach(item => this.worldContainer.addChild(item));
     }
@@ -44,4 +52,6 @@ export default class View {
     findItem(q) {
         return find(this.items, q);
     }
+
+
 };
