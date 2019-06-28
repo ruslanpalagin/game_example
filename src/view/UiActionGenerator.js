@@ -7,6 +7,7 @@ class UiActionGenerator {
     constructor() {
         this.lastLoopTime = null;
         this.controlledUnit = null;
+        this.hoveredUnit = null;
         this.worldContainer = null;
         this.items = null;
     }
@@ -18,6 +19,10 @@ class UiActionGenerator {
         keyMouseActions.on("mouseRightClick", (e) => {
             const worldPoint = this.worldContainer.toLocal(e);
             this.testInteraction(worldPoint);
+        });
+        keyMouseActions.on("mouseMove", (e) => {
+            const worldPoint = this.worldContainer.toLocal(e);
+            this.testHover(worldPoint);
         });
     }
 
@@ -84,6 +89,23 @@ class UiActionGenerator {
                 source: { unitId: this.controlledUnit.id },
                 target: { unitId: clickedItem.unitId },
             });
+        } else {
+            this.emit("interactWithTooFar", {
+                source: { unitId: this.controlledUnit.id },
+                target: { unitId: clickedItem.unitId },
+            });
+        }
+    }
+
+    testHover(worldPoint) {
+        const hoveredItem = collisions.findItemByPoint(this.items, worldPoint);
+        if (this.hoveredUnit && !hoveredItem) {
+            this.emit("mouseOut", this.hoveredUnit);
+            this.hoveredUnit = null;
+        }
+        if (!this.hoveredUnit && hoveredItem) {
+            this.hoveredUnit = hoveredItem;
+            this.emit("mouseIn", this.hoveredUnit);
         }
     }
 

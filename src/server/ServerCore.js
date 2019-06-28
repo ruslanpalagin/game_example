@@ -44,7 +44,31 @@ export default class ServerCore {
         if (action === "interactWith") {
             const { source, target } = data;
             this.broadcast(session, "say", { unitId: source.unitId, message: `Hello ${target.unitId}` });
+            if (target.unitId === 2) {
+                setTimeout(() => {
+                    let reply = "Hi man";
+                    if (Math.random() > 0.4) {
+                        reply = "Hello";
+                    }
+                    if (Math.random() > 0.6) {
+                        reply = "What do you want?";
+                    }
+                    if (Math.random() > 0.8) {
+                        reply = "Yeah...";
+                    }
+                    if (Math.random() > 0.9) {
+                        reply = "Leave me alone!";
+                    }
+                    this.broadcast(session, "say", { unitId: target.unitId, message: reply });
+                }, 2000);
+            }
+            if (target.unitId === 17) {
+                setTimeout(() => {
+                    this.broadcast(session, "say", { unitId: target.unitId, message: "..." });
+                }, 2000);
+            }
         }
+
     }
 
     // TODO tmp

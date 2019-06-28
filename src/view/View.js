@@ -43,6 +43,7 @@ export default class View {
 
     handleSay({ unitId, message }) {
         console.log("{ unitId, message }", { unitId, message });
+        alert(`${unitId === this.controlledUnit.id ? "You" : unitId}: ${message}`);
     }
 
     setControlledUnit(unit) {
@@ -60,7 +61,15 @@ export default class View {
         this.app.ticker.add(() => this.uiActionGenerator.loop(keyMouseActions));
         this.uiActionGenerator.listenToInput(keyMouseActions);
         keyMouseActions.on("resize", () => this.resize());
+        this.uiActionGenerator.on("mouseIn", () => this._setCursor("pointer"));
+        this.uiActionGenerator.on("mouseOut", () => this._setCursor(null));
+        this.uiActionGenerator.on("interactWithTooFar", ({ source, target }) => {
+            this.handleSay({ unitId: source.unitId, message: `Oh, ${target.unitId} is too far...` });
+        });
+    }
 
+    _setCursor(cursor) {
+        this.app.view.style.cursor = cursor
     }
 
     _trackCenter(unit) {

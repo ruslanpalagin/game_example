@@ -13,7 +13,7 @@ export default decorateWithEvents({
         window.addEventListener( "resize", () => this.emit("resize"), false );
     },
     pressed: {},
-    mouseMoveHistory: null,
+    cameraRotationMouseMoveHistory: null,
     down(name){
         if (!this.pressed[name]) {
             this.emit("start", { name });
@@ -98,13 +98,13 @@ export default decorateWithEvents({
     mouseDown(e) {
         if (e.button === 2) {
             this.down("mouseRightButton");
-            this.mouseMoveHistory = { pageX: e.pageX, pageY: e.pageY };
+            this.cameraRotationMouseMoveHistory = { pageX: e.pageX, pageY: e.pageY };
         }
     },
     mouseUp(e) {
         if (e.button === 2) {
             this.up("mouseRightButton");
-            this.mouseMoveHistory = null;
+            this.cameraRotationMouseMoveHistory = null;
         }
         if (e.button === 2) {
             this.emit("mouseRightClick", { x: e.pageX, y: e.pageY });
@@ -115,11 +115,13 @@ export default decorateWithEvents({
         return false;
     },
     mouseMove(e) {
+        const point = { x: e.pageX, y: e.pageY };
         if (this.pressed["mouseRightButton"]) {
-            const diff = e.pageX - this.mouseMoveHistory.pageX;
+            const diff = point.x - this.cameraRotationMouseMoveHistory.pageX;
             const rad = diff / CAMERA_X_PX_PER_RAD * Math.PI;
             this.emit("rotateCamera", {rad});
-            this.mouseMoveHistory = { pageX: e.pageX, pageY: e.pageY };
+            this.cameraRotationMouseMoveHistory = { pageX: point.x, pageY: point.y };
         }
+        this.emit("mouseMove", point);
     },
 });
