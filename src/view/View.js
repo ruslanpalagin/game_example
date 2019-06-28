@@ -75,8 +75,15 @@ export default class View {
         keyMouseActions.on("resize", () => this.resize());
         this.uiActionGenerator.on("mouseIn", () => this._setCursor("pointer"));
         this.uiActionGenerator.on("mouseOut", () => this._setCursor(null));
-        this.uiActionGenerator.on("interactWithTooFar", ({ source, target }) => {
-            this.handleSay({ unitId: source.unitId, message: `Oh, ${target.unitId} is too far...` });
+        this.uiActionGenerator.on("interactWithTooFar", ({ source }) => {
+            let message = "Oh, it's too far away";
+            if (Math.random() > 0.4){
+                message = "It's too far..."
+            }
+            if (Math.random() > 0.7){
+                message = "Let's get closer"
+            }
+            this.handleSay({ unitId: source.unitId, message });
         });
     }
 

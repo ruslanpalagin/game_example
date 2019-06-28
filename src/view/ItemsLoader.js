@@ -59,23 +59,29 @@ class ItemsLoader {
     }
 
     createMessageItem(message) {
+        const container = new PIXI.Container();
+
+        const rectangle = new PIXI.Graphics();
+        rectangle.lineStyle(4, 0x333333, 1);
+        rectangle.beginFill(0xFFFFFF);
+        rectangle.drawRoundedRect(0, 0, 200, 30, 5);
+        rectangle.endFill();
+
         const style = new PIXI.TextStyle({
             fontFamily: "Arial",
             fontSize: 16,
-            fill: "white",
-            stroke: '#333333',
-            strokeThickness: 4,
-            dropShadow: true,
-            dropShadowColor: "#eeeeee",
-            dropShadowBlur: 4,
-            dropShadowAngle: Math.PI / 6,
-            dropShadowDistance: 6,
+            fill: "#000000",
         });
         const text = new PIXI.Text(message, style);
-        text.pivot.x = text.width / 2;
-        text.pivot.y = 50;
+        text.position.set(7, 5);
 
-        return text;
+        container.addChild(rectangle);
+        container.addChild(text);
+
+        container.pivot.x = container.width / 2;
+        container.pivot.y = 50;
+
+        return container;
     }
 }
 
