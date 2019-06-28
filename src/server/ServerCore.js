@@ -31,7 +31,14 @@ export default class ServerCore {
     pushActionRequest(session, action, data) {
         if (action === "moveUnit") {
             const { unit, position, rotation } = data;
-            const updatedUnit = this.worldState.updUnitById(unit.id, {position, rotation});
+            const diff = {};
+            if (position) {
+                diff.position = position;
+            }
+            if (rotation) {
+                diff.rotation = rotation;
+            }
+            const updatedUnit = this.worldState.updUnitById(unit.id, diff);
             this.broadcast(session, "moveUnit", updatedUnit);
         }
     }

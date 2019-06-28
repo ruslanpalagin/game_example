@@ -1,6 +1,5 @@
 import find from "lodash/find";
-// import keyMouseActions from "src/uiActionDecoders/keyMouseActions";
-// import UiActionGenerator from "./UiActionGenerator";
+import UiActionGenerator from "./UiActionGenerator";
 import ItemsLoader from "./ItemsLoader";
 
 export default class View {
@@ -9,7 +8,9 @@ export default class View {
         this.items = [];
         this.worldContainer = null;
         this.centeredUnit = null;
+        this.controlledUnit = null;
         this.itemsLoader = new ItemsLoader();
+        this.uiActionGenerator = new UiActionGenerator();
     }
 
     loadAndAddItems(units) {
@@ -17,17 +18,41 @@ export default class View {
     }
 
     handleMoveUnit(unit) {
-        const item = this.findItem({unitId: unit.id});
-        unit.position && item.position.set(unit.position.x, unit.position.y);
-        unit.rotation !== undefined && (item.rotation = unit.rotation);
-        this.centralize();
+        const item = this._findItem({unitId: unit.id});
+        if (unit.position) {
+            item.position.set(unit.position.x, unit.position.y);
+        }
+        if (unit.rotation !== undefined) {
+            item.rotation = unit.rotation;
+        }
+        this._centralize();
     }
 
-    trackCenter(unit) {
+    setControlledUnit(unit) {
+        this.controlledUnit = unit;
+        this._trackCenter(unit);
+    }
+
+    resize() {
+        this.app.renderer.resize(window.innerWidth - 10, window.innerHeight - 10);
+        this._centralize();
+    }
+
+    listenToInput(keyMouseActions) {
+        this.app.ticker.add(() => {
+            this.uiActionGenerator.loop(keyMouseActions, { controlledUnit: this.controlledUnit });
+        });
+        keyMouseActions.on("rotateCamera", ({rad}) => {
+            this.uiActionGenerator.rotate(rad, { controlledUnit: this.controlledUnit });
+        });
+        keyMouseActions.on("resize", () => this.resize());
+    }
+
+    _trackCenter(unit) {
         this.centeredUnit = unit;
     }
 
-    centralize() {
+    _centralize() {
         if (!this.centeredUnit) {
             return;
         }
@@ -39,19 +64,12 @@ export default class View {
         );
     }
 
-    resize() {
-        this.app.renderer.resize(window.innerWidth - 10, window.innerHeight - 10);
-        this.centralize();
-    }
-
     _addItems(items) {
         this.items = items;
         items.forEach(item => this.worldContainer.addChild(item));
     }
 
-    findItem(q) {
+    _findItem(q) {
         return find(this.items, q);
     }
-
-
 };

@@ -48,6 +48,13 @@ class UiActionGenerator {
             });
         }
     }
+
+    rotate(rad, {controlledUnit}) {
+        this.emit("moveUnit", {
+            unit: controlledUnit,
+            rotation: controlledUnit.rotation + rad
+        });
+    }
 }
 
 decorateWithEvents(UiActionGenerator);
