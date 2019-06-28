@@ -41,6 +41,10 @@ export default class ServerCore {
             const updatedUnit = this.worldState.updUnitById(unit.id, diff);
             this.broadcast(session, "moveUnit", updatedUnit);
         }
+        if (action === "interactWith") {
+            const { source, target } = data;
+            this.broadcast(session, "say", { unitId: source.unitId, message: `Hello ${target.unitId}` });
+        }
     }
 
     // TODO tmp

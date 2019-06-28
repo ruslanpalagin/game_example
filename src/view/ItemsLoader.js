@@ -27,6 +27,7 @@ const initSprite = (unit) => {
     const url = typesMap[unit.viewSkin];
     const sprite = new PIXI.Sprite(PIXI.loader.resources[url].texture);
     sprite.unitId = unit.id;
+    sprite.isInteractive = unit.isInteractive;
     unit.position && sprite.position.set(unit.position.x, unit.position.y);
     unit.rotation && (sprite.rotation = unit.rotation);
     if (unit.viewSkin === "char") {

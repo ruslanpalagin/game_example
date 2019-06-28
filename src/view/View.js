@@ -1,4 +1,5 @@
 import find from "lodash/find";
+import PIXI from "src/vendor/PIXI.js";
 import UiActionGenerator from "./UiActionGenerator";
 import ItemsLoader from "./ItemsLoader";
 
@@ -11,6 +12,18 @@ export default class View {
         this.controlledUnit = null;
         this.itemsLoader = new ItemsLoader();
         this.uiActionGenerator = new UiActionGenerator();
+    }
+
+    createCanvas(document, {elId}) {
+        this.app = new PIXI.Application({
+            antialias: true,    // default: false
+            transparent: true, // default: false
+            resolution: 1       // default: 1
+        });
+        document.getElementById(elId).appendChild(this.app.view);
+        this.worldContainer = new PIXI.Container();
+        this.uiActionGenerator.worldContainer = this.worldContainer;
+        this.app.stage.addChild(this.worldContainer);
     }
 
     loadAndAddItems(units) {
@@ -28,8 +41,13 @@ export default class View {
         this._centralize();
     }
 
+    handleSay({ unitId, message }) {
+        console.log("{ unitId, message }", { unitId, message });
+    }
+
     setControlledUnit(unit) {
         this.controlledUnit = unit;
+        this.uiActionGenerator.controlledUnit = unit;
         this._trackCenter(unit);
     }
 
@@ -39,13 +57,10 @@ export default class View {
     }
 
     listenToInput(keyMouseActions) {
-        this.app.ticker.add(() => {
-            this.uiActionGenerator.loop(keyMouseActions, { controlledUnit: this.controlledUnit });
-        });
-        keyMouseActions.on("rotateCamera", ({rad}) => {
-            this.uiActionGenerator.rotate(rad, { controlledUnit: this.controlledUnit });
-        });
+        this.app.ticker.add(() => this.uiActionGenerator.loop(keyMouseActions));
+        this.uiActionGenerator.listenToInput(keyMouseActions);
         keyMouseActions.on("resize", () => this.resize());
+
     }
 
     _trackCenter(unit) {
@@ -66,6 +81,7 @@ export default class View {
 
     _addItems(items) {
         this.items = items;
+        this.uiActionGenerator.items = items;
         items.forEach(item => this.worldContainer.addChild(item));
     }
 

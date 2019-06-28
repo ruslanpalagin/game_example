@@ -1,11 +1,28 @@
 import decorateWithEvents from "src/utils/decorateWithEvents";
+import collisions from "src/common/collisions.js";
+
+const MAX_INTRACTION_RANGE = 100;
 
 class UiActionGenerator {
     constructor() {
-        this.lastLoopTime = null
+        this.lastLoopTime = null;
+        this.controlledUnit = null;
+        this.worldContainer = null;
+        this.items = null;
     }
 
-    loop(controls, {controlledUnit}) {
+    listenToInput(keyMouseActions) {
+        keyMouseActions.on("rotateCamera", ({rad}) => {
+            this.rotate(rad);
+        });
+        keyMouseActions.on("mouseRightClick", (e) => {
+            const worldPoint = this.worldContainer.toLocal(e);
+            this.testInteraction(worldPoint);
+        });
+    }
+
+    loop(controls) {
+        const controlledUnit = this.controlledUnit;
         this.lastLoopTime = this.lastLoopTime || (new Date()).getTime();
         const MOVE_SPEED = 60;
         const ROTATION_SPEED = 3;
@@ -49,11 +66,31 @@ class UiActionGenerator {
         }
     }
 
-    rotate(rad, {controlledUnit}) {
+    rotate(rad) {
         this.emit("moveUnit", {
-            unit: controlledUnit,
-            rotation: controlledUnit.rotation + rad
+            unit: this.controlledUnit,
+            rotation: this.controlledUnit.rotation + rad
         });
+    }
+
+    testInteraction(worldPoint) {
+        const clickedItem = collisions.findItemByPoint(this.items, worldPoint);
+        if (!clickedItem) {
+            return;
+        }
+        const range = this.calcRangeToBorder(this.controlledUnit, clickedItem);
+        if (range <= MAX_INTRACTION_RANGE) {
+            this.emit("interactWith", {
+                source: { unitId: this.controlledUnit.id },
+                target: { unitId: clickedItem.unitId },
+            });
+        }
+    }
+
+    calcRangeToBorder(controlledUnit, clickedItem) {
+        const xDiff = Math.abs(controlledUnit.position.x - clickedItem.position.x);
+        const yDiff = Math.abs(controlledUnit.position.y - clickedItem.position.y);
+        return Math.sqrt( xDiff * xDiff + yDiff * yDiff );
     }
 }
 

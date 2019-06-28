@@ -1,5 +1,4 @@
 import React from 'react';
-import PIXI from "./vendor/PIXI";
 import View from "src/view/View";
 import WorldState from "src/state/WorldState.js";
 import ServerConnection from "src/server/ServerConnection.js";
@@ -15,15 +14,7 @@ const session = {
 class App extends React.Component {
     componentDidMount = () => {
         // init
-        view.app = new PIXI.Application({
-            antialias: true,    // default: false
-            transparent: true, // default: false
-            resolution: 1       // default: 1
-        });
-        // view.app.renderer.resize(window.innerWidth - 50, window.innerHeight - 50 );
-        document.getElementById("game__main-frame").appendChild(view.app.view);
-        view.worldContainer = new PIXI.Container();
-        view.app.stage.addChild(view.worldContainer);
+        view.createCanvas(document, { elId: "game__main-frame" });
 
         // connect to server & get world
         serverConnection.connect()
@@ -40,14 +31,22 @@ class App extends React.Component {
             const controlledUnit = worldState.findUnit({accountId: session.accountId});
             view.setControlledUnit(controlledUnit);
             view.listenToInput(keyMouseActions);
-            view.uiActionGenerator.on("moveUnit", (data) => serverConnection.toServer(session, "moveUnit", data));
 
+            // send data to server
+            view.uiActionGenerator.on("moveUnit", (data) => serverConnection.toServer(session, "moveUnit", data));
+            view.uiActionGenerator.on("interactWith", (data) => serverConnection.toServer(session, "interactWith", data));
+
+            // handle updates from server
             serverConnection.onMessageFromServer((session, action, data) => {
                 // console.log("onMessageFromServer", session, action, data);
                 if (action === "moveUnit") {
                     const updatedUnit = data;
                     const unit = worldState.updUnitById(updatedUnit.id, {position: updatedUnit.position, rotation: updatedUnit.rotation});
                     view.handleMoveUnit(unit);
+                }
+                if (action === "say") {
+                    const { unitId, message } = data;
+                    view.handleSay({ unitId, message });
                 }
             });
             view.resize();

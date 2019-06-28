@@ -106,6 +106,9 @@ export default decorateWithEvents({
             this.up("mouseRightButton");
             this.mouseMoveHistory = null;
         }
+        if (e.button === 2) {
+            this.emit("mouseRightClick", { x: e.pageX, y: e.pageY });
+        }
     },
     contextmenu(e) {
         e.preventDefault();
