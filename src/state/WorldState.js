@@ -1,10 +1,12 @@
 import find from "lodash/find";
+import UnitLibrary from "./UnitLibrary.js";
 
 class WorldState {
     constructor() {
         this.state = {
             units: [],
         };
+        this.unitLibrary = new UnitLibrary(this);
     }
 
     setState(state) {
@@ -19,6 +21,10 @@ class WorldState {
         const unit = this.findUnit({id});
         Object.assign(unit, props);
         return unit;
+    }
+
+    getUnitLibrary() {
+        return this.unitLibrary;
     }
 
     loadSave() {
@@ -39,14 +45,14 @@ class WorldState {
             { id: 15, viewSkin: "road", position: {x: 0, y: -370} },
 
             { id: 16, viewSkin: "hills", position: {x: -240, y: 150} },
-            { id: 17, viewSkin: "lake", position: {x: -120, y: 210}, isInteractive: true },
+            { id: 17, viewSkin: "lake", name: "Lake", position: {x: -120, y: 210}, isInteractive: true },
             { id: 18, viewSkin: "tree3items", position: {x: 80, y: 150} },
             { id: 19, viewSkin: "grass4items", position: {x: -80, y: 220} },
             { id: 20, viewSkin: "grass4items", position: {x: -150, y: 270} },
             { id: 21, viewSkin: "road", position: {x: 0, y: 0} },
 
-            { id: 1, viewSkin: "char", accountId: 1, position: { x: 0, y: 350 }, rotation: 0.5, isInteractive: true },
-            { id: 2, viewSkin: "char", accountId: 2, position: { x: 220, y: 0 }, rotation: 3.5, isInteractive: true },
+            { id: 1, viewSkin: "char", name: "", accountId: 1, position: { x: 0, y: 350 }, rotation: 0.5, isInteractive: true },
+            { id: 2, viewSkin: "char", name: "Adi", accountId: 2, position: { x: 220, y: 0 }, rotation: 3.5, isInteractive: true },
         ];
         this.state.units = units;
 

@@ -31,42 +31,49 @@ class UiActionGenerator {
         this.lastLoopTime = this.lastLoopTime || (new Date()).getTime();
         const MOVE_SPEED = 60;
         const ROTATION_SPEED = 3;
-        const newV = {};
+        const newV = {
+            position: { x: controlledUnit.position.x, y: controlledUnit.position.y },
+            rotation: controlledUnit.rotation,
+        };
         const currentTime = (new Date()).getTime();
         const delta = (currentTime - this.lastLoopTime) / 1000;
         this.lastLoopTime = currentTime;
         if (controls.pressed["up"]) {
             newV.position = newV.position || {};
-            newV.position.x = controlledUnit.position.x + Math.sin(controlledUnit.rotation) * MOVE_SPEED * delta;
-            newV.position.y = controlledUnit.position.y - Math.cos(controlledUnit.rotation) * MOVE_SPEED * delta;
+            newV.position.x = newV.position.x + Math.sin(newV.rotation) * MOVE_SPEED * delta;
+            newV.position.y = newV.position.y - Math.cos(newV.rotation) * MOVE_SPEED * delta;
         }
         if (controls.pressed["down"]) {
             newV.position = newV.position || {};
-            newV.position.x = controlledUnit.position.x - Math.sin(controlledUnit.rotation) * MOVE_SPEED * delta;
-            newV.position.y = controlledUnit.position.y + Math.cos(controlledUnit.rotation) * MOVE_SPEED * delta;
+            newV.position.x = newV.position.x - Math.sin(newV.rotation) * MOVE_SPEED/2 * delta;
+            newV.position.y = newV.position.y + Math.cos(newV.rotation) * MOVE_SPEED/2 * delta;
         }
         if (controls.pressed["left"]) {
             newV.position = newV.position || {};
-            newV.position.x = controlledUnit.position.x - Math.cos(controlledUnit.rotation) * MOVE_SPEED * delta;
-            newV.position.y = controlledUnit.position.y - Math.sin(controlledUnit.rotation) * MOVE_SPEED * delta;
+            newV.position.x = newV.position.x - Math.cos(newV.rotation) * MOVE_SPEED/2 * delta;
+            newV.position.y = newV.position.y - Math.sin(newV.rotation) * MOVE_SPEED/2 * delta;
         }
         if (controls.pressed["right"]) {
             newV.position = newV.position || {};
-            newV.position.x = controlledUnit.position.x + Math.cos(controlledUnit.rotation) * MOVE_SPEED * delta;
-            newV.position.y = controlledUnit.position.y + Math.sin(controlledUnit.rotation) * MOVE_SPEED * delta;
+            newV.position.x = newV.position.x + Math.cos(newV.rotation) * MOVE_SPEED/2 * delta;
+            newV.position.y = newV.position.y + Math.sin(newV.rotation) * MOVE_SPEED/2 * delta;
         }
         if (controls.pressed["rotateLeft"]) {
-            newV.rotation = controlledUnit.rotation - ROTATION_SPEED * delta;
+            newV.rotation = newV.rotation - ROTATION_SPEED * delta;
         }
         if (controls.pressed["rotateRight"]) {
-            newV.rotation = controlledUnit.rotation + ROTATION_SPEED * delta;
+            newV.rotation = newV.rotation + ROTATION_SPEED * delta;
         }
 
-        if (newV.rotation || newV.position) {
+        if (
+            newV.rotation !== controlledUnit.rotation ||
+            newV.position.x !== controlledUnit.position.x ||
+            newV.position.y !== controlledUnit.position.y
+        ) {
             this.emit("moveUnit", {
                 unit: controlledUnit,
-                position: newV.position || controlledUnit.position,
-                rotation: newV.rotation || controlledUnit.rotation,
+                position: newV.position,
+                rotation: newV.rotation,
             });
         }
     }

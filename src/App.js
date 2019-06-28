@@ -49,6 +49,7 @@ class App extends React.Component {
                     view.handleSay({ unitId, message });
                 }
             });
+            view.setUnitLibrary(worldState.getUnitLibrary());
             view.resize();
         });
     }

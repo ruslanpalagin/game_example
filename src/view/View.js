@@ -12,6 +12,11 @@ export default class View {
         this.controlledUnit = null;
         this.itemsLoader = new ItemsLoader();
         this.uiActionGenerator = new UiActionGenerator();
+        this.unitLibrary = null;
+    }
+
+    setUnitLibrary(unitLibrary) {
+        this.unitLibrary = unitLibrary;
     }
 
     createCanvas(document, {elId}) {
@@ -42,8 +47,15 @@ export default class View {
     }
 
     handleSay({ unitId, message }) {
+        const unit = this.unitLibrary.findUnit({ id: unitId });
+        const text = this.itemsLoader.createMessageItem(`${unitId === this.controlledUnit.id ? "You" : unit.name}: ${message}`);
+        text.position.x = unit.position.x;
+        text.position.y = unit.position.y;
+        this.worldContainer.addChild(text);
+        setTimeout(() => {
+            this.worldContainer.removeChild(text);
+        }, 4000);
         console.log("{ unitId, message }", { unitId, message });
-        alert(`${unitId === this.controlledUnit.id ? "You" : unitId}: ${message}`);
     }
 
     setControlledUnit(unit) {

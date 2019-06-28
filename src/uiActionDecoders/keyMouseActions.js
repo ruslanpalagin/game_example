@@ -100,8 +100,14 @@ export default decorateWithEvents({
             this.down("mouseRightButton");
             this.cameraRotationMouseMoveHistory = { pageX: e.pageX, pageY: e.pageY };
         }
+        if (e.button === 0) {
+            this.down("up");
+        }
     },
     mouseUp(e) {
+        if (e.button === 0) {
+            this.up("up");
+        }
         if (e.button === 2) {
             this.up("mouseRightButton");
             this.cameraRotationMouseMoveHistory = null;

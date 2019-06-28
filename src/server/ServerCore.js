@@ -3,6 +3,7 @@ import WorldState from "src/state/WorldState.js";
 export default class ServerCore {
     constructor() {
         this.worldState = new WorldState();
+        this.unitLibrary = this.worldState.getUnitLibrary();
         this.connections = [];
     }
 
@@ -43,7 +44,8 @@ export default class ServerCore {
         }
         if (action === "interactWith") {
             const { source, target } = data;
-            this.broadcast(session, "say", { unitId: source.unitId, message: `Hello ${target.unitId}` });
+            const targetUnit = this.unitLibrary.findUnit({ id: target.unitId });
+            this.broadcast(session, "say", { unitId: source.unitId, message: `Hello ${targetUnit.name}` });
             if (target.unitId === 2) {
                 setTimeout(() => {
                     let reply = "Hi man";
@@ -60,12 +62,12 @@ export default class ServerCore {
                         reply = "Leave me alone!";
                     }
                     this.broadcast(session, "say", { unitId: target.unitId, message: reply });
-                }, 2000);
+                }, 1500);
             }
             if (target.unitId === 17) {
                 setTimeout(() => {
                     this.broadcast(session, "say", { unitId: target.unitId, message: "..." });
-                }, 2000);
+                }, 1500);
             }
         }
 

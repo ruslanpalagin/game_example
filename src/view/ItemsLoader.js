@@ -57,6 +57,26 @@ class ItemsLoader {
             })
         });
     }
+
+    createMessageItem(message) {
+        const style = new PIXI.TextStyle({
+            fontFamily: "Arial",
+            fontSize: 16,
+            fill: "white",
+            stroke: '#333333',
+            strokeThickness: 4,
+            dropShadow: true,
+            dropShadowColor: "#eeeeee",
+            dropShadowBlur: 4,
+            dropShadowAngle: Math.PI / 6,
+            dropShadowDistance: 6,
+        });
+        const text = new PIXI.Text(message, style);
+        text.pivot.x = text.width / 2;
+        text.pivot.y = 50;
+
+        return text;
+    }
 }
 
 export default ItemsLoader;
