@@ -50,17 +50,19 @@ export default class View {
 
     handleSay({ unitId, message }) {
         const unit = this.unitLibrary.findUnit({ id: unitId });
-        const text = this.itemsFactory.createFromUnit({
+        this.itemsFactory.createFromUnit({
             viewSkin: "messageBox",
             message: `${unitId === this.controlledUnit.id ? "You" : unit.name}: ${message}`,
+        })
+        .then((text) => {
+            text.position.x = unit.position.x;
+            text.position.y = unit.position.y;
+            this.worldContainer.addChild(text);
+            setTimeout(() => {
+                this.worldContainer.removeChild(text);
+            }, 4000);
+            console.log("{ unitId, message }", { unitId, message });
         });
-        text.position.x = unit.position.x;
-        text.position.y = unit.position.y;
-        this.worldContainer.addChild(text);
-        setTimeout(() => {
-            this.worldContainer.removeChild(text);
-        }, 4000);
-        console.log("{ unitId, message }", { unitId, message });
     }
 
     handleHit({ source }) {

@@ -37,7 +37,7 @@ class Loader {
 
     getTexture(viewSkin) {
         const url = typesMap[viewSkin];
-        return PIXI.loader.resources[url].texture;
+        return url ? PIXI.loader.resources[url].texture : null;
     }
 }
 

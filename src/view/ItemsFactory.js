@@ -80,7 +80,7 @@ export default class ItemsFactory{
         return container;
     }
 
-    async messageTooltip({message}){
+    async messageBox({message}){
         const container = new PIXI.Container();
 
         const rectangle = new PIXI.Graphics();
