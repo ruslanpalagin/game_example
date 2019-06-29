@@ -53,6 +53,9 @@ class App extends React.Component {
                     const { source } = data;
                     view.handleHit({ source });
                 }
+                if (action === "debugArea") {
+                    view.handleDebugArea(data);
+                }
             });
             view.setUnitLibrary(worldState.getUnitLibrary());
             view.resize();

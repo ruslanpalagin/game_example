@@ -1,4 +1,5 @@
 import WorldState from "src/state/WorldState.js";
+import collisions from "src/common/collisions.js";
 
 export default class ServerCore {
     constructor() {
@@ -71,8 +72,9 @@ export default class ServerCore {
             }
         }
         if (action === "useAbility" && data.slot === 1) {
-            const source = this.worldState.findUnit({id: data.source.id});
-            this.broadcast(session, "hit", { source: source });
+            const sourceUnit = this.worldState.findUnit({id: data.source.id});
+            this.broadcast(session, "hit", { source: sourceUnit });
+            this.broadcast(session, "debugArea", collisions.calcWeaponHitBox(sourceUnit));
         }
     }
 

@@ -21,11 +21,24 @@ export default class ItemsFactory{
 
     // factory methods
 
-    async helperPoint(unit) {
+    async debugPoint(unit) {
         const g = new PIXI.Graphics();
         g.beginFill(0xFF0000);
         g.drawCircle(0, 0, 2);
         g.endFill();
+        unit.position && g.position.set(unit.position.x, unit.position.y);
+        unit.rotation && (g.rotation = unit.rotation);
+        return g;
+    }
+
+    async debugArea(unit) {
+        const g = new PIXI.Graphics();
+        g.beginFill(0xFF0000);
+        g.drawCircle(0, 0, unit.radius);
+        g.endFill();
+        g.beginHole();
+        g.drawCircle(0, 0, unit.radius - 2);
+        g.endHole();
         unit.position && g.position.set(unit.position.x, unit.position.y);
         unit.rotation && (g.rotation = unit.rotation);
         return g;

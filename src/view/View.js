@@ -68,6 +68,13 @@ export default class View {
         this.animator.animateHit(item);
     }
 
+    handleDebugArea(unit) {
+        this.itemsFactory.debugArea(unit).then((item) => {
+            this.worldContainer.addChild(item);
+            setTimeout(() => this._removeItemAnimated(item), 2000);
+        });
+    }
+
     setControlledUnit(unit) {
         this.controlledUnit = unit;
         this.uiActionGenerator.controlledUnit = unit;
@@ -125,5 +132,9 @@ export default class View {
 
     _findItem(q) {
         return find(this.items, q);
+    }
+
+    _removeItemAnimated(item) {
+        this.worldContainer.removeChild(item);
     }
 };
