@@ -58,6 +58,11 @@ export default decorateWithEvents({
         if (key.keyCode === 69 || key.keyCode === 39) {
             this.down("rotateRight");
         }
+
+        // ability keys
+        if (key.keyCode >= 48 && key.keyCode <= 58) {
+            this.emit("abilityKey", { slot: key.keyCode - 48 });
+        }
         // console.log("down key.keyCode", key.keyCode);
     },
     keyUp(key) {

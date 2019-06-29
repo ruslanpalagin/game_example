@@ -70,7 +70,10 @@ export default class ServerCore {
                 }, 1500);
             }
         }
-
+        if (action === "useAbility" && data.slot === 1) {
+            const source = this.worldState.findUnit({id: data.source.id});
+            this.broadcast(session, "hit", { source: source });
+        }
     }
 
     // TODO tmp

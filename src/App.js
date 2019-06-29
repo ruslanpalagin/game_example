@@ -35,6 +35,7 @@ class App extends React.Component {
             // send data to server
             view.uiActionGenerator.on("moveUnit", (data) => serverConnection.toServer(session, "moveUnit", data));
             view.uiActionGenerator.on("interactWith", (data) => serverConnection.toServer(session, "interactWith", data));
+            view.uiActionGenerator.on("useAbility", (data) => serverConnection.toServer(session, "useAbility", data));
 
             // handle updates from server
             serverConnection.onMessageFromServer((session, action, data) => {
@@ -47,6 +48,10 @@ class App extends React.Component {
                 if (action === "say") {
                     const { unitId, message } = data;
                     view.handleSay({ unitId, message });
+                }
+                if (action === "hit") {
+                    const { source } = data;
+                    view.handleHit({ source });
                 }
             });
             view.setUnitLibrary(worldState.getUnitLibrary());

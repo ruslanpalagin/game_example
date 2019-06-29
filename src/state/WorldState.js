@@ -51,7 +51,7 @@ class WorldState {
             { id: 20, viewSkin: "grass4items", position: {x: -150, y: 270} },
             { id: 21, viewSkin: "road", position: {x: 0, y: 0} },
 
-            { id: 1, viewSkin: "char", name: "", accountId: 1, position: { x: 0, y: 0 }, rotation: 0.5, isInteractive: true },
+            { id: 1, viewSkin: "char", name: "", accountId: 1, position: { x: 0, y: 0 }, rotation: 0, isInteractive: true },
             { id: 2, viewSkin: "char", name: "Adi", accountId: 2, position: { x: 220, y: 0 }, rotation: 3.5, isInteractive: true },
             { id: 0, viewSkin: "helperPoint", position: { x: 0, y: 0 }, rotation: 0 },
         ];

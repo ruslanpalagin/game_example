@@ -24,6 +24,9 @@ class UiActionGenerator {
             const worldPoint = this.worldContainer.toLocal(e);
             this.testHover(worldPoint);
         });
+        keyMouseActions.on("abilityKey", ({slot}) => {
+            this.emit("useAbility", { slot, source: this.controlledUnit });
+        });
     }
 
     loop(controls) {

@@ -42,14 +42,29 @@ export default class ItemsFactory{
     }
 
     async char(unit) {
-        const texture = this.loader.getTexture(unit.viewSkin);
-        const sprite = new PIXI.Sprite(texture);
-        sprite.unitId = unit.id;
-        sprite.isInteractive = unit.isInteractive;
-        unit.position && sprite.position.set(unit.position.x, unit.position.y);
-        unit.rotation && (sprite.rotation = unit.rotation);
-        sprite.anchor.set(0.5, 0.5);
-        return sprite;
+        const body = new PIXI.Sprite(this.loader.getTexture(unit.viewSkin));
+        body.position.set(0, 0);
+
+        const weapon = new PIXI.Graphics();
+        weapon.beginFill(0xFF0000);
+        weapon.drawRect(0, 0, 2, 20);
+        weapon.endFill();
+        weapon.position.set(18, 12);
+        weapon.pivot.set(0, 20);
+
+        const container = new PIXI.Container();
+        container.unitId = unit.id;
+        container.isInteractive = unit.isInteractive;
+        unit.position && container.position.set(unit.position.x, unit.position.y);
+        unit.rotation && (container.rotation = unit.rotation);
+        container.pivot.set(10, 10);
+
+        container.addChild(body);
+        container.body = body;
+        container.addChild(weapon);
+        container.weapon = weapon;
+
+        return container;
     }
 
     async messageTooltip({message}){

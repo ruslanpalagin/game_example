@@ -2,6 +2,7 @@ import find from "lodash/find";
 import PIXI from "src/vendor/PIXI.js";
 import UiActionGenerator from "./UiActionGenerator";
 import ItemsFactory from "src/view/ItemsFactory";
+import Animator from "src/view/Animator";
 
 export default class View {
     constructor() {
@@ -13,6 +14,7 @@ export default class View {
         this.itemsFactory = new ItemsFactory();
         this.uiActionGenerator = new UiActionGenerator();
         this.unitLibrary = null;
+        this.animator = new Animator();
     }
 
     setUnitLibrary(unitLibrary) {
@@ -59,6 +61,11 @@ export default class View {
             this.worldContainer.removeChild(text);
         }, 4000);
         console.log("{ unitId, message }", { unitId, message });
+    }
+
+    handleHit({ source }) {
+        const item = this._findItem({unitId: source.id});
+        this.animator.animateHit(item);
     }
 
     setControlledUnit(unit) {
