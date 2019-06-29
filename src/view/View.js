@@ -1,7 +1,7 @@
 import find from "lodash/find";
 import PIXI from "src/vendor/PIXI.js";
 import UiActionGenerator from "./UiActionGenerator";
-import ItemsLoader from "./ItemsLoader";
+import ItemsFactory from "src/view/ItemsFactory";
 
 export default class View {
     constructor() {
@@ -10,7 +10,7 @@ export default class View {
         this.worldContainer = null;
         this.centeredUnit = null;
         this.controlledUnit = null;
-        this.itemsLoader = new ItemsLoader();
+        this.itemsFactory = new ItemsFactory();
         this.uiActionGenerator = new UiActionGenerator();
         this.unitLibrary = null;
     }
@@ -32,7 +32,7 @@ export default class View {
     }
 
     loadAndAddItems(units) {
-        return this.itemsLoader.loadSceneObjects(units).then(items => this._addItems(items));
+        return this.itemsFactory.createFromUnits(units).then(items => this._addItems(items));
     }
 
     handleMoveUnit(unit) {
@@ -48,7 +48,10 @@ export default class View {
 
     handleSay({ unitId, message }) {
         const unit = this.unitLibrary.findUnit({ id: unitId });
-        const text = this.itemsLoader.createMessageItem(`${unitId === this.controlledUnit.id ? "You" : unit.name}: ${message}`);
+        const text = this.itemsFactory.createFromUnit({
+            viewSkin: "messageBox",
+            message: `${unitId === this.controlledUnit.id ? "You" : unit.name}: ${message}`,
+        });
         text.position.x = unit.position.x;
         text.position.y = unit.position.y;
         this.worldContainer.addChild(text);
