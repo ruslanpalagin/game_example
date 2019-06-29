@@ -28,6 +28,10 @@ export default class ServerCore {
             });
             this.broadcast({}, "moveUnit", updatedUnit);
         }, 55000);
+        setInterval(() => {
+            this.broadcast({}, "hit", { source: char2 });
+            this.broadcast({}, "debugArea", collisions.calcWeaponHitBox(char2));
+        }, 17000);
     }
 
     pushActionRequest(session, action, data) {
