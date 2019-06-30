@@ -1,7 +1,7 @@
 import React from 'react';
 import View from "src/view/View";
 import WorldState from "src/state/WorldState.js";
-import ServerConnection from "src/server/ServerConnection.js";
+import ServerConnection from "src/app/ServerConnection.js";
 import keyMouseActions from "src/uiActionDecoders/keyMouseActions.js";
 
 const worldState = new WorldState();

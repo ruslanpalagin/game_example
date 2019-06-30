@@ -1,4 +1,5 @@
 const collisions = {
+    // TODO rework to area
     findItemByPoint(items, {x, y}) {
         let result = null;
         for(let i = items.length - 1; i >= 0; i--) {
@@ -29,13 +30,13 @@ const collisions = {
             radius: 14,
             position: { x: unit.position.x + 7, y: unit.position.y - 15 },
         };
-        area.position = this.rotatePoint(area.position, unit.position, unit.rotation);
+        area.position = this.rotatePoint(area.position, { pivot: unit.position, angle: unit.rotation });
         return area;
     },
     calcUnitHitBox(unit) {
 
     },
-    rotatePoint(point, pivot, angle) {
+    rotatePoint(point, { pivot, angle }) {
         const s = Math.sin(angle);
         const c = Math.cos(angle);
 
@@ -52,6 +53,30 @@ const collisions = {
         point.y = ynew + pivot.y;
 
         return point;
+    },
+    movementPointBetween(unit, destination, {speed, delta}) {
+        const from = unit.position;
+        const to = destination.position;
+        const angle = this.calcAngleBetween(from, to);
+        const distance = (speed / 1000) * delta;
+        console.log("distance", distance);
+        const toPartial = { x: from.x, y: from.y + distance };
+        console.log("toPartial", toPartial);
+        return {
+            position: this.rotatePoint(from, { pivot: toPartial, angle }),
+            rotation: angle,
+        };
+    },
+    getDistance(controlledUnit, clickedItem) {
+        const xDiff = Math.abs(controlledUnit.position.x - clickedItem.position.x);
+        const yDiff = Math.abs(controlledUnit.position.y - clickedItem.position.y);
+        return Math.sqrt( xDiff * xDiff + yDiff * yDiff );
+    },
+    _calcAngle(x, y) {
+        return Math.atan2(y, x);
+    },
+    calcAngleBetween(from, to) {
+        return Math.atan2(to.x - from.x, to.y - from.y);
     },
 };
 

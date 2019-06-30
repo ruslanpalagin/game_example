@@ -101,12 +101,12 @@ export default decorateWithEvents({
         // console.log("up key.keyCode", key.keyCode);
     },
     mouseDown(e) {
+        if (e.button === 0 && this.pressed["mouseRightButton"]) {
+            this.down("up");
+        }
         if (e.button === 2) {
             this.down("mouseRightButton");
             this.cameraRotationMouseMoveHistory = { pageX: e.pageX, pageY: e.pageY };
-        }
-        if (e.button === 0) {
-            this.down("up");
         }
     },
     mouseUp(e) {

@@ -119,6 +119,7 @@ class UiActionGenerator {
         }
     }
 
+    // TODO use collisions
     calcRangeToBorder(controlledUnit, clickedItem) {
         const xDiff = Math.abs(controlledUnit.position.x - clickedItem.position.x);
         const yDiff = Math.abs(controlledUnit.position.y - clickedItem.position.y);
