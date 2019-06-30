@@ -35,15 +35,27 @@ describe("collisions", () => {
     });
 
     describe("rotatePoint", () => {
-        it("around 0 0", () => {
-            const point = collisions.rotatePoint({x: 10, y: 11}, { pivot: {x: 10, y: 10}, angle: Math.PI / 2 });
-            console.log("around 0 0 ", point);
-            expectToBeCloseTo(point.x, 1);
+        it("around 0 0 + 90deg", () => {
+            const point = collisions.rotatePoint({x: 0, y: 2}, { pivot: {x: 0, y: 0}, angle: Math.PI / 2 });
+            // console.log("around 0 0 ", point);
+            expectToBeCloseTo(point.x, 2);
+            expectToBeCloseTo(point.y, 0);
+        });
+        it("around 0 0 + 45deg", () => {
+            const point = collisions.rotatePoint({x: 0, y: 1}, { pivot: {x: 0, y: 0}, angle: Math.PI / 4 });
+            // console.log("around 0 0 ", point);
+            expectToBeCloseTo(point.x, 0.7);
+            expectToBeCloseTo(point.y, 0.7);
+        });
+        it("around 0 0 - 90deg", () => {
+            const point = collisions.rotatePoint({x: 0, y: 2}, { pivot: {x: 0, y: 0}, angle: -Math.PI / 2 });
+            // console.log("around 0 0 ", point);
+            expectToBeCloseTo(point.x, -2);
             expectToBeCloseTo(point.y, 0);
         });
         it("around 5 10", () => {
             const point = collisions.rotatePoint({x: 5, y: 12}, { pivot: {x: 5, y: 10}, angle: Math.PI / 2 });
-            console.log("around 5 10", point);
+            // console.log("around 5 10", point);
             expectToBeCloseTo(point.x, 7);
             expectToBeCloseTo(point.y, 10);
         });
@@ -56,9 +68,39 @@ describe("collisions", () => {
                 { position: {x: 2, y: 2}, rotation: 0},
                 { speed: 1, delta: 1000 },
             );
-            console.log("point", point);
-            // expect(point.position.x).toBe(1);
-            // expect(point.position.y).toBe(1);
+            expectToBeCloseTo(point.position.x, 0.7);
+            expectToBeCloseTo(point.position.y, 0.7);
+            expectToBeCloseTo(point.rotation, 0.78);
+        });
+        it("with different speed", () => {
+            const point = collisions.movementPointBetween(
+                { position: {x: 0, y: 0}, rotation: 0},
+                { position: {x: 2, y: 2}, rotation: 0},
+                { speed: 10, delta: 50 },
+            );
+            expectToBeCloseTo(point.position.x, 0.35);
+            expectToBeCloseTo(point.position.y, 0.35);
+            expectToBeCloseTo(point.rotation, 0.78);
+        });
+        it("to negative sector", () => {
+            const point = collisions.movementPointBetween(
+                { position: {x: 2, y: 2}, rotation: 0},
+                { position: {x: -2, y: -2}, rotation: 0},
+                { speed: 1, delta: 1000 },
+            );
+            expectToBeCloseTo(point.position.x, 1.292);
+            expectToBeCloseTo(point.position.y, 1.292);
+            expectToBeCloseTo(point.rotation, -2.356);
+        });
+        it("faster then target", () => {
+            const point = collisions.movementPointBetween(
+                { position: {x: 0, y: 0}, rotation: 0},
+                { position: {x: 4, y: 4}, rotation: 0},
+                { speed: 1000, delta: 1000 },
+            );
+            expectToBeCloseTo(point.position.x, 4);
+            expectToBeCloseTo(point.position.y, 4);
+            expectToBeCloseTo(point.rotation, 0.78);
         });
     });
 

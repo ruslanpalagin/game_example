@@ -37,8 +37,8 @@ const collisions = {
 
     },
     rotatePoint(point, { pivot, angle }) {
-        const s = Math.sin(angle);
-        const c = Math.cos(angle);
+        const s = Math.sin(-angle);
+        const c = Math.cos(-angle);
 
         // translate point back to origin:
         point.x -= pivot.x;
@@ -58,12 +58,21 @@ const collisions = {
         const from = unit.position;
         const to = destination.position;
         const angle = this.calcAngleBetween(from, to);
-        const distance = (speed / 1000) * delta;
-        console.log("distance", distance);
-        const toPartial = { x: from.x, y: from.y + distance };
-        console.log("toPartial", toPartial);
+
+        const distanceBySpeed = (speed / 1000) * delta;
+        const maxDistance = this.getDistance(unit, destination);
+
+        if (distanceBySpeed > maxDistance) {
+            return {
+                position: to,
+                rotation: angle,
+            };
+        }
+
+        const tmpDestination = { x: from.x, y: from.y + distanceBySpeed };
+        const rotatedPoint = this.rotatePoint(tmpDestination, { pivot: from, angle });
         return {
-            position: this.rotatePoint(from, { pivot: toPartial, angle }),
+            position: rotatedPoint,
             rotation: angle,
         };
     },
