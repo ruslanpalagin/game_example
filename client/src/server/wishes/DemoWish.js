@@ -1,3 +1,4 @@
+import isEqual from "lodash/isEqual";
 import collisions from "src/common/collisions.js";
 
 export default class DemoWish {
@@ -8,14 +9,23 @@ export default class DemoWish {
     }
 
     getActions(delta){
-        const UNIT_SPEED = 60;
+        console.log("delta", delta);
+        const UNIT_SPEED = 30;
         const point = this.points[this.targetPoint];
         const action = {
-            name: "move",
-            unit: this.unit,
-            point: collisions.movementPointBetween(this.unit, point, UNIT_SPEED)
+            name: "moveUnit",
+            unitId: this.unit.id,
+            uPoint: collisions.movementPointBetween(this.unit, point, { speed: UNIT_SPEED, delta }),
         };
-        return [];
+
+        if (isEqual(action.uPoint, point)) {
+            this.points[]
+        }
+
+        return [
+            action
+        ];
     }
+
     isCompleted(){}
 }

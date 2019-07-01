@@ -16,10 +16,13 @@ export default class ServerCore {
     load() {
         return this.worldState.loadSave()
         .then(() => this._instantiateWishes(this.worldState.getUnits()))
-        .then(() => this.runAI());
+        // .then(() => this.runAI())
+        .then(() => this.startGameLoop())
+            ;
     }
 
     startGameLoop() {
+        this.lastLoopTime = (new Date()).getTime();
         setInterval(() => {
             this.loop();
         }, 50);
@@ -32,8 +35,25 @@ export default class ServerCore {
             const actions = wish.getActions(delta, this.unitLibrary);
             this.loopActionsQ.mergeActions(actions);
         });
-
+        this.processActionsAndFlush(this.loopActionsQ);
         this.lastLoopTime = now;
+    }
+
+    processActionsAndFlush() {
+        for (let unitId in this.loopActionsQ.q) {
+            const unitActions = this.loopActionsQ.q[unitId];
+            for (let actionName in unitActions) {
+                this.changeState(unitActions[actionName]);
+                this.broadcast({}, unitActions[actionName]);
+            }
+        }
+        this.loopActionsQ.flush();
+    }
+
+    changeState(action) {
+        if (action.name === "moveUnit") {
+            this.worldState.updUnitById(action.unitId, action.uPoint);
+        }
     }
 
     runAI() {
@@ -60,6 +80,7 @@ export default class ServerCore {
     pushActionRequest(session, action, data) {
 
     }
+
     pushActionRequestOld(session, action, data) {
         if (action === "moveUnit") {
             const { unit, position, rotation } = data;
@@ -113,9 +134,9 @@ export default class ServerCore {
         this.connections.push(serverConnection);
     }
 
-    broadcast(session, action, data) {
+    broadcast(session, data) {
         this.connections.forEach(c => {
-            c.onMessageFromServerCallback && c.onMessageFromServerCallback(session, action, data);
+            c.onMessageFromServerCallback && c.onMessageFromServerCallback(session, data);
         });
     }
 

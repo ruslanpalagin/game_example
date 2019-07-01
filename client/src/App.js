@@ -38,11 +38,12 @@ class App extends React.Component {
             view.uiActionGenerator.on("useAbility", (data) => serverConnection.toServer(session, "useAbility", data));
 
             // handle updates from server
-            serverConnection.onMessageFromServer((session, action, data) => {
+            serverConnection.onMessageFromServer((session, data) => {
+                const action = data.name;
                 // console.log("onMessageFromServer", session, action, data);
                 if (action === "moveUnit") {
-                    const updatedUnit = data;
-                    const unit = worldState.updUnitById(updatedUnit.id, {position: updatedUnit.position, rotation: updatedUnit.rotation});
+                    console.log("data", data);
+                    const unit = worldState.updUnitById(data.unitId, data.uPoint);
                     view.handleMoveUnit(unit);
                 }
                 if (action === "say") {

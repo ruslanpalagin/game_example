@@ -5,12 +5,17 @@ export default class LoopActionsQ{
 
     // names: move, hit, say
     setAction(action) {
-        this.q[action.unit.id][action.name] = action;
+        this.q[action.unitId] = this.q[action.unitId] || {};
+        this.q[action.unitId][action.name] = action;
     }
 
     mergeActions(actions) {
         actions.forEach((action) => {
             this.setAction(action)
         });
+    }
+
+    flush() {
+        this.q = {};
     }
 }
