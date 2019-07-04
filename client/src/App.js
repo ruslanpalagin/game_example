@@ -42,7 +42,7 @@ class App extends React.Component {
                 const action = data.name;
                 // console.log("onMessageFromServer", session, action, data);
                 if (action === "moveUnit") {
-                    console.log("data", data);
+                    // console.log("data", data);
                     const unit = worldState.updUnitById(data.unitId, data.uPoint);
                     view.handleMoveUnit(unit);
                 }

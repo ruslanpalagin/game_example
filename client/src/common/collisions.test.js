@@ -8,10 +8,6 @@ const expectToBeCloseTo = (current, expected) => {
 describe("collisions", () => {
 
     describe("calcAngleBetween", () => {
-        it("with low lvl method", () => {
-            const angle = collisions._calcAngle(1, 1);
-            expectToBeCloseTo(angle, 0.785);
-        });
         it("with 45 deg", () => {
             const angle = collisions.calcAngleBetween({ x: 1, y: 0 }, { x: 3, y: 2 });
             // console.log("angle", angle);
@@ -31,6 +27,34 @@ describe("collisions", () => {
             const angle = collisions.calcAngleBetween({ x: 0, y: 5 }, { x: -5, y: 10 });
             expectToBeCloseTo(angle, -0.785);
             // console.log("angle", angle);
+        });
+    });
+
+    describe("calcAngleBetweenInversedY", () => {
+        it("to get ~0 deg ", () => {
+            const angle = collisions.calcAngleBetweenInversedY({x: 0.000001, y: 0}, {x: 0, y: -350});
+            console.log("angle", angle);
+            expectToBeCloseTo(angle, 0);
+        });
+        it("to get 45 deg", () => {
+            const angle = collisions.calcAngleBetweenInversedY({ x: 0, y: 0 }, { x: 10, y: -10 });
+            expectToBeCloseTo(angle, 1 * Math.PI / 4);
+        });
+        it("to get 90", () => {
+            const angle = collisions.calcAngleBetweenInversedY({ x: 1, y: 0 }, { x: 3, y: 0 });
+            expectToBeCloseTo(angle, 2 * Math.PI / 4);
+        });
+        it("to get 90 + 45 deg", () => {
+            const angle = collisions.calcAngleBetweenInversedY({ x: 1, y: 0 }, { x: 3, y: 2 });
+            expectToBeCloseTo(angle, 3 * Math.PI / 4);
+        });
+        it("to get 180 deg", () => {
+            const angle = collisions.calcAngleBetweenInversedY({ x: 0, y: 0 }, { x: 0, y: 5 });
+            expectToBeCloseTo(angle, Math.PI);
+        });
+        it("to get 180 + 45 deg", () => {
+            const angle = collisions.calcAngleBetweenInversedY({ x: 0, y: 0 }, { x: -5, y: 5 });
+            expectToBeCloseTo(angle, 5 * Math.PI / 4);
         });
     });
 

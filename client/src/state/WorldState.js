@@ -32,6 +32,13 @@ class WorldState {
     }
 
     loadSave() {
+        const points = [
+            {position: {x: 0, y: -50}},
+            {position: {x: 50, y: -100}},
+            {position: {x: 100, y: -100}},
+            {position: {x: 150, y: -50}},
+            {position: {x: 100, y: -50}},
+        ];
         const units = [
             { id: 3, viewSkin: "treesBurned", position: {x: -100, y: -650} },
             { id: 4, viewSkin: "treesBurned", position: {x: 20, y: -670} },
@@ -57,8 +64,8 @@ class WorldState {
 
             { id: 1, viewSkin: "char", name: "", accountId: 1, position: { x: 0, y: 0 }, rotation: 1.57, isInteractive: true },
             {
-                id: 2, viewSkin: "char", name: "Dvadi", accountId: 2, position: { x: 220, y: 0 }, rotation: 3.5, isInteractive: true,
-                wishes: [{ name: "DemoWish", points: [ {position: {x: 0, y:0}}, {position: {x: 0, y:350}, rotation: 0} ] }],
+                id: 2, viewSkin: "char", name: "Dvadi", accountId: 2, position: { x: 0, y: 0 }, rotation: 3.5, isInteractive: true,
+                wishes: [{ name: "DemoWish", points }],
             },
             { id: 0, viewSkin: "debugPoint", position: { x: 0, y: 0 }, rotation: 0 },
             // { id: 0, viewSkin: "debugArea", position: { x: 0, y: 0 }, rotation: 0, radius: 20 },

@@ -35,6 +35,7 @@ export default class ServerCore {
             const actions = wish.getActions(delta, this.unitLibrary);
             this.loopActionsQ.mergeActions(actions);
         });
+        this.wishes = this.wishes.filter(wish => !wish.isCompleted());
         this.processActionsAndFlush(this.loopActionsQ);
         this.lastLoopTime = now;
     }

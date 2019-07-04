@@ -81,11 +81,11 @@ const collisions = {
         const yDiff = Math.abs(controlledUnit.position.y - clickedItem.position.y);
         return Math.sqrt( xDiff * xDiff + yDiff * yDiff );
     },
-    _calcAngle(x, y) {
-        return Math.atan2(y, x);
-    },
     calcAngleBetween(from, to) {
         return Math.atan2(to.x - from.x, to.y - from.y);
+    },
+    calcAngleBetweenInversedY(from, to) {
+        return Math.atan2(to.y - from.y, to.x - from.x) + Math.PI / 2;
     },
 };
 
