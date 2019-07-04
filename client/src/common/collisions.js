@@ -65,7 +65,7 @@ const collisions = {
         if (distanceBySpeed > maxDistance) {
             return {
                 position: to,
-                rotation: angle,
+                rotation: this.calcAngleBetweenInversedY(from, to),
             };
         }
 
@@ -73,7 +73,7 @@ const collisions = {
         const rotatedPoint = this.rotatePoint(tmpDestination, { pivot: from, angle });
         return {
             position: rotatedPoint,
-            rotation: angle,
+            rotation: this.calcAngleBetweenInversedY(from, to),
         };
     },
     getDistance(controlledUnit, clickedItem) {

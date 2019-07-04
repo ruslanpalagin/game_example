@@ -37,7 +37,11 @@ class WorldState {
             {position: {x: 50, y: -100}},
             {position: {x: 100, y: -100}},
             {position: {x: 150, y: -50}},
-            {position: {x: 100, y: -50}},
+            {position: {x: 150, y: 0}},
+            {position: {x: 100, y: 50}},
+            {position: {x: 50, y: 50}},
+            {position: {x: 0, y: 0}},
+            {position: {x: 0, y: 300}, rotation: 0},
         ];
         const units = [
             { id: 3, viewSkin: "treesBurned", position: {x: -100, y: -650} },
