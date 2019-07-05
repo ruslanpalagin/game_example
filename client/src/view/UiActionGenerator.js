@@ -32,7 +32,7 @@ class UiActionGenerator {
     loop(controls) {
         const controlledUnit = this.controlledUnit;
         this.lastLoopTime = this.lastLoopTime || (new Date()).getTime();
-        const MOVE_SPEED = 60;
+        const MOVE_SPEED = 90;
         const ROTATION_SPEED = 3;
         const newV = {
             position: { x: controlledUnit.position.x, y: controlledUnit.position.y },
@@ -74,17 +74,21 @@ class UiActionGenerator {
             newV.position.y !== controlledUnit.position.y
         ) {
             this.emit("moveUnit", {
-                unit: controlledUnit,
-                position: newV.position,
-                rotation: newV.rotation,
+                name: "moveUnit",
+                unitId: controlledUnit.id,
+                uPoint: {
+                    position: newV.position,
+                    rotation: newV.rotation,
+                },
             });
         }
     }
 
     rotate(rad) {
         this.emit("moveUnit", {
-            unit: this.controlledUnit,
-            rotation: this.controlledUnit.rotation + rad
+            name: "moveUnit",
+            unitId: this.controlledUnit.id,
+            uPoint: { rotation: this.controlledUnit.rotation + rad }
         });
     }
 

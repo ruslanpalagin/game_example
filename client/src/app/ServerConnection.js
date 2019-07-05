@@ -18,9 +18,8 @@ export default class ServerConnection {
         return Promise.resolve(this.serverCore.worldState.state);
     }
 
-    toServer(session, action, data) {
-        // console.log("session, action, data", session, action, data);
-        this.serverCore.pushActionRequest(session, action, data);
+    toServer(session, action) {
+        this.serverCore.pushActionRequest(session, action);
     }
 
     onMessageFromServer(callback) {

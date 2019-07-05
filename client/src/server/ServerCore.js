@@ -16,7 +16,6 @@ export default class ServerCore {
     load() {
         return this.worldState.loadSave()
         .then(() => this._instantiateWishes(this.worldState.getUnits()))
-        // .then(() => this.runAI())
         .then(() => this.startGameLoop())
             ;
     }
@@ -25,7 +24,7 @@ export default class ServerCore {
         this.lastLoopTime = (new Date()).getTime();
         setInterval(() => {
             this.loop();
-        }, 50);
+        }, 500);
     }
 
     loop() {
@@ -44,57 +43,29 @@ export default class ServerCore {
         for (let unitId in this.loopActionsQ.q) {
             const unitActions = this.loopActionsQ.q[unitId];
             for (let actionName in unitActions) {
-                this.changeState(unitActions[actionName]);
+                this.changeStateByAction(unitActions[actionName]);
                 this.broadcast({}, unitActions[actionName]);
             }
         }
         this.loopActionsQ.flush();
     }
 
-    changeState(action) {
+    changeStateByAction(action) {
         if (action.name === "moveUnit") {
             this.worldState.updUnitById(action.unitId, action.uPoint);
         }
     }
 
-    runAI() {
-        const char2 = this.worldState.findUnit({id: 2});
-        const interval = setInterval(() => {
-            const updatedUnit = this.worldState.updUnitById(char2.id, {
-                position: { x: char2.position.x - 0.2, y: char2.position.y + 0.4 }
-            });
-            this.broadcast({}, "moveUnit", updatedUnit);
-        }, 50);
-        setTimeout(() => {
-            clearInterval(interval);
-            const updatedUnit = this.worldState.updUnitById(char2.id, {
-                rotation: 0
-            });
-            this.broadcast({}, "moveUnit", updatedUnit);
-        }, 55000);
-        setInterval(() => {
-            this.broadcast({}, "hit", { source: char2 });
-            this.broadcast({}, "debugArea", collisions.calcWeaponHitBox(char2));
-        }, 1000);
-    }
-
-    pushActionRequest(session, action, data) {
-
+    pushActionRequest(session, action) {
+        const actionName = action.name;
+        // TODO validate session
+        if (actionName === "moveUnit") {
+            const { unitId, uPoint } = action;
+            this.loopActionsQ.setAction({ unitId, name: actionName, uPoint });
+        }
     }
 
     pushActionRequestOld(session, action, data) {
-        if (action === "moveUnit") {
-            const { unit, position, rotation } = data;
-            const diff = {};
-            if (position) {
-                diff.position = position;
-            }
-            if (rotation) {
-                diff.rotation = rotation;
-            }
-            const updatedUnit = this.worldState.updUnitById(unit.id, diff);
-            this.broadcast(session, "moveUnit", updatedUnit);
-        }
         if (action === "interactWith") {
             const { source, target } = data;
             const targetUnit = this.unitLibrary.findUnit({ id: target.unitId });

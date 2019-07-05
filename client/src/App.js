@@ -33,7 +33,7 @@ class App extends React.Component {
             view.listenToInput(keyMouseActions);
 
             // send data to server
-            view.uiActionGenerator.on("moveUnit", (data) => serverConnection.toServer(session, "moveUnit", data));
+            view.uiActionGenerator.on("moveUnit", (data) => serverConnection.toServer(session, data));
             view.uiActionGenerator.on("interactWith", (data) => serverConnection.toServer(session, "interactWith", data));
             view.uiActionGenerator.on("useAbility", (data) => serverConnection.toServer(session, "useAbility", data));
 
