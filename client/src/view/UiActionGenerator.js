@@ -25,7 +25,7 @@ class UiActionGenerator {
             this.testHover(worldPoint);
         });
         keyMouseActions.on("abilityKey", ({slot}) => {
-            this.emit("useAbility", { slot, source: this.controlledUnit });
+            this.emit("useAbility", { slot, sourceUnit: this.controlledUnit, name: "useAbility" });
         });
     }
 
@@ -100,13 +100,15 @@ class UiActionGenerator {
         const range = this.calcRangeToBorder(this.controlledUnit, clickedItem);
         if (range <= MAX_INTRACTION_RANGE) {
             this.emit("interactWith", {
-                source: { unitId: this.controlledUnit.id },
-                target: { unitId: clickedItem.unitId },
+                name: "interactWith",
+                sourceUnit: { id: this.controlledUnit.id },
+                targetUnit: { id: clickedItem.unitId },
             });
         } else {
             this.emit("interactWithTooFar", {
-                source: { unitId: this.controlledUnit.id },
-                target: { unitId: clickedItem.unitId },
+                name: "interactWithTooFar",
+                sourceUnit: { id: this.controlledUnit.id },
+                targetUnit: { id: clickedItem.unitId },
             });
         }
     }

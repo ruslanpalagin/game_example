@@ -24,7 +24,7 @@ export default class ServerCore {
         this.lastLoopTime = (new Date()).getTime();
         setInterval(() => {
             this.loop();
-        }, 500);
+        }, 20);
     }
 
     loop() {
@@ -58,19 +58,25 @@ export default class ServerCore {
 
     pushActionRequest(session, action) {
         const actionName = action.name;
+        if (!actionName) {
+            throw new Error("ServerCore: actionName must be defined");
+        }
         // TODO validate session
         if (actionName === "moveUnit") {
             const { unitId, uPoint } = action;
             this.loopActionsQ.setAction({ unitId, name: actionName, uPoint });
         }
-    }
-
-    pushActionRequestOld(session, action, data) {
-        if (action === "interactWith") {
-            const { source, target } = data;
-            const targetUnit = this.unitLibrary.findUnit({ id: target.unitId });
-            this.broadcast(session, "say", { unitId: source.unitId, message: `Hello ${targetUnit.name}` });
-            if (target.unitId === 2) {
+        if (actionName === "useAbility" && action.slot === 1) {
+            const sourceUnit = this.worldState.findUnit({id: action.sourceUnit.id});
+            this.broadcast(session, { name: "hit", sourceUnit });
+            this.broadcast(session, { name: "debugArea", ...collisions.calcWeaponHitBox(sourceUnit) });
+        }
+        if (actionName === "interactWith") {
+            const { sourceUnit, targetUnit } = action;
+            const serverTargetUnit = this.unitLibrary.findUnit({ id: targetUnit.id });
+            this.broadcast(session, { name: "say", unitId: sourceUnit.id, message: `Hello ${serverTargetUnit.name}` });
+            // reply
+            if (serverTargetUnit.id === 2) {
                 setTimeout(() => {
                     let reply = "Hi man";
                     if (Math.random() > 0.4) {
@@ -85,19 +91,14 @@ export default class ServerCore {
                     if (Math.random() > 0.9) {
                         reply = "Leave me alone!";
                     }
-                    this.broadcast(session, "say", { unitId: target.unitId, message: reply });
+                    this.broadcast(session, { name: "say", unitId: serverTargetUnit.id, message: reply });
                 }, 1500);
             }
-            if (target.unitId === 17) {
+            if (serverTargetUnit.id === 17) {
                 setTimeout(() => {
-                    this.broadcast(session, "say", { unitId: target.unitId, message: "..." });
+                    this.broadcast(session, { name: "say", unitId: serverTargetUnit.id, message: "..." });
                 }, 1500);
             }
-        }
-        if (action === "useAbility" && data.slot === 1) {
-            const sourceUnit = this.worldState.findUnit({id: data.source.id});
-            this.broadcast(session, "hit", { source: sourceUnit });
-            this.broadcast(session, "debugArea", collisions.calcWeaponHitBox(sourceUnit));
         }
     }
 

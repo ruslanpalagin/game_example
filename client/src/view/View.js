@@ -65,8 +65,8 @@ export default class View {
         });
     }
 
-    handleHit({ source }) {
-        const item = this._findItem({unitId: source.id});
+    handleHit(action) {
+        const item = this._findItem({unitId: action.sourceUnit.id});
         this.animator.animateHit(item);
     }
 
@@ -94,7 +94,7 @@ export default class View {
         keyMouseActions.on("resize", () => this.resize());
         this.uiActionGenerator.on("mouseIn", () => this._setCursor("pointer"));
         this.uiActionGenerator.on("mouseOut", () => this._setCursor(null));
-        this.uiActionGenerator.on("interactWithTooFar", ({ source }) => {
+        this.uiActionGenerator.on("interactWithTooFar", ({ sourceUnit }) => {
             let message = "Oh, it's too far away";
             if (Math.random() > 0.4){
                 message = "It's too far..."
@@ -102,7 +102,7 @@ export default class View {
             if (Math.random() > 0.7){
                 message = "Let's get closer"
             }
-            this.handleSay({ unitId: source.unitId, message });
+            this.handleSay({ unitId: sourceUnit.id, message });
         });
     }
 

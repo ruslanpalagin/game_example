@@ -38,28 +38,34 @@ class App extends React.Component {
                 view.handleMoveUnit(unit);
                 serverConnection.toServer(session, data);
             });
-            view.uiActionGenerator.on("interactWith", (data) => serverConnection.toServer(session, "interactWith", data));
-            view.uiActionGenerator.on("useAbility", (data) => serverConnection.toServer(session, "useAbility", data));
+            view.uiActionGenerator.on("interactWith", (data) => {
+                serverConnection.toServer(session, data)
+            });
+            view.uiActionGenerator.on("useAbility", (data) => {
+                serverConnection.toServer(session, data);
+            });
 
             // handle updates from server
-            serverConnection.onMessageFromServer((session, data) => {
-                const action = data.name;
-                // console.log("onMessageFromServer", session, action, data);
-                if (action === "moveUnit") {
+            serverConnection.onMessageFromServer((session, action) => {
+                const actionName = action.name;
+                // console.log("onMessageFromServer", session, action);
+                if (!actionName) {
+                    throw new Error("onMessageFromServer: actionName is required");
+                }
+                if (actionName === "moveUnit") {
                     // console.log("data", data);
-                    const unit = worldState.updUnitById(data.unitId, data.uPoint);
+                    const unit = worldState.updUnitById(action.unitId, action.uPoint);
                     view.handleMoveUnit(unit);
                 }
-                if (action === "say") {
-                    const { unitId, message } = data;
+                if (actionName === "say") {
+                    const { unitId, message } = action;
                     view.handleSay({ unitId, message });
                 }
-                if (action === "hit") {
-                    const { source } = data;
-                    view.handleHit({ source });
+                if (actionName === "hit") {
+                    view.handleHit(action);
                 }
-                if (action === "debugArea") {
-                    view.handleDebugArea(data);
+                if (actionName === "debugArea") {
+                    view.handleDebugArea(action);
                 }
             });
             view.setUnitLibrary(worldState.getUnitLibrary());
