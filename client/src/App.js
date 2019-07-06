@@ -67,6 +67,10 @@ class App extends React.Component {
                 if (actionName === "debugArea") {
                     view.handleDebugArea(action);
                 }
+                if (actionName === "damage") {
+                    const unit = worldState.updUnitById(action.targetUnit.id, { state: action.targetUnit.state });
+                    view.handleDamageUnit(unit);
+                }
             });
             view.setUnitLibrary(worldState.getUnitLibrary());
             view.resize();

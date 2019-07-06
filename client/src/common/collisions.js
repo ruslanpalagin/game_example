@@ -22,19 +22,22 @@ const collisions = {
         }
         return result;
     },
-    findItemInRect(items, {left, top, right, bottom}) {
-
-    },
-    calcWeaponHitBox(unit) {
+    calcWeaponHitArea(unit) {
         const area = {
-            radius: 14,
+            radius: 18,
             position: { x: unit.position.x + 7, y: unit.position.y - 15 },
         };
-        area.position = this.rotatePoint(area.position, { pivot: unit.position, angle: unit.rotation });
+        area.position = this.rotatePointInversedY(area.position, { pivot: unit.position, angle: unit.rotation });
         return area;
     },
-    calcUnitHitBox(unit) {
-
+    findUnitsInArea(units, area) {
+        return units.filter((unit) => this._isUnitInArea(unit, area));
+    },
+    _isUnitInArea(unit, area) {
+        return this.getDistance(unit, area) <= area.radius;
+    },
+    rotatePointInversedY(point, { pivot, angle }) {
+        return this.rotatePoint(point, { pivot, angle: -angle });
     },
     rotatePoint(point, { pivot, angle }) {
         const s = Math.sin(-angle);

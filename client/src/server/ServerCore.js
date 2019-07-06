@@ -54,6 +54,31 @@ export default class ServerCore {
         if (action.name === "moveUnit") {
             this.worldState.updUnitById(action.unitId, action.uPoint);
         }
+        if (action.name === "hit") {
+            const sourceUnit = this.worldState.findUnit({id: action.sourceUnit.id});
+            const hitArea = collisions.calcWeaponHitArea(sourceUnit);
+            const hitedUnits = collisions.findUnitsInArea(this.worldState.getHitableUnits(), hitArea);
+            // this.broadcast({}, { name: "debugArea", ...hitArea });
+
+            hitedUnits.forEach((targetUnit) => {
+                if (targetUnit.id === sourceUnit.id) {
+                    return;
+                }
+                if (targetUnit.state.isDead) {
+                    return;
+                }
+                const newHp = targetUnit.state.hp - 40;
+                const isDead = newHp <= 0;
+                const newState = Object.assign(targetUnit.state, { hp: newHp, isDead });
+                const updTargetUnit = this.worldState.updUnitById(targetUnit.id, { state: newState });
+                this.broadcast({}, { name: "damage", sourceUnit, targetUnit: updTargetUnit });
+                this.broadcast({}, { name: "say", unitId: updTargetUnit.id, message: isDead ? "Oh, need to rest." : (newHp > 50 ? "Careful!" : "Stop It!") });
+
+                if (isDead && targetUnit.id === 1) {
+                    setTimeout(() => this.broadcast({}, { name: "say", unitId: updTargetUnit.id, message: "F5..." }), 22000);
+                }
+            });
+        }
     }
 
     pushActionRequest(session, action) {
@@ -68,8 +93,7 @@ export default class ServerCore {
         }
         if (actionName === "useAbility" && action.slot === 1) {
             const sourceUnit = this.worldState.findUnit({id: action.sourceUnit.id});
-            this.broadcast(session, { name: "hit", sourceUnit });
-            this.broadcast(session, { name: "debugArea", ...collisions.calcWeaponHitBox(sourceUnit) });
+            this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "hit", sourceUnit });
         }
         if (actionName === "interactWith") {
             const { sourceUnit, targetUnit } = action;
@@ -91,6 +115,12 @@ export default class ServerCore {
                     if (Math.random() > 0.9) {
                         reply = "Leave me alone!";
                     }
+                    if (serverTargetUnit.state.isDead) {
+                        reply = "...";
+                        setTimeout(() => {
+                            this.broadcast(session, { name: "say", unitId: sourceUnit.id, message: "Oh dear..." });
+                        }, 3000);
+                    }
                     this.broadcast(session, { name: "say", unitId: serverTargetUnit.id, message: reply });
                 }, 1500);
             }
@@ -98,6 +128,9 @@ export default class ServerCore {
                 setTimeout(() => {
                     this.broadcast(session, { name: "say", unitId: serverTargetUnit.id, message: "..." });
                 }, 1500);
+                setTimeout(() => {
+                    this.broadcast(session, { name: "say", unitId: sourceUnit.id, message: "A'm talking to lake... Need more NPCs here!" });
+                }, 5000);
             }
         }
     }

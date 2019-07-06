@@ -94,7 +94,6 @@ describe("collisions", () => {
             );
             expectToBeCloseTo(point.position.x, 0.7);
             expectToBeCloseTo(point.position.y, 0.7);
-            expectToBeCloseTo(point.rotation, 0.78);
         });
         it("with different speed", () => {
             const point = collisions.movementPointBetween(
@@ -104,7 +103,6 @@ describe("collisions", () => {
             );
             expectToBeCloseTo(point.position.x, 0.35);
             expectToBeCloseTo(point.position.y, 0.35);
-            expectToBeCloseTo(point.rotation, 0.78);
         });
         it("to negative sector", () => {
             const point = collisions.movementPointBetween(
@@ -114,7 +112,6 @@ describe("collisions", () => {
             );
             expectToBeCloseTo(point.position.x, 1.292);
             expectToBeCloseTo(point.position.y, 1.292);
-            expectToBeCloseTo(point.rotation, -2.356);
         });
         it("faster then target", () => {
             const point = collisions.movementPointBetween(
@@ -124,7 +121,6 @@ describe("collisions", () => {
             );
             expectToBeCloseTo(point.position.x, 4);
             expectToBeCloseTo(point.position.y, 4);
-            expectToBeCloseTo(point.rotation, 0.78);
         });
     });
 
@@ -149,6 +145,23 @@ describe("collisions", () => {
                 { position: {x: 0, y: 4}, rotation: 0},
             );
             expect(distance).toBe(4);
+        });
+    });
+
+    describe("_isUnitInArea", () => {
+        it("positive", () => {
+            const isUnitInArea = collisions._isUnitInArea(
+                {position: {x: 0, y: 0}},
+                {position: {x: 10, y: 10}, radius: 20}
+            );
+            expect(isUnitInArea).toBe(true);
+        });
+        it("negative", () => {
+            const isUnitInArea = collisions._isUnitInArea(
+                {position: {x: 0, y: 0}},
+                {position: {x: 10, y: 10}, radius: 10}
+            );
+            expect(isUnitInArea).toBe(false);
         });
     });
 

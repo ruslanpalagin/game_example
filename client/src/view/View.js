@@ -61,7 +61,6 @@ export default class View {
             setTimeout(() => {
                 this.worldContainer.removeChild(text);
             }, 4000);
-            console.log("{ unitId, message }", { unitId, message });
         });
     }
 
@@ -75,6 +74,14 @@ export default class View {
             this.worldContainer.addChild(item);
             setTimeout(() => this._removeItemAnimated(item), 2000);
         });
+    }
+
+    handleDamageUnit(unit) {
+        if (unit.state.isDead) {
+            const item = this._findItem({unitId: unit.id});
+            this.animator.animateCharDeath(item);
+        }
+        console.log("damaged: ", unit.id, unit.state.hp);
     }
 
     setControlledUnit(unit) {

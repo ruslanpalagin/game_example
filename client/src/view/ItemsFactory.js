@@ -101,7 +101,7 @@ export default class ItemsFactory{
         container.addChild(text);
 
         container.pivot.x = container.width / 2;
-        container.pivot.y = 50;
+        container.pivot.y = 120;
         container.alpha = 0.8;
 
         return container;

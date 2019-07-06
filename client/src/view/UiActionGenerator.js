@@ -14,22 +14,27 @@ class UiActionGenerator {
 
     listenToInput(keyMouseActions) {
         keyMouseActions.on("rotateCamera", ({rad}) => {
+            if (this.controlledUnit.state.isDead) { return; }
             this.rotate(rad);
         });
         keyMouseActions.on("mouseRightClick", (e) => {
+            if (this.controlledUnit.state.isDead) { return; }
             const worldPoint = this.worldContainer.toLocal(e);
             this.testInteraction(worldPoint);
         });
         keyMouseActions.on("mouseMove", (e) => {
+            if (this.controlledUnit.state.isDead) { return; }
             const worldPoint = this.worldContainer.toLocal(e);
             this.testHover(worldPoint);
         });
         keyMouseActions.on("abilityKey", ({slot}) => {
+            if (this.controlledUnit.state.isDead) { return; }
             this.emit("useAbility", { slot, sourceUnit: this.controlledUnit, name: "useAbility" });
         });
     }
 
     loop(controls) {
+        if (this.controlledUnit.state.isDead) { return; }
         const controlledUnit = this.controlledUnit;
         this.lastLoopTime = this.lastLoopTime || (new Date()).getTime();
         const MOVE_SPEED = 90;
@@ -48,18 +53,18 @@ class UiActionGenerator {
         }
         if (controls.pressed["down"]) {
             newV.position = newV.position || {};
-            newV.position.x = newV.position.x - Math.sin(newV.rotation) * MOVE_SPEED/2 * delta;
-            newV.position.y = newV.position.y + Math.cos(newV.rotation) * MOVE_SPEED/2 * delta;
+            newV.position.x = newV.position.x - Math.sin(newV.rotation) * MOVE_SPEED * 0.6 * delta;
+            newV.position.y = newV.position.y + Math.cos(newV.rotation) * MOVE_SPEED * 0.6 * delta;
         }
         if (controls.pressed["left"]) {
             newV.position = newV.position || {};
-            newV.position.x = newV.position.x - Math.cos(newV.rotation) * MOVE_SPEED/2 * delta;
-            newV.position.y = newV.position.y - Math.sin(newV.rotation) * MOVE_SPEED/2 * delta;
+            newV.position.x = newV.position.x - Math.cos(newV.rotation) * MOVE_SPEED * 0.9 * delta;
+            newV.position.y = newV.position.y - Math.sin(newV.rotation) * MOVE_SPEED * 0.9 * delta;
         }
         if (controls.pressed["right"]) {
             newV.position = newV.position || {};
-            newV.position.x = newV.position.x + Math.cos(newV.rotation) * MOVE_SPEED/2 * delta;
-            newV.position.y = newV.position.y + Math.sin(newV.rotation) * MOVE_SPEED/2 * delta;
+            newV.position.x = newV.position.x + Math.cos(newV.rotation) * MOVE_SPEED * 0.9 * delta;
+            newV.position.y = newV.position.y + Math.sin(newV.rotation) * MOVE_SPEED * 0.9 * delta;
         }
         if (controls.pressed["rotateLeft"]) {
             newV.rotation = newV.rotation - ROTATION_SPEED * delta;
@@ -97,7 +102,7 @@ class UiActionGenerator {
         if (!clickedItem) {
             return;
         }
-        const range = this.calcRangeToBorder(this.controlledUnit, clickedItem);
+        const range = collisions.getDistance(this.controlledUnit, clickedItem);
         if (range <= MAX_INTRACTION_RANGE) {
             this.emit("interactWith", {
                 name: "interactWith",
@@ -123,13 +128,6 @@ class UiActionGenerator {
             this.hoveredUnit = hoveredItem;
             this.emit("mouseIn", this.hoveredUnit);
         }
-    }
-
-    // TODO use collisions
-    calcRangeToBorder(controlledUnit, clickedItem) {
-        const xDiff = Math.abs(controlledUnit.position.x - clickedItem.position.x);
-        const yDiff = Math.abs(controlledUnit.position.y - clickedItem.position.y);
-        return Math.sqrt( xDiff * xDiff + yDiff * yDiff );
     }
 }
 

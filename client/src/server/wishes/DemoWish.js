@@ -13,29 +13,35 @@ export default class DemoWish {
         // console.log("delta", delta);
         const UNIT_SPEED = 30;
         const point = this.points[this.targetPoint];
-        const action = {
+        const moveAction = {
             name: "moveUnit",
             unitId: this.unit.id,
             uPoint: collisions.movementPointBetween(this.unit, { position: point.position }, { speed: UNIT_SPEED, delta }),
         };
 
-        if (isEqual(action.uPoint.position, point.position)) {
+        if (isEqual(moveAction.uPoint.position, point.position)) {
             this.targetPoint++;
         }
 
         if (this.targetPoint > this.points.length - 1){
             this.isLast = true;
-            action.uPoint.rotation = point.rotation;
+            moveAction.uPoint.rotation = point.rotation;
         }
 
-        // console.log("action.uPoint.rotation", action.uPoint.rotation);
+        const actions = [moveAction];
 
-        return [
-            action
-        ];
+        if (Math.random() > 0.99) {
+            actions.push({
+                name: "hit",
+                sourceUnit: this.unit,
+                unitId: this.unit.id,
+            });
+        }
+
+        return actions;
     }
 
     isCompleted(){
-        return this.isLast;
+        return this.unit.state.isDead || this.isLast;
     }
 }
