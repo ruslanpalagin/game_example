@@ -1,0 +1,23 @@
+{
+  "name": "docker-demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon node src/server.js",
+    "start": "./node_modules/foreman/nf.js start"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/pubsub": "^0.29.1",
+    "foreman": "^3.0.1",
+    "knex": "^0.16.5",
+    "koa": "^2.7.0",
+    "koa-router": "^7.4.0",
+    "nodemon": "^1.19.1",
+    "pg": "^7.11.0",
+    "yargs": "^13.2.4"
+  }
+}
