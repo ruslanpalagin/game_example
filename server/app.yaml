@@ -7,8 +7,8 @@ env: flex
 #network:
 #  session_affinity: true
 #
-
-network:
-  forwarded_ports:
-  - 8081
-  instance_tag: websocket
+#
+#network:
+#  forwarded_ports:
+#  - 8081
+#  instance_tag: websocket
