@@ -1,2 +1,9 @@
-GOOGLE_APPLICATION_CREDENTIALS=/home/dev/d/tmp/docker-demo/tmp/docker-test-432d30d1bf9e.json node src/task.js Pub
-GOOGLE_APPLICATION_CREDENTIALS=/home/dev/d/tmp/docker-demo/tmp/docker-test-432d30d1bf9e.json PORT=3000 node src/server.js
+#setup websockets for GCloud
+https://medium.com/google-cloud/a-node-js-websocket-server-on-google-app-engine-c6c32a486e9a
+
+network:
+  forwarded_ports:
+  - 8081
+  instance_tag: websocket
+  
+$ gcloud compute firewall-rules create default-allow-websockets --allow tcp:8081 --target-tags websocket 
