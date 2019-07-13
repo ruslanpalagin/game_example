@@ -1,11 +1,11 @@
 import React from 'react';
 import View from "src/view/View";
-import WorldState from "src/state/WorldState.js";
-import ServerConnection from "src/app/ServerConnection.js";
-import keyMouseActions from "src/uiActionDecoders/keyMouseActions.js";
+import WorldState from "src/state/WorldState";
+import RemoveServerConnection from "src/app/RemoveServerConnection";
+import keyMouseActions from "src/uiActionDecoders/keyMouseActions";
 
 const worldState = new WorldState();
-const serverConnection = new ServerConnection();
+const serverConnection = new RemoveServerConnection();
 const view = new View();
 const session = {
     accountId: 1,

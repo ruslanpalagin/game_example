@@ -9,9 +9,9 @@ let gws = null;
 
 // Using routes
 app.use(route.all('/', function (ctx) {
-    ctx.body = "koa ws V0.0.1";
+    ctx.body = "koa ws V0.0.2";
     if (gws) {
-        gws.send('web rq');
+        gws.send(JSON.stringify({ name: "say", unitId: 1, message: "Connected!" }));
     } else {
         console.log("gws is empty");
     }
@@ -25,7 +25,7 @@ app.ws.use(function(ctx, next) {
 });
 
 // Using routes
-app.ws.use(route.all('/wstest', function (ctx) {
+app.ws.use(route.all('/game', function (ctx) {
     // `ctx` is the regular koa context created from the `ws` onConnection `socket.upgradeReq` object.
     // the websocket is added to the context on `ctx.websocket`.
     ctx.websocket.send('Hello World');

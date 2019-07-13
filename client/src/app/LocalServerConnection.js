@@ -1,6 +1,6 @@
 import ServerCore from "src/server/ServerCore.js";
 
-export default class ServerConnection {
+export default class LocalServerConnection {
     constructor() {
         this.onMessageFromServerCallback = null;
         this.serverCore = new ServerCore(); // TODO tmp
