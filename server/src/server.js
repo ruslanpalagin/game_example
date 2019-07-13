@@ -29,12 +29,14 @@ app.ws.use(route.all('/game', function (ctx) {
     // `ctx` is the regular koa context created from the `ws` onConnection `socket.upgradeReq` object.
     // the websocket is added to the context on `ctx.websocket`.
     // ctx.websocket.send('Hello World');
-    console.log("ctx.websocket", ctx.websocket);
     gws = ctx.websocket;
-    console.log("set gws", gws);
-    ctx.websocket.on('message', function(message) {
+    // console.log("ctx.websocket", ctx.websocket);
+    console.log("set gws");
+    ctx.websocket.on('message', (action) => {
         // do something with the message from client
-        console.log(message);
+        action = JSON.parse(action);
+        console.log("message.data", action);
+        action.name === "ping" && gws.send(JSON.stringify({ name: "pong" }));
     });
 }));
 

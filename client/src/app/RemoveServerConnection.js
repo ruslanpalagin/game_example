@@ -2,18 +2,28 @@ export default class RemoveServerConnection {
     constructor() {
         this.onMessageFromServerCallback = null;
         this.socket = null;
+        this.pingTimeId = Math.random();
+    }
+
+    ping() {
+        console.time(this.pingTimeId);
+        this.socket.send(JSON.stringify({ name: "ping" }));
     }
 
     connect() {
-        const socket = this.socket = new WebSocket("ws://35.240.39.143:8080/game");
+        // const socket = this.socket = new WebSocket("ws://35.240.39.143:8080/game");
+        const socket = this.socket = new WebSocket("ws://localhost:8080/game");
 
         return new Promise((resolve) => {
-            socket.onopen = function() {
+            socket.onopen = () => {
                 console.log("ws open");
                 resolve();
+                setTimeout(() => {
+                    this.ping();
+                }, 2000);
             };
 
-            socket.onclose = function(event) {
+            socket.onclose = (event) => {
                 if (event.wasClean) {
                     console.warn('Соединение закрыто чисто');
                 } else {
@@ -22,12 +32,14 @@ export default class RemoveServerConnection {
                 console.warn('Код: ' + event.code + ' причина: ' + event.reason);
             };
 
-            socket.onmessage = function(event) {
+            socket.onmessage = (event) => {
                 console.log("WS c event", event);
-                this.onMessageFromServerCallback(JSON.parse(event.data));
+                const data = JSON.parse(event.data);
+                this.onMessageFromServerCallback({}, data);
+                data.name === "pong" && console.timeEnd(this.pingTimeId);
             };
 
-            socket.onerror = function(error) {
+            socket.onerror = (error) => {
                 console.warn("Ошибка " + error.message);
             };
         });
