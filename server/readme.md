@@ -8,5 +8,11 @@ network:
   
 $ gcloud compute firewall-rules create default-allow-websockets --allow tcp:8081 --target-tags websocket
 
+# deploy
+ssh dev@35.240.39.143 "cd ~/production/game_example/server && git pull && sudo reboot"
 
-cd ~/production/game_example/server && git pull && 
+# TODO deploy without reboot
+http://fibrevillage.com/sysadmin/237-ways-to-kill-parent-and-child-processes-in-one-command
+
+ps -o pid,ppid,pgid,gid,sess,cmd -U dev
+pkill -9 -g $PGID

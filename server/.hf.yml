@@ -1,0 +1,17 @@
+---
+deploy:
+  master: './deploy.sh'
+  develop: 'echo ''I will speak on: hf deploy develop'' '
+before_deploy_commit: 'echo ''Before committing with deploy'' '
+locale: en
+skip_colorize: false
+
+source_branch: master
+mode: feature
+task_branch_name_tpl: "{mode}/{task_name}"
+
+project_name: "S"
+commit_massage_tpl: "[{project_name}] #{task_name}: {commit_message}"
+
+run:
+  test: 'echo "run test"'

@@ -9,7 +9,7 @@ let gws = null;
 
 // Using routes
 app.use(route.all('/', function (ctx) {
-    ctx.body = "koa ws V1";
+    ctx.body = "koa ws V0.0.1";
     if (gws) {
         gws.send('web rq');
     } else {
