@@ -12,7 +12,8 @@ ReactDOM.render(<App />, document.getElementById('root'));
 serviceWorker.unregister();
 
 // ws
-var socket = new WebSocket("wss://time-lancer-flex.appspot.com/wstest");
+// var socket = new WebSocket("wss://time-lancer-flex.appspot.com/wstest");
+var socket = new WebSocket("ws://localhost:8080/wstest");
 
 socket.onopen = function() {
     console.log("Соединение установлено.");
