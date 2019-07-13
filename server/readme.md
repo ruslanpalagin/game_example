@@ -9,3 +9,4 @@ network:
 $ gcloud compute firewall-rules create default-allow-websockets --allow tcp:8081 --target-tags websocket
 
 
+cd ~/production/game_example/server && git pull && 
