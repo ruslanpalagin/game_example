@@ -1,15 +1,20 @@
-export default class RemoveServerConnection {
+export default class RemoteServerConnection {
     constructor() {
         this.onMessageFromServerCallback = null;
         this.socket = null;
-        this.pingTimeId = Math.random();
+        this.pingTimeId = "ping";
     }
 
     ping() {
         console.time(this.pingTimeId);
-        this.socket.send(JSON.stringify({ name: "ping" }));
+        this.send({ name: "ping" });
     }
 
+    send(data) {
+        this.socket.send(JSON.stringify(data));
+    }
+
+    // TODO handle reconnect
     connect() {
         // const socket = this.socket = new WebSocket("ws://35.240.39.143:8080/game");
         const socket = this.socket = new WebSocket("ws://localhost:8080/game");
@@ -18,9 +23,6 @@ export default class RemoveServerConnection {
             socket.onopen = () => {
                 console.log("ws open");
                 resolve();
-                setTimeout(() => {
-                    this.ping();
-                }, 2000);
             };
 
             socket.onclose = (event) => {
@@ -33,9 +35,9 @@ export default class RemoveServerConnection {
             };
 
             socket.onmessage = (event) => {
-                console.log("WS c event", event);
+                console.log("WS c event data", event.data);
                 const data = JSON.parse(event.data);
-                this.onMessageFromServerCallback({}, data);
+                this.onMessageFromServerCallback(data);
                 data.name === "pong" && console.timeEnd(this.pingTimeId);
             };
 
@@ -59,11 +61,12 @@ export default class RemoveServerConnection {
         });
     }
 
-    toServer(session, action) {
-        // todo
+    toServer(action) {
+        this.send(action);
     }
 
     onMessageFromServer(callback) {
         this.onMessageFromServerCallback = callback;
+        this.ping();
     }
 }

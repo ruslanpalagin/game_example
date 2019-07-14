@@ -1,15 +1,13 @@
 import React from 'react';
 import View from "src/view/View";
 import WorldState from "src/state/WorldState";
-import RemoveServerConnection from "src/app/RemoveServerConnection";
+import RemoteServerConnection from "src/app/RemoteServerConnection";
 import keyMouseActions from "src/uiActionDecoders/keyMouseActions";
 
 const worldState = new WorldState();
-const serverConnection = new RemoveServerConnection();
+const serverConnection = new RemoteServerConnection();
 const view = new View();
-const session = {
-    accountId: 1,
-};
+const session = { accountId: parseInt(prompt("Please enter account ID")) };
 
 class App extends React.Component {
     componentDidMount = () => {
@@ -36,17 +34,17 @@ class App extends React.Component {
             view.uiActionGenerator.on("moveUnit", (data) => {
                 const unit = worldState.updUnitById(data.unitId, data.uPoint);
                 view.handleMoveUnit(unit);
-                serverConnection.toServer(session, data);
+                serverConnection.toServer(data);
             });
             view.uiActionGenerator.on("interactWith", (data) => {
-                serverConnection.toServer(session, data)
+                serverConnection.toServer(data)
             });
             view.uiActionGenerator.on("useAbility", (data) => {
-                serverConnection.toServer(session, data);
+                serverConnection.toServer(data);
             });
 
             // handle updates from server
-            serverConnection.onMessageFromServer((session, action) => {
+            serverConnection.onMessageFromServer((action) => {
                 const actionName = action.name;
                 // console.log("onMessageFromServer", session, action);
                 if (!actionName) {
