@@ -72,18 +72,19 @@ class WorldState {
             { id: 21, viewSkin: "road", position: {x: 0, y: 0} },
 
             {
-                id: 1, viewSkin: "char", name: "", accountId: 1, position: { x: 0, y: 0 }, rotation: 1.57, isInteractive: true,
+                id: 1, accountId: 1,
+                viewSkin: "char", name: "", position: { x: 0, y: 0 }, rotation: 1.57, isInteractive: true,
                 canBeDamaged: true,
                 state: { hp: 100, isDead: false },
                 stats: { maxHp: 100 },
             },
             {
-                id: 2, viewSkin: "char", name: "Dvadi", position: { x: 0, y: 0 }, rotation: 3.5, isInteractive: true,
+                id: 2, accountId: 2,
+                viewSkin: "char", name: "Dvadi", position: { x: 0, y: 0 }, rotation: 3.5, isInteractive: true,
                 canBeDamaged: true,
                 state: { hp: 100, isDead: false },
                 stats: { maxHp: 100 },
-                wishes: [ { name: "DemoWish", points } ],
-
+                // wishes: [ { name: "DemoWish", points } ],
             },
             { id: 0, viewSkin: "debugPoint", position: { x: 0, y: 0 }, rotation: 0 },
             // { id: 0, viewSkin: "debugArea", position: { x: 0, y: 0 }, rotation: 0, radius: 20 },

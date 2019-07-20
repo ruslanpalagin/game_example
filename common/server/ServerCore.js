@@ -7,50 +7,117 @@ class ServerCore {
     constructor() {
         this.worldState = new WorldState();
         this.unitLibrary = this.worldState.getUnitLibrary();
-        this.connections = [];
         this.lastLoopTime = null;
         this.wishes = [];
         this.loopActionsQ = new LoopActionsQ();
+        this.broadcastHandler = null;
     }
 
     load() {
         return this.worldState.loadSave()
         .then(() => this._instantiateWishes(this.worldState.getUnits()))
-        .then(() => this.startGameLoop())
+        .then(() => this._startGameLoop())
             ;
     }
 
-    startGameLoop() {
-        this.lastLoopTime = (new Date()).getTime();
-        setInterval(() => {
-            this.loop();
-        }, 20);
+    broadcast(data) {
+        console.log("broDCAST", data);
+        this.broadcastHandler(data);
     }
 
-    loop() {
-        const now = (new Date()).getTime();
-        const delta = now - this.lastLoopTime;
-        this.wishes.forEach((wish) => {
-            const actions = wish.getActions(delta, this.unitLibrary);
-            this.loopActionsQ.mergeActions(actions);
-        });
-        this.wishes = this.wishes.filter(wish => !wish.isCompleted());
-        this.processActionsAndFlush(this.loopActionsQ);
-        this.lastLoopTime = now;
+    handleBroadcast(callback) {
+        this.broadcastHandler = callback;
     }
 
-    processActionsAndFlush() {
+    pushActionRequest(action) {
+        const actionName = action.name;
+        if (!actionName) {
+            throw new Error("ServerCore: actionName must be defined");
+        }
+        // TODO validate session
+        if (actionName === "sysLoadUser") {
+            this.broadcast({ name: "sysLoadWorld", worldState: { state: this.worldState.state } });
+        }
+        if (actionName === "moveUnit") {
+            const { unitId, uPoint } = action;
+            this.loopActionsQ.setAction({ unitId, name: actionName, uPoint });
+        }
+        if (actionName === "useAbility" && action.slot === 1) {
+            const sourceUnit = this.worldState.findUnit({id: action.sourceUnit.id});
+            this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "hit", sourceUnit });
+        }
+        if (actionName === "interactWith") {
+            const { sourceUnit, targetUnit } = action;
+            const serverTargetUnit = this.unitLibrary.findUnit({ id: targetUnit.id });
+            this.broadcast({ name: "say", unitId: sourceUnit.id, message: `Hello ${serverTargetUnit.name}` });
+            // reply
+            if (serverTargetUnit.id === 2) {
+                setTimeout(() => {
+                    let reply = "Hi man";
+                    if (Math.random() > 0.4) {
+                        reply = "Hello";
+                    }
+                    if (Math.random() > 0.6) {
+                        reply = "What do you want?";
+                    }
+                    if (Math.random() > 0.8) {
+                        reply = "Yeah...";
+                    }
+                    if (Math.random() > 0.9) {
+                        reply = "Leave me alone!";
+                    }
+                    if (serverTargetUnit.state.isDead) {
+                        reply = "...";
+                        setTimeout(() => {
+                            this.broadcast({ name: "say", unitId: sourceUnit.id, message: "Oh dear..." });
+                        }, 3000);
+                    }
+                    this.broadcast({ name: "say", unitId: serverTargetUnit.id, message: reply });
+                }, 1500);
+            }
+            if (serverTargetUnit.id === 17) {
+                setTimeout(() => {
+                    this.broadcast({ name: "say", unitId: serverTargetUnit.id, message: "..." });
+                }, 1500);
+                setTimeout(() => {
+                    this.broadcast({ name: "say", unitId: sourceUnit.id, message: "A'm talking to lake... Need more NPCs here!" });
+                }, 5000);
+            }
+        }
+    }
+
+    _processActionsAndFlush() {
         for (let unitId in this.loopActionsQ.q) {
             const unitActions = this.loopActionsQ.q[unitId];
             for (let actionName in unitActions) {
-                this.changeStateByAction(unitActions[actionName]);
-                this.broadcast({}, unitActions[actionName]);
+                console.log("unitActions[actionName]", unitActions[actionName]);
+                this._changeStateByAction(unitActions[actionName]);
+                this.broadcast(unitActions[actionName]);
             }
         }
         this.loopActionsQ.flush();
     }
 
-    changeStateByAction(action) {
+    _startGameLoop() {
+        this.lastLoopTime = (new Date()).getTime();
+        setInterval(() => {
+            this._doLoopTick();
+        }, 200);
+    }
+
+    _doLoopTick() {
+        const now = (new Date()).getTime();
+        const delta = now - this.lastLoopTime;
+        this.lastLoopTime = now;
+        this.wishes.forEach((wish) => {
+            const actions = wish.getActions(delta, this.unitLibrary);
+            this.loopActionsQ.mergeActions(actions);
+        });
+        this._processActionsAndFlush(this.loopActionsQ);
+        this.wishes = this.wishes.filter(wish => !wish.isCompleted());
+    }
+
+    _changeStateByAction(action) {
         if (action.name === "moveUnit") {
             this.worldState.updUnitById(action.unitId, action.uPoint);
         }
@@ -79,71 +146,6 @@ class ServerCore {
                 }
             });
         }
-    }
-
-    pushActionRequest(session, action) {
-        const actionName = action.name;
-        if (!actionName) {
-            throw new Error("ServerCore: actionName must be defined");
-        }
-        // TODO validate session
-        if (actionName === "moveUnit") {
-            const { unitId, uPoint } = action;
-            this.loopActionsQ.setAction({ unitId, name: actionName, uPoint });
-        }
-        if (actionName === "useAbility" && action.slot === 1) {
-            const sourceUnit = this.worldState.findUnit({id: action.sourceUnit.id});
-            this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "hit", sourceUnit });
-        }
-        if (actionName === "interactWith") {
-            const { sourceUnit, targetUnit } = action;
-            const serverTargetUnit = this.unitLibrary.findUnit({ id: targetUnit.id });
-            this.broadcast(session, { name: "say", unitId: sourceUnit.id, message: `Hello ${serverTargetUnit.name}` });
-            // reply
-            if (serverTargetUnit.id === 2) {
-                setTimeout(() => {
-                    let reply = "Hi man";
-                    if (Math.random() > 0.4) {
-                        reply = "Hello";
-                    }
-                    if (Math.random() > 0.6) {
-                        reply = "What do you want?";
-                    }
-                    if (Math.random() > 0.8) {
-                        reply = "Yeah...";
-                    }
-                    if (Math.random() > 0.9) {
-                        reply = "Leave me alone!";
-                    }
-                    if (serverTargetUnit.state.isDead) {
-                        reply = "...";
-                        setTimeout(() => {
-                            this.broadcast(session, { name: "say", unitId: sourceUnit.id, message: "Oh dear..." });
-                        }, 3000);
-                    }
-                    this.broadcast(session, { name: "say", unitId: serverTargetUnit.id, message: reply });
-                }, 1500);
-            }
-            if (serverTargetUnit.id === 17) {
-                setTimeout(() => {
-                    this.broadcast(session, { name: "say", unitId: serverTargetUnit.id, message: "..." });
-                }, 1500);
-                setTimeout(() => {
-                    this.broadcast(session, { name: "say", unitId: sourceUnit.id, message: "A'm talking to lake... Need more NPCs here!" });
-                }, 5000);
-            }
-        }
-    }
-
-    // TODO tmp
-    connect(serverConnection) {
-        this.connections.push(serverConnection);
-    }
-
-    broadcast(session, data) {
-        this.connections.forEach(c => {
-            c.onMessageFromServerCallback && c.onMessageFromServerCallback(session, data);
-        });
     }
 
     _instantiateWishes(units){

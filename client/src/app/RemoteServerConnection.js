@@ -23,6 +23,7 @@ export default class RemoteServerConnection {
             socket.onopen = () => {
                 console.log("ws open");
                 resolve();
+                this.ping();
             };
 
             socket.onclose = (event) => {
@@ -47,26 +48,11 @@ export default class RemoteServerConnection {
         });
     }
 
-    loadWorldState() {
-        return Promise.resolve({
-            units: [
-                { id: 21, viewSkin: "road", position: {x: 0, y: 0} },
-                {
-                    id: 1, viewSkin: "char", name: "", accountId: 1, position: { x: 0, y: 0 }, rotation: 1.57, isInteractive: true,
-                    canBeDamaged: true,
-                    state: { hp: 100, isDead: false },
-                    stats: { maxHp: 100 },
-                },
-            ]
-        });
-    }
-
     toServer(action) {
         this.send(action);
     }
 
     onMessageFromServer(callback) {
         this.onMessageFromServerCallback = callback;
-        this.ping();
     }
 }
