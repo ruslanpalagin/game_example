@@ -12,5 +12,4 @@ export NVM_DIR="/home/dev/.nvm"
 
 cd ~/production/game_example/common && npm i
 cd ~/production/game_example/server && npm i
-cd ~/production/game_example/server && git pull
-sudo reboot
+cd ~/production/game_example/server && git pull origin master
