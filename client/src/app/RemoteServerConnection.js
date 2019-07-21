@@ -18,8 +18,8 @@ export default class RemoteServerConnection {
 
     // TODO handle reconnect
     connect(session) {
-        // const socket = this.socket = new WebSocket("ws://35.240.39.143:8080/game");
-        const socket = this.socket = new WebSocket("ws://localhost:8080/game?" + qs.stringify(session));
+        const socket = this.socket = new WebSocket("ws://35.240.39.143:8080/game?" + qs.stringify(session));
+        // const socket = this.socket = new WebSocket("ws://localhost:8080/game?" + qs.stringify(session));
 
         return new Promise((resolve) => {
             socket.onopen = () => {
