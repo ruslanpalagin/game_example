@@ -3,7 +3,7 @@ const collisions = require("../utils/collisions");
 const LoopActionsQ = require("./LoopActionsQ");
 const DemoWish = require("./wishes/DemoWish");
 
-const VERSION = "0.0.3";
+const VERSION = "0.0.4";
 
 class ServerCore {
     constructor() {

@@ -1,5 +1,5 @@
 import View from "src/view/View";
-import WorldState from "src/state/WorldState";
+import WorldState from "../../../common/state/WorldState";
 import RemoteServerConnection from "src/app/RemoteServerConnection";
 import keyMouseActions from "src/uiActionDecoders/keyMouseActions";
 
