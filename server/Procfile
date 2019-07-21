@@ -1,4 +1,4 @@
-server: ENV_FROM_PROCFILE=FOO node src/server.js
+server: ./node_modules/pm2/bin/pm2 start node src/server.js
 #migrations: ./node_modules/knex/bin/cli.js migrate:latest
 #NodeKiq: node src/task.js NodeKiq
 LogEnv: node src/task.js LogEnv

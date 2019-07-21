@@ -6,16 +6,19 @@ import keyMouseActions from "src/uiActionDecoders/keyMouseActions";
 const worldState = new WorldState();
 const serverConnection = new RemoteServerConnection();
 const view = new View();
-const session = { accountId: parseInt(prompt("Please enter account ID")) };
-// const session = { accountId: 1 };
+const servers = {
+    production: "ws://35.240.39.143:8080",
+    local: "ws://localhost:8080",
+};
 
 export default class Main {
-    init () {
+    init ({ serverName = "production", accountId, addPing } = {}) {
+        const session = {accountId};
         // init
         view.createCanvas(document, { elId: "game__main-frame" });
 
         // connect to server & get world
-        serverConnection.onMessageFromServer((action) => {
+        const handleMessageFromServer = (action) => {
             const actionName = action.name;
 
             // console.log("onMessageFromServer", session, action);
@@ -25,7 +28,7 @@ export default class Main {
 
             // system messages
             if (action.name === "sysLoadWorld") {
-                this.loadWorld(action);
+                this.loadWorld(action, session);
             }
 
             // game messages
@@ -48,13 +51,21 @@ export default class Main {
                 const unit = worldState.updUnitById(action.targetUnit.id, { state: action.targetUnit.state });
                 view.handleDamageUnit(unit);
             }
+        };
+        serverConnection.onMessageFromServer((action) => {
+            if (addPing) {
+                return setTimeout(() => {
+                    handleMessageFromServer(action);
+                }, addPing);
+            }
+            handleMessageFromServer(action);
         });
-        serverConnection.connect(session).then(() => {
+        serverConnection.connect(session, servers[serverName]).then(() => {
             serverConnection.toServer({ name: "sysLoadUser" });
         });
     }
 
-    loadWorld(world){
+    loadWorld(world, session){
         worldState.setState(world.worldState.state);
 
         // load view

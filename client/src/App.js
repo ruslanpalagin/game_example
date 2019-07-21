@@ -1,11 +1,16 @@
 import React from 'react';
 import Main from "./app/Main";
+import qs from "qs";
 
 const main = new Main();
 
 class App extends React.Component {
     componentDidMount = () => {
-        main.init();
+        const options = qs.parse(window.location.search.replace("?", ""));
+        options.accountId = parseInt(options.accountId, 10);
+        options.addPing = parseInt(options.addPing, 10);
+        console.log("options", options);
+        main.init(options);
     };
 
     render = () => {

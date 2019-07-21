@@ -18,7 +18,7 @@ module.exports = route.all('/game', function (ctx, next) {
             if (session && session.accountId !== client.sessionAccountId) {
                 return;
             }
-            console.log(`sending to: ${client.sessionAccountId}: ${data.name}`);
+            console.log(`${data.v}:sending to: ${client.sessionAccountId}: ${data.name}`);
             client.send(JSON.stringify(data));
         });
     });

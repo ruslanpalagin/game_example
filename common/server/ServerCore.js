@@ -3,6 +3,8 @@ const collisions = require("../utils/collisions");
 const LoopActionsQ = require("./LoopActionsQ");
 const DemoWish = require("./wishes/DemoWish");
 
+const VERSION = "0.0.1";
+
 class ServerCore {
     constructor() {
         this.worldState = new WorldState();
@@ -21,6 +23,7 @@ class ServerCore {
     }
 
     broadcast(data, session) {
+        data.v = VERSION;
         this.broadcastHandler(data, session);
     }
 
@@ -141,7 +144,7 @@ class ServerCore {
                 this.broadcast({ name: "say", unitId: updTargetUnit.id, message: isDead ? "Oh, need to rest." : (newHp > 50 ? "Careful!" : "Stop It!") });
 
                 if (isDead && targetUnit.id === 1) {
-                    setTimeout(() => this.broadcast({}, { name: "say", unitId: updTargetUnit.id, message: "F5..." }), 22000);
+                    setTimeout(() => this.broadcast({ name: "say", unitId: updTargetUnit.id, message: "F5..." }), 22000);
                 }
             });
         }
