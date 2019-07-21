@@ -1,7 +1,7 @@
-import View from "src/view/View";
-import WorldState from "../../../common/state/WorldState";
-import RemoteServerConnection from "src/app/RemoteServerConnection";
-import keyMouseActions from "src/uiActionDecoders/keyMouseActions";
+import View from "./view/View";
+import WorldState from "../../../core/state/WorldState";
+import RemoteServerConnection from "./RemoteServerConnection";
+import keyMouseActions from "./uiActionDecoders/keyMouseActions";
 
 const worldState = new WorldState();
 const serverConnection = new RemoteServerConnection();
@@ -11,11 +11,11 @@ const servers = {
     local: "ws://localhost:8080",
 };
 
-export default class Main {
-    init ({ serverName = "production", accountId, addPing } = {}) {
+export default class Game2D {
+    init ({ elId, serverName = "production", accountId, addPing } = {}) {
         const session = {accountId};
         // init
-        view.createCanvas(document, { elId: "game__main-frame" });
+        view.createCanvas(document, { elId });
 
         // connect to server & get world
         const handleMessageFromServer = (action) => {

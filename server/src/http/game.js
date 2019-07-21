@@ -1,6 +1,6 @@
 const route = require('koa-route');
 // const ws = require('../instances/ws');
-const ServerCore = require('../../../common/server/ServerCore');
+const ServerCore = require('../../../core/server/ServerCore');
 const serverCore = new ServerCore();
 const qs = require("qs");
 

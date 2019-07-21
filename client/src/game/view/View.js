@@ -1,8 +1,8 @@
 import find from "lodash/find";
 import PIXI from "src/vendor/PIXI.js";
 import UiActionGenerator from "./UiActionGenerator";
-import ItemsFactory from "src/view/ItemsFactory";
-import Animator from "src/view/Animator";
+import ItemsFactory from "./ItemsFactory";
+import Animator from "./Animator";
 
 export default class View {
     constructor() {

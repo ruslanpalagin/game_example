@@ -1,5 +1,5 @@
 import decorateWithEvents from "src/utils/decorateWithEvents";
-import collisions from "src/common/collisions.js";
+import collisions from "src/../../core/utils/collisions.js";
 
 const MAX_INTRACTION_RANGE = 100;
 
