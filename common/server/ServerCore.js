@@ -20,23 +20,23 @@ class ServerCore {
             ;
     }
 
-    broadcast(data) {
-        console.log("broDCAST", data);
-        this.broadcastHandler(data);
+    broadcast(data, session) {
+        this.broadcastHandler(data, session);
     }
 
     handleBroadcast(callback) {
         this.broadcastHandler = callback;
     }
 
-    pushActionRequest(action) {
+    pushActionRequest(action, session) {
+        console.log(`received ${action.name} from ${session.accountId}`);
         const actionName = action.name;
         if (!actionName) {
             throw new Error("ServerCore: actionName must be defined");
         }
         // TODO validate session
         if (actionName === "sysLoadUser") {
-            this.broadcast({ name: "sysLoadWorld", worldState: { state: this.worldState.state } });
+            this.broadcast({ name: "sysLoadWorld", worldState: { state: this.worldState.state } }, session);
         }
         if (actionName === "moveUnit") {
             const { unitId, uPoint } = action;
@@ -90,7 +90,6 @@ class ServerCore {
         for (let unitId in this.loopActionsQ.q) {
             const unitActions = this.loopActionsQ.q[unitId];
             for (let actionName in unitActions) {
-                console.log("unitActions[actionName]", unitActions[actionName]);
                 this._changeStateByAction(unitActions[actionName]);
                 this.broadcast(unitActions[actionName]);
             }
@@ -102,7 +101,7 @@ class ServerCore {
         this.lastLoopTime = (new Date()).getTime();
         setInterval(() => {
             this._doLoopTick();
-        }, 200);
+        }, 50);
     }
 
     _doLoopTick() {
@@ -125,7 +124,7 @@ class ServerCore {
             const sourceUnit = this.worldState.findUnit({id: action.sourceUnit.id});
             const hitArea = collisions.calcWeaponHitArea(sourceUnit);
             const hitedUnits = collisions.findUnitsInArea(this.worldState.getHitableUnits(), hitArea);
-            // this.broadcast({}, { name: "debugArea", ...hitArea });
+            // this.broadcast({ name: "debugArea", ...hitArea });
 
             hitedUnits.forEach((targetUnit) => {
                 if (targetUnit.id === sourceUnit.id) {
@@ -138,8 +137,8 @@ class ServerCore {
                 const isDead = newHp <= 0;
                 const newState = Object.assign(targetUnit.state, { hp: newHp, isDead });
                 const updTargetUnit = this.worldState.updUnitById(targetUnit.id, { state: newState });
-                this.broadcast({}, { name: "damage", sourceUnit, targetUnit: updTargetUnit });
-                this.broadcast({}, { name: "say", unitId: updTargetUnit.id, message: isDead ? "Oh, need to rest." : (newHp > 50 ? "Careful!" : "Stop It!") });
+                this.broadcast({ name: "damage", sourceUnit, targetUnit: updTargetUnit });
+                this.broadcast({ name: "say", unitId: updTargetUnit.id, message: isDead ? "Oh, need to rest." : (newHp > 50 ? "Careful!" : "Stop It!") });
 
                 if (isDead && targetUnit.id === 1) {
                     setTimeout(() => this.broadcast({}, { name: "say", unitId: updTargetUnit.id, message: "F5..." }), 22000);

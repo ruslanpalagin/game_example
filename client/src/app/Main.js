@@ -49,7 +49,7 @@ export default class Main {
                 view.handleDamageUnit(unit);
             }
         });
-        serverConnection.connect().then(() => {
+        serverConnection.connect(session).then(() => {
             serverConnection.toServer({ name: "sysLoadUser" });
         });
     }

@@ -1,22 +1,32 @@
 const route = require('koa-route');
-const ws = require('../instances/ws');
+// const ws = require('../instances/ws');
 const ServerCore = require('../../../common/server/ServerCore');
 const serverCore = new ServerCore();
+const qs = require("qs");
 
-module.exports = route.all('/game', function (ctx) {
-    // if (!ws.socket) {
-    //     ws.socket = ctx.websocket;
-    // }
+const clients = [];
+
+module.exports = route.all('/game', function (ctx, next) {
+    const params = qs.parse(ctx.query);
+    // wrote session into ctx. ctx is the same across ws frames
+    ctx.websocket.sessionAccountId = parseInt(params.accountId, 10);
+    clients.push(ctx.websocket);
     serverCore.load();
-    serverCore.handleBroadcast((data) => {
-        ws.socket.send(JSON.stringify(data));
+    serverCore.handleBroadcast((data, session) => {
+        clients.forEach((client) => {
+            // skip not relevant clients if session specified
+            if (session && session.accountId !== client.sessionAccountId) {
+                return;
+            }
+            console.log(`sending to: ${client.sessionAccountId}: ${data.name}`);
+            client.send(JSON.stringify(data));
+        });
     });
 
     ctx.websocket.on('message', (action) => {
-        ws.socket = ctx.websocket;
         action = JSON.parse(action);
-        console.log("message.data", action);
-        // action.name === "ping" && ws.socket.send(JSON.stringify({ name: "pong" }));
-        serverCore.pushActionRequest(action);
+        serverCore.pushActionRequest(action, { accountId: ctx.websocket.sessionAccountId });
     });
+
+    return next(ctx);
 });
