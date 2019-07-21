@@ -16,7 +16,3 @@ git pull origin master
 cd server && npm i
 cd ..
 cd common && npm i
-
-#cd ~/production/game_example && git pull origin master
-#cd ~/production/game_example/common && npm i
-#cd ~/production/game_example/server && npm i
