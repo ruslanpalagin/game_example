@@ -31,7 +31,7 @@ class App extends React.Component {
     initGame = () => {
         const { options } = this.state;
         console.log("options", options);
-        game.init(options);
+        game.init(options); // TODO handle disconnect and back to logic screen
         this.setState({
             isGameInitialized: true,
         });

@@ -54,6 +54,7 @@ export default class ItemsFactory{
         return sprite;
     }
 
+    // TODO handle "isDead" state on loading
     async char(unit) {
         const body = new PIXI.Sprite(this.loader.getTexture(unit.viewSkin));
         body.position.set(0, 0);
