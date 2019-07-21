@@ -9,4 +9,4 @@
 export NVM_DIR="/home/dev/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
-sudo reboot
+./node_modules/pm2/bin/pm2 reload server
