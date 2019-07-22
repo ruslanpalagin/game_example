@@ -12,6 +12,7 @@ class WorldState {
 
     setState(state) {
         this.state = Object.assign(this.state, state);
+        console.log("this.state", this.state);
     }
 
     getUnits(){

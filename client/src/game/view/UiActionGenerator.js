@@ -14,26 +14,31 @@ class UiActionGenerator {
 
     listenToInput(keyMouseActions) {
         keyMouseActions.on("rotateCamera", ({rad}) => {
+            if (!this.controlledUnit) { return; }
             if (this.controlledUnit.state.isDead) { return; }
             this.rotate(rad);
         });
         keyMouseActions.on("mouseRightClick", (e) => {
+            if (!this.controlledUnit) { return; }
             if (this.controlledUnit.state.isDead) { return; }
             const worldPoint = this.worldContainer.toLocal(e);
             this.testInteraction(worldPoint);
         });
         keyMouseActions.on("mouseMove", (e) => {
+            if (!this.controlledUnit) { return; }
             if (this.controlledUnit.state.isDead) { return; }
             const worldPoint = this.worldContainer.toLocal(e);
             this.testHover(worldPoint);
         });
         keyMouseActions.on("abilityKey", ({slot}) => {
+            if (!this.controlledUnit) { return; }
             if (this.controlledUnit.state.isDead) { return; }
             this.emit("useAbility", { slot, sourceUnit: this.controlledUnit, name: "useAbility" });
         });
     }
 
     loop(controls) {
+        if (!this.controlledUnit) { return; }
         if (this.controlledUnit.state.isDead) { return; }
         const controlledUnit = this.controlledUnit;
         this.lastLoopTime = this.lastLoopTime || (new Date()).getTime();

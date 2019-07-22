@@ -32,7 +32,7 @@ class ServerCore {
     }
 
     pushActionRequest(action, session) {
-        console.log(`received ${action.name} from ${session.accountId}`);
+        console.log(`< received ${action.name} from ${session.accountId}`);
         const actionName = action.name;
         if (!actionName) {
             throw new Error("ServerCore: actionName must be defined");
@@ -40,6 +40,10 @@ class ServerCore {
         // TODO validate session
         if (actionName === "sysLoadUser") {
             this.broadcast({ name: "sysLoadWorld", worldState: { state: this.worldState.state } }, session);
+        }
+        if (actionName === "seeTheWorld") {
+            const controlledUnit = this.worldState.findUnit({accountId: session.accountId});
+            this.broadcast({ name: "takeControl", unitId: controlledUnit.id }, session);
         }
         if (actionName === "moveUnit") {
             const { unitId, uPoint } = action;
