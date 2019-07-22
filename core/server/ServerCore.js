@@ -89,17 +89,6 @@ class ServerCore {
         }
     }
 
-    _processActionsAndFlush() {
-        for (let unitId in this.loopActionsQ.q) {
-            const unitActions = this.loopActionsQ.q[unitId];
-            for (let actionName in unitActions) {
-                this._changeStateByAction(unitActions[actionName]);
-                this.broadcast(unitActions[actionName]);
-            }
-        }
-        this.loopActionsQ.flush();
-    }
-
     _startGameLoop() {
         this.lastLoopTime = (new Date()).getTime();
         setInterval(() => {
@@ -117,6 +106,17 @@ class ServerCore {
         });
         this._processActionsAndFlush(this.loopActionsQ);
         this.wishes = this.wishes.filter(wish => !wish.isCompleted());
+    }
+
+    _processActionsAndFlush() {
+        for (let unitId in this.loopActionsQ.q) {
+            const unitActions = this.loopActionsQ.q[unitId];
+            for (let actionName in unitActions) {
+                this._changeStateByAction(unitActions[actionName]);
+                this.broadcast(unitActions[actionName]);
+            }
+        }
+        this.loopActionsQ.flush();
     }
 
     _changeStateByAction(action) {
