@@ -33,9 +33,10 @@ export default class Game2D {
 
             // game messages
             if (actionName === "moveUnit") {
-                // console.log("data", data);
-                const unit = worldState.updUnitById(action.unitId, action.uPoint);
-                view.handleMoveUnit(unit);
+                if (view.controlledUnit && view.controlledUnit.id !== action.unitId) {
+                    const unit = worldState.updUnitById(action.unitId, action.uPoint);
+                    view.moveNotControlledUnit(unit);
+                }
             }
             if (actionName === "say") {
                 const { unitId, message } = action;
@@ -83,7 +84,7 @@ export default class Game2D {
             // TODO listen to view instead of directly to uiActionGenerator
             view.uiActionGenerator.on("moveUnit", (data) => {
                 const unit = worldState.updUnitById(data.unitId, data.uPoint);
-                view.handleMoveUnit(unit);
+                view.moveControlledUnit(unit);
                 serverConnection.toServer(data);
             });
             view.uiActionGenerator.on("interactWith", (data) => {

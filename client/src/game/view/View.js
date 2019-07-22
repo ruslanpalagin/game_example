@@ -37,7 +37,16 @@ export default class View {
         return this.itemsFactory.createFromUnits(units).then(items => this._addItems(items));
     }
 
-    handleMoveUnit(unit) {
+    moveNotControlledUnit(unit) {
+        this._moveUnit(unit);
+    }
+
+    moveControlledUnit(unit) {
+        this._moveUnit(unit);
+        this._centralize();
+    }
+
+    _moveUnit(unit) {
         const item = this._findItem({unitId: unit.id});
         if (unit.position) {
             item.position.set(unit.position.x, unit.position.y);
@@ -45,7 +54,6 @@ export default class View {
         if (unit.rotation !== undefined) {
             item.rotation = unit.rotation;
         }
-        this._centralize();
     }
 
     handleSay({ unitId, message }) {
