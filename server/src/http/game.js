@@ -33,10 +33,10 @@ module.exports = route.all('/game', function (ctx, next) {
 });
 
 // TODO refactor - move to service
-const doSend = (client, data) => {
-    console.log(`${data.v}:sending to: ${client.sessionAccountId}: ${data.name}`);
+const doSend = (client, action) => {
+    console.log(`> ${action.v}:sending to: ${client.sessionAccountId}: ${action.name}`);
     try {
-        client.send(JSON.stringify(data)); // TODO handle connect/disconnect/hash-search
+        client.send(JSON.stringify(action)); // TODO handle connect/disconnect/hash-search
     } catch (e) {
         console.log(e.toString());
     }

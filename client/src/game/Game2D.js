@@ -28,7 +28,10 @@ export default class Game2D {
 
             // system messages
             if (action.name === "sysLoadWorld") {
-                this.loadWorld(action, session);
+                this.loadWorld(action, session)
+                .then(() => {
+                    serverConnection.toServer({name: "seeTheWorld"})
+                })
             }
 
             // game messages
@@ -52,6 +55,10 @@ export default class Game2D {
                 const unit = worldState.updUnitById(action.targetUnit.id, { state: action.targetUnit.state });
                 view.handleDamageUnit(unit);
             }
+            if (actionName === "takeControl") {
+                const controlledUnit = worldState.findUnit({id: action.unitId});
+                view.setControlledUnit(controlledUnit);
+            }
         };
         serverConnection.onMessageFromServer((action) => {
             if (addPing) {
@@ -66,18 +73,14 @@ export default class Game2D {
         });
     }
 
-    loadWorld(world, session){
-        worldState.setState(world.worldState.state);
+    loadWorld(world){
+        worldState.setState({ units: world.worldState.state.units });
 
         // load view
-         view.loadAndAddItems(worldState.state.units)
+        return view.loadAndAddItems(worldState.state.units)
         .then(() => {
             // bind keys & mouse
             keyMouseActions.sub(window);
-
-            // control character & set it to the center of the view
-            const controlledUnit = worldState.findUnit({accountId: session.accountId});
-            view.setControlledUnit(controlledUnit);
             view.listenToInput(keyMouseActions);
 
             // send data to server

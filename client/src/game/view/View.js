@@ -127,6 +127,7 @@ export default class View {
 
     _trackCenter(unit) {
         this.centeredUnit = unit;
+        this._centralize();
     }
 
     _centralize() {
