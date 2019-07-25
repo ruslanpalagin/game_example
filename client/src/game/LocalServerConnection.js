@@ -18,8 +18,8 @@ export default class LocalServerConnection {
         return Promise.resolve(this.serverCore.worldState.state);
     }
 
-    toServer(session, action) {
-        this.serverCore.pushActionRequest(session, action);
+    toServer(action, session) {
+        this.serverCore.pushActionRequest(action, session);
     }
 
     onMessageFromServer(callback) {
