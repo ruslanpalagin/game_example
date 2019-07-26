@@ -1,10 +1,13 @@
 const find = require("lodash/find");
 const filter = require("lodash/filter");
+const uniqueId = require("lodash/uniqueId");
 const UnitLibrary = require("./UnitLibrary");
 
 class WorldState {
     constructor() {
         this.state = {
+            realmUnits: [],
+            guestUnits: [],
             units: [],
         };
         this.unitLibrary = new UnitLibrary(this);
@@ -16,14 +19,17 @@ class WorldState {
     }
 
     getUnits(){
+        // console.log("deprecated - use unitLibrary");
         return this.state.units;
     }
 
     findUnit(q) {
+        // console.log("deprecated - use unitLibrary");
         return find(this.state.units, q);
     }
 
     getHitableUnits() {
+        // console.log("deprecated - use unitLibrary");
         return filter(this.state.units, { canBeDamaged: true });
     }
 
@@ -37,19 +43,13 @@ class WorldState {
         return this.unitLibrary;
     }
 
+    addDynamicUnit(unit) {
+        this.state.guestUnits.push(unit);
+        this.state.units.push(unit);
+    }
+
     loadSave() {
-        const points = [
-            {position: {x: 0, y: -50}},
-            {position: {x: 50, y: -100}},
-            {position: {x: 100, y: -100}},
-            {position: {x: 150, y: -50}},
-            {position: {x: 150, y: 0}},
-            {position: {x: 100, y: 50}},
-            {position: {x: 50, y: 50}},
-            {position: {x: 0, y: 0}},
-            {position: {x: 0, y: 300}, rotation: 0},
-        ];
-        const units = [
+        const realmUnits = [
             { id: 3, viewSkin: "treesBurned", position: {x: -100, y: -650} },
             { id: 4, viewSkin: "treesBurned", position: {x: 20, y: -670} },
             { id: 5, viewSkin: "treesBurned", position: {x: -80, y: -730} },
@@ -73,26 +73,55 @@ class WorldState {
             { id: 21, viewSkin: "road", position: {x: 0, y: 0} },
 
             {
-                id: 1, accountId: 1,
-                viewSkin: "char", name: "", position: { x: 0, y: 0 }, rotation: 1.57, isInteractive: true,
+                id: 1,
+                viewSkin: "char", name: "Diego", position: { x: 220, y: 330 }, rotation: 1.57, isInteractive: true,
                 canBeDamaged: true,
                 state: { hp: 100, isDead: false },
-                stats: { maxHp: 100 },
+                stats: { maxHp: 100, lvl: 1 },
+                wishes: [
+                    { name: "DemoWish", points: [
+                        {position: {x: 0, y: -50}},
+                        {position: {x: 50, y: -100}},
+                        {position: {x: 100, y: -100}},
+                        {position: {x: 150, y: -50}},
+                        {position: {x: 150, y: 0}},
+                        {position: {x: 100, y: 50}},
+                        {position: {x: 50, y: 50}},
+                        {position: {x: 0, y: 0}},
+                        {position: {x: -30, y: 300}, rotation: 0},
+                    ] }
+                ],
             },
             {
-                id: 2, accountId: 2,
-                viewSkin: "char", name: "Dvadi", position: { x: 0, y: 0 }, rotation: 3.5, isInteractive: true,
+                id: 2,
+                viewSkin: "char", name: "Jack", position: { x: 0, y: 0 }, rotation: 3.5, isInteractive: true,
                 canBeDamaged: true,
                 state: { hp: 100, isDead: false },
-                stats: { maxHp: 100 },
-                // wishes: [ { name: "DemoWish", points } ],
+                stats: { maxHp: 100, lvl: 1 },
+                wishes: [
+                    { name: "DemoWish", points: [
+                        {position: {x: 0, y: -50}},
+                        {position: {x: 50, y: -100}},
+                        {position: {x: 100, y: -100}},
+                        {position: {x: 150, y: -50}},
+                        {position: {x: 150, y: 0}},
+                        {position: {x: 100, y: 50}},
+                        {position: {x: 50, y: 50}},
+                        {position: {x: 0, y: 0}},
+                        {position: {x: 0, y: 300}, rotation: 0},
+                    ] }
+                ],
             },
-            { id: 0, viewSkin: "debugPoint", position: { x: 0, y: 0 }, rotation: 0 },
-            // { id: 0, viewSkin: "debugArea", position: { x: 0, y: 0 }, rotation: 0, radius: 20 },
+            { id: uniqueId(), viewSkin: "debugPoint", position: { x: 0, y: 0 }, rotation: 0 },
+            { id: uniqueId(), viewSkin: "debugArea", position: { x: 0, y: 0 }, rotation: 0, radius: 20 },
         ];
-        this.state.units = units;
+        const guestUnits = [];
 
-        return Promise.resolve(units);
+        this.state.realmUnits = realmUnits;
+        this.state.guestUnits = guestUnits;
+        this.state.units = [...realmUnits, ...guestUnits];
+
+        return Promise.resolve();
     }
 }
 

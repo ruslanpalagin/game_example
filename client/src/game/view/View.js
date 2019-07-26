@@ -46,6 +46,13 @@ export default class View {
         this._centralize();
     }
 
+    addNewUnit(unit) {
+        this.itemsFactory.createFromUnit(unit)
+        .then((item) => {
+            this._addNewItem(item);
+        });
+    }
+
     _moveUnit(unit) {
         const item = this._findItem({unitId: unit.id});
         if (unit.position) {
@@ -146,6 +153,12 @@ export default class View {
         this.items = items;
         this.uiActionGenerator.items = items;
         items.forEach(item => this.worldContainer.addChild(item));
+    }
+
+    _addNewItem(item) {
+        this.items.push(item);
+        // this.uiActionGenerator.items auto-updated
+        this.worldContainer.addChild(item);
     }
 
     _findItem(q) {
