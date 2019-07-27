@@ -1,14 +1,23 @@
-# Update packages, start server & client
+# ALL: Update packages, start server & client
 yarn dev
 
-# run server
+# ALL: deploy
+./deploy.sh [GIT_BRANCH]
+
+# Server: run
 cd core && npm i 
 cd server && npm i 
 yarn dev
 
-# run client
+# Server: deploy
+cd server && ./deploy.sh [GIT_BRANCH]
+
+# Client: run 
 cd client
 yarn start
+
+# Client: deploy
+cd client && ./deploy.sh [GIT_BRANCH]
 
 # Roadmap 
 
