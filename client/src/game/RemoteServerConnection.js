@@ -1,7 +1,8 @@
 import qs from "qs";
 
 export default class RemoteServerConnection {
-    constructor() {
+    constructor({ VERSION }) {
+        this.VERSION = VERSION;
         this.onMessageFromServerCallback = null;
         this.socket = null;
         this.pingTimeId = "ping";
@@ -13,6 +14,7 @@ export default class RemoteServerConnection {
     }
 
     send(data) {
+        data.v = this.VERSION;
         this.socket.send(JSON.stringify(data));
     }
 

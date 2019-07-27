@@ -4,7 +4,8 @@ const CharFactory = require("../state/CharFactory");
 const LoopActionsQ = require("./LoopActionsQ");
 const DemoWish = require("./wishes/DemoWish");
 
-const VERSION = "0.0.4";
+const VERSION = "0.0.5";
+console.log("ServerCore v:" + VERSION);
 
 class ServerCore {
     constructor() {
@@ -33,7 +34,7 @@ class ServerCore {
     }
 
     pushActionRequest(action, session) {
-        console.log(`< received ${action.name} from ${session.accountId}`);
+        console.log(`< received:${action.v} ${action.name} from ${session.accountId}`);
         const actionName = action.name;
         if (!actionName) {
             throw new Error("ServerCore: actionName must be defined");
@@ -45,11 +46,10 @@ class ServerCore {
         if (actionName === "seeTheWorld") {
             let controlledUnit = this.worldState.findUnit({accountId: session.accountId});
             if (!controlledUnit) {
-                controlledUnit = CharFactory.initEmptyCharacter({accountId: session.accountId});
+                controlledUnit = CharFactory.initEmptyCharacter({accountId: session.accountId, name: `Account#${session.accountId}`});
                 this.worldState.addDynamicUnit(controlledUnit);
+                this.broadcast({ name: "sysAddDynamicUnit", unit: controlledUnit });
             };
-            console.log("controlledUnit", controlledUnit);
-            this.broadcast({ name: "sysAddDynamicUnit", unit: controlledUnit });
             setTimeout(() => {
                 this.broadcast({ name: "takeControl", unitId: controlledUnit.id }, session);
             }, 500); // TODO batch updates
@@ -175,6 +175,10 @@ class ServerCore {
                 );
             });
         }
+    }
+
+    initDisconnectedAction(){
+        return { name: "sysDisconnected" };
     }
 }
 
