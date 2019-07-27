@@ -9,4 +9,9 @@
 export NVM_DIR="/home/dev/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
-cd ~/production/game_example/server/ && ./node_modules/foreman/nf.js start  > /home/dev/log 2>&1 &
+# USAGE: cd server && ./bin/remote/npm_i.sh
+cd ..
+echo $(pwd)
+cd server && npm i
+cd ..
+cd core && npm i
