@@ -1,5 +1,6 @@
 const WorldState = require("../state/WorldState");
 const collisions = require("../utils/collisions");
+const CharFactory = require("../state/CharFactory");
 const LoopActionsQ = require("./LoopActionsQ");
 const DemoWish = require("./wishes/DemoWish");
 
@@ -42,8 +43,16 @@ class ServerCore {
             this.broadcast({ name: "sysLoadWorld", worldState: { state: this.worldState.state } }, session);
         }
         if (actionName === "seeTheWorld") {
-            const controlledUnit = this.worldState.findUnit({accountId: session.accountId});
-            this.broadcast({ name: "takeControl", unitId: controlledUnit.id }, session);
+            let controlledUnit = this.worldState.findUnit({accountId: session.accountId});
+            if (!controlledUnit) {
+                controlledUnit = CharFactory.initEmptyCharacter({accountId: session.accountId});
+                this.worldState.addDynamicUnit(controlledUnit);
+            };
+            console.log("controlledUnit", controlledUnit);
+            this.broadcast({ name: "sysAddDynamicUnit", unit: controlledUnit });
+            setTimeout(() => {
+                this.broadcast({ name: "takeControl", unitId: controlledUnit.id }, session);
+            }, 500); // TODO batch updates
         }
         if (actionName === "moveUnit") {
             const { unitId, uPoint } = action;
