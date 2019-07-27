@@ -33,6 +33,10 @@ export default class Game2D {
                     serverConnection.toServer({name: "seeTheWorld"})
                 })
             }
+            if (action.name === "sysAddDynamicUnit") {
+                worldState.addDynamicUnit(action.unit);
+                view.addNewUnit(action.unit);
+            }
 
             // game messages
             if (actionName === "moveUnit") {
