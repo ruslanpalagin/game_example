@@ -12,7 +12,8 @@ export NVM_DIR="/home/dev/.nvm"
 cd ..
 echo $(pwd)
 git add -A && git reset --hard
-git pull origin master
+git pull
+git checkout $1
 cd server && npm i
 cd ..
-cd common && npm i
+cd core && npm i

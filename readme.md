@@ -1,3 +1,6 @@
+# Update packages, start server & client
+yarn dev
+
 # run server
 cd core && npm i 
 cd server && npm i 
