@@ -12,7 +12,7 @@ app.ws.use(game);
 
 // http
 app.use(route.all('/', function (ctx) {
-    ctx.body = "koa ws V0.0.2";
+    ctx.body = "koa ws V0.0.3";
 }));
 
 app.listen(8080);
