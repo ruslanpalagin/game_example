@@ -9,11 +9,9 @@
 export NVM_DIR="/home/dev/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
+# USAGE: cd server && ./bin/remote/npm_i.sh
 cd ..
 echo $(pwd)
-git add -A && git reset --hard
-git pull
-git checkout $1
 cd server && npm i
 cd ..
 cd core && npm i
