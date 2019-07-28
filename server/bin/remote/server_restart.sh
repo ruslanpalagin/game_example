@@ -9,10 +9,6 @@
 export NVM_DIR="/home/dev/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm
 
-cd ..
-echo $(pwd)
-git add -A && git reset --hard
-git pull origin master
-cd server && npm i
-cd ..
-cd common && npm i
+# USAGE: cd server && ./bin/remote/server_restart.sh
+
+./node_modules/pm2/bin/pm2 reload server
