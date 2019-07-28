@@ -3,13 +3,16 @@ import WorldState from "../../../core/state/WorldState";
 import RemoteServerConnection from "./RemoteServerConnection";
 import keyMouseActions from "./uiActionDecoders/keyMouseActions";
 
+const VERSION = "0.0.5";
 const worldState = new WorldState();
-const serverConnection = new RemoteServerConnection();
+const serverConnection = new RemoteServerConnection({ VERSION });
 const view = new View();
 const servers = {
     production: "ws://35.240.39.143:8080",
     local: "ws://localhost:8080",
 };
+
+console.log("Game2D v: " + VERSION);
 
 export default class Game2D {
     init ({ elId, serverName = "production", accountId, addPing } = {}) {
@@ -32,6 +35,14 @@ export default class Game2D {
                 .then(() => {
                     serverConnection.toServer({name: "seeTheWorld"})
                 })
+            }
+            if (action.name === "sysAddDynamicUnit") {
+                worldState.addDynamicUnit(action.unit);
+                view.addNewUnit(action.unit);
+            }
+            if (action.name === "sysDisconnected") {
+                alert("Disconnected from the server.");
+                window.location.reload();
             }
 
             // game messages
