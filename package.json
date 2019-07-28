@@ -1,7 +1,7 @@
 {
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "./node_modules/foreman/nf.js start"
+    "dev": "node ./node_modules/foreman/nf.js start"
   },
   "dependencies": {
     "foreman": "^3.0.1"
