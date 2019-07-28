@@ -19,8 +19,9 @@ serverCore.handleBroadcast((data, sendingQuery = {}) => {
 
 module.exports = route.all('/game', function (ctx, next) {
     const params = qs.parse(ctx.query);
-    // wrote session into ctx. ctx is the same across ws frames
     const sessionAccountId = parseInt(params.accountId, 10);
+    disconnectIfConnected(clients, sessionAccountId);
+    // wrote session into ctx. ctx is the same across ws frames
     clients[sessionAccountId] = ctx.websocket;
     clients[sessionAccountId].sessionAccountId = sessionAccountId;
 
@@ -36,9 +37,14 @@ module.exports = route.all('/game', function (ctx, next) {
 const doSend = (client, action) => {
     console.log(`> ${action.v}:sending to: ${client.sessionAccountId}: ${action.name}`);
     try {
-        client.send(JSON.stringify(action)); // TODO handle connect/disconnect/hash-search
+        client.send(JSON.stringify(action));
     } catch (e) {
         console.log(e.toString());
     }
 };
 
+const disconnectIfConnected = (clients, accountId) => {
+    if (clients[accountId]) {
+        doSend(clients[accountId], serverCore.initDisconnectedAction());
+    }
+};
