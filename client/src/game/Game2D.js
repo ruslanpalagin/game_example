@@ -59,6 +59,12 @@ export default class Game2D {
             if (actionName === "hit") {
                 view.handleHit(action);
             }
+            if (actionName === "rangedHit") {
+                view.handleRangedHit(action);
+            }
+            if (actionName === "attackOnArea") {
+                view.handleAttackOnArea(action);
+            }
             if (actionName === "debugArea") {
                 view.handleDebugArea(action);
             }

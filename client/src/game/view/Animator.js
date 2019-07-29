@@ -9,8 +9,8 @@ class Animator {
     animateHit(char){
         char.weapon.animationReset = char.weapon.animationReset || {
             rotation: char.weapon.rotation,
-                position: char.weapon.position.clone(),
-            };
+            position: char.weapon.position.clone(),
+        };
         const main = {
             rotation: char.weapon.rotation,
             x: char.weapon.position.x,
@@ -29,6 +29,27 @@ class Animator {
             char.weapon.position.y = main.y;
         })
         .start();
+    }
+
+    animateRangedHit(char, distance) {
+        const projectile = Animator.createTriangle(char.position.x, char.position.y, (char.angle % 360) + 180);
+        // console.log(projectile.rotation, Math.cos(projectile.rotation), Math.sin(projectile.rotation));
+
+        new TWEEN.Tween(projectile)
+        .to({
+            x: projectile.position.x + Math.cos(char.rotation - Math.PI / 2) * distance,
+            y: projectile.position.y + Math.sin(char.rotation - Math.PI / 2) * distance,
+        }, 1000)
+        // .easing(TWEEN.Easing.Quadratic.Out)
+        .onComplete((tweensTarget) => {
+            tweensTarget.parent.removeChild(tweensTarget);
+        })
+        .start();
+        return projectile;
+    }
+
+    animateAttackOnArea(char, targetPoint) {
+
     }
 
     animateCharDeath(char){
@@ -57,6 +78,30 @@ class Animator {
             char.weapon.rotation = main.rotation;
         })
         .start();
+    }
+
+    static createTriangle(xPos, yPos, angle = 0) {
+        const color = 0xff6600;
+        
+        const triangleWidth = 5,
+            triangleHeight = 15,
+            triangleHalfway = triangleWidth / 2;
+        
+        // draw triangle 
+        const triangle = new PIXI.Graphics()
+            .beginFill(color, 1)
+            .lineStyle(0, color, 1)
+            .moveTo(triangleWidth, 0)
+            .lineTo(triangleHalfway, triangleHeight)
+            .lineTo(0, 0)
+            .lineTo(triangleHalfway, 0)
+            .endFill();
+
+        triangle.x = xPos;
+        triangle.y = yPos;
+        triangle.angle = angle;
+
+        return triangle;
     }
 }
 

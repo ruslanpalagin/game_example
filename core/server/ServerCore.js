@@ -58,9 +58,17 @@ class ServerCore {
             const { unitId, uPoint } = action;
             this.loopActionsQ.setAction({ unitId, name: actionName, uPoint });
         }
-        if (actionName === "useAbility" && action.slot === 1) {
-            const sourceUnit = this.worldState.findUnit({id: action.sourceUnit.id});
-            this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "hit", sourceUnit });
+        if (actionName === "useAbility") {
+            const sourceUnit = this.worldState.findUnit({ id: action.sourceUnit.id });
+            if (action.slot === 1) {
+                this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "hit", sourceUnit }); //meleeHit
+            }
+            if (action.slot === 2) {
+                this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "rangedHit", sourceUnit, distance: 270 });
+            }
+            if (action.slot === 3) {
+                this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "attackOnArea", sourceUnit });
+            }
         }
         if (actionName === "interactWith") {
             const { sourceUnit, targetUnit } = action;
