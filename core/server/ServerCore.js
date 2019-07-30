@@ -13,6 +13,7 @@ class ServerCore {
         this.unitLibrary = this.worldState.getUnitLibrary();
         this.lastLoopTime = null;
         this.wishes = [];
+        this.projectiles = [];
         this.loopActionsQ = new LoopActionsQ();
         this.broadcastHandler = null;
     }
