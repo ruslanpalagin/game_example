@@ -29,7 +29,7 @@ cd client && ./deploy.sh [GIT_BRANCH]
 "I" - Infrastructure
 
 - UI hp bar 
-- S target units
-- UI target units
+- UI/S target units
 - UI/S implement cameras
+- UI/S bulk WS actions transport
 

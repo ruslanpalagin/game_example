@@ -3,8 +3,9 @@ import PIXI from "src/vendor/PIXI.js";
 import UiActionGenerator from "./UiActionGenerator";
 import ItemsFactory from "./ItemsFactory";
 import Animator from "./Animator";
+import decorateWithEvents from "src/utils/decorateWithEvents";
 
-export default class View {
+class View {
     constructor() {
         this.app = null;
         this.items = [];
@@ -170,3 +171,5 @@ export default class View {
         this.worldContainer.removeChild(item);
     }
 };
+
+export default decorateWithEvents(View);

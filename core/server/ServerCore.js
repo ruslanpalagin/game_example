@@ -5,7 +5,7 @@ const LoopActionsQ = require("./LoopActionsQ");
 const DemoWish = require("./wishes/DemoWish");
 const WS_ACTIONS = require("../WS_ACTIONS");
 
-const VERSION = "0.0.5";
+const VERSION = "0.0.6";
 console.log("ServerCore v:" + VERSION);
 
 class ServerCore {

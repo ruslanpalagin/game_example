@@ -40,9 +40,8 @@ export default class Game2D {
     handleMessageFromServer = (action) => {
         const actionName = action.name;
 
-        // console.log("onMessageFromServer", session, action);
         if (!actionName) {
-            throw new Error("handleMessageFromServer: actionName is required");
+            throw new Error("handleMessageFromServer: action.name is required");
         }
 
         // system messages
@@ -85,8 +84,8 @@ export default class Game2D {
         }
     };
 
-    loadWorld(world){
-        this.worldState.setState({ units: world.worldState.state.units });
+    loadWorld(worldFromServer){
+        this.worldState.setState({ units: worldFromServer.worldState.state.units });
 
         // load view
         return this.view.loadAndAddItemsToStage(this.worldState.state.units)
