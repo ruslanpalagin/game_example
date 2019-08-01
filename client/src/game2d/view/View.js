@@ -33,7 +33,7 @@ export default class View {
         this.app.stage.addChild(this.worldContainer);
     }
 
-    loadAndAddItems(units) {
+    loadAndAddItemsToStage(units) {
         return this.itemsFactory.createFromUnits(units).then(items => this._addItems(items));
     }
 
