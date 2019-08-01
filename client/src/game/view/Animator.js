@@ -1,4 +1,4 @@
-import PIXI from "src/vendor/PIXI.js";
+// import PIXI from "src/vendor/PIXI.js";
 const TWEEN = require('@tweenjs/tween.js');
 
 setInterval(() => {
@@ -31,17 +31,8 @@ class Animator {
         .start();
     }
 
-    animateCharDeath(char){
-        let line = new PIXI.Graphics();
-        line.lineStyle(1, 0xFF0000, 1);
-        line.moveTo(0, 0);
-        line.lineTo(15, 15);
-        line.moveTo(15, 0);
-        line.lineTo(0, 15);
-        line.x = 0;
-        line.y = 0;
-        char.addChild(line);
-
+    animateCharDeath(char, deadMark){
+        char.addChild(deadMark);
         const main = {
             x: char.weapon.position.x,
             rotation: char.weapon.rotation,

@@ -91,10 +91,11 @@ export default class View {
         });
     }
 
-    handleDamageUnit(unit) {
+    async handleDamageUnit(unit) {
         if (unit.state.isDead) {
             const item = this._findItem({unitId: unit.id});
-            this.animator.animateCharDeath(item);
+            const deadMark = await this.itemsFactory.deadMark();
+            this.animator.animateCharDeath(item, deadMark);
         }
         console.log("damaged: ", unit.id, unit.state.hp);
     }

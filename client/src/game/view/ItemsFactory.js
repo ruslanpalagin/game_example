@@ -54,7 +54,6 @@ export default class ItemsFactory{
         return sprite;
     }
 
-    // TODO handle "isDead" state on loading
     async char(unit) {
         const body = new PIXI.Sprite(this.loader.getTexture(unit.viewSkin));
         body.position.set(0, 0);
@@ -77,6 +76,11 @@ export default class ItemsFactory{
         container.body = body;
         container.addChild(weapon);
         container.weapon = weapon;
+
+        if (unit.state.isDead) {
+            const deadMark = await this.deadMark();
+            container.addChild(deadMark);
+        }
 
         return container;
     }
@@ -106,5 +110,17 @@ export default class ItemsFactory{
         container.alpha = 0.8;
 
         return container;
+    }
+
+    async deadMark() {
+        let line = new PIXI.Graphics();
+        line.lineStyle(1, 0xFF0000, 1);
+        line.moveTo(0, 0);
+        line.lineTo(15, 15);
+        line.moveTo(15, 0);
+        line.lineTo(0, 15);
+        line.x = 0;
+        line.y = 0;
+        return line;
     }
 }
