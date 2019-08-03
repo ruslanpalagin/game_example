@@ -28,10 +28,8 @@ cd client && ./deploy.sh [GIT_BRANCH]
 "UI" - UI
 "I" - Infrastructure
 
-- UI/S disconnect duplicated session (by same accountId)
-- UI Fix isDead units loader
 - UI hp bar 
-- S target units
-- UI target units
+- UI/S target units
 - UI/S implement cameras
+- UI/S bulk WS actions transport
 

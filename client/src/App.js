@@ -1,8 +1,10 @@
 import React from 'react';
-import Game2D from "./game/Game2D";
+import Game2D from "./game2d/Game2D";
 import qs from "qs";
 
-const game = new Game2D();
+const VERSION = "0.0.7";
+console.log("Client v: " + VERSION);
+const game = new Game2D({ version: VERSION });
 
 class App extends React.Component {
     constructor(props) {
@@ -30,8 +32,7 @@ class App extends React.Component {
 
     initGame = () => {
         const { options } = this.state;
-        console.log("options", options);
-        game.init(options); // TODO handle disconnect and back to logic screen
+        game.init(options);
         this.setState({
             isGameInitialized: true,
         });
@@ -46,35 +47,42 @@ class App extends React.Component {
                 {
                     !isGameInitialized &&
                     <div>
-                        <h1>Dungeon</h1>
-                        <h3>of Might & Flower</h3>
-                        <label>
-                            Account ID:
-                            <input
-                                type="text"
-                                onChange={(event) => this.setOption("accountId", parseInt(event.target.value, 10)) }
-                                value={options.accountId}
-                            />
-                        </label>
-                        <label>
-                            Server Name:
-                            <select
-                                value={options.serverName}
-                                onChange={(event) => this.setOption("serverName", event.target.value) }
-                            >
-                                <option value="production">production</option>
-                                <option value="local">local</option>
-                            </select>
-                        </label>
-                        <label>
-                            Add ping:
-                            <input
-                                type="text"
-                                onChange={(event) => this.setOption("addPing", parseInt(event.target.value, 10)) }
-                                value={options.addPing}
-                            />
-                        </label>
-                        <button onClick={this.initGame}>Start free trial now</button>
+                        <h1>Time Lancer</h1>
+                        <div>
+                            <label>
+                                Account ID:
+                                <input
+                                    type="text"
+                                    onChange={(event) => this.setOption("accountId", parseInt(event.target.value, 10)) }
+                                    value={options.accountId}
+                                />
+                            </label>
+                        </div>
+                        <div>
+                            <label>
+                                Server Name:
+                                <select
+                                    value={options.serverName}
+                                    onChange={(event) => this.setOption("serverName", event.target.value) }
+                                >
+                                    <option value="production">production</option>
+                                    <option value="local">local</option>
+                                </select>
+                            </label>
+                        </div>
+                        <div>
+                            <label>
+                                Add ping for slow connection emulation:
+                                <input
+                                    type="text"
+                                    onChange={(event) => this.setOption("addPing", parseInt(event.target.value, 10)) }
+                                    value={options.addPing}
+                                />
+                            </label>
+                        </div>
+                        <div>
+                            <button onClick={this.initGame}>Start free trial now</button>
+                        </div>
                     </div>
                 }
             </div>
