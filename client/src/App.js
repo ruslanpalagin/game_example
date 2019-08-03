@@ -57,6 +57,11 @@ class App extends React.Component {
                 });
             }, 4000);
         }
+        if (action.name === "updateControlledUnit") {
+            this.setState(({uiState}) => ({
+                uiState: Object.assign(uiState, { controlledUnit: action.controlledUnit }),
+            }));
+        }
     };
 
     render = () => {

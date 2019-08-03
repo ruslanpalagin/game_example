@@ -80,12 +80,18 @@ class Game2D {
             this.view.handleDebugArea(action);
         }
         if (actionName === "damage") {
-            const unit = this.worldState.updUnitById(action.targetUnit.id, { state: action.targetUnit.state });
-            this.view.handleDamageUnit(unit);
+            const damagedUnit = this.worldState.updUnitById(action.targetUnit.id, { state: action.targetUnit.state });
+            this.view.handleDamageUnit(damagedUnit);
+            // upd hp bar
+            const controlledUnit = this.view.controlledUnit;
+            if (controlledUnit.id === damagedUnit.id) {
+                this.emit("uiStateAction", { name: "updateControlledUnit", controlledUnit });
+            }
         }
         if (actionName === "takeControl") {
             const controlledUnit = this.worldState.findUnit({id: action.unitId});
             this.view.setControlledUnit(controlledUnit);
+            this.emit("uiStateAction", { name: "updateControlledUnit", controlledUnit });
         }
     };
 

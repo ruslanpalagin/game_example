@@ -12,3 +12,17 @@
   border-radius: 5px;
   max-width: 200px;
 }
+
+.bar{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 250px;
+  border: 2px solid #000;
+  background-color: #fff;
+}
+
+.bar__value{
+  height: 20px;
+  background-color: red;
+}
