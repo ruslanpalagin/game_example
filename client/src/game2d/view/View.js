@@ -3,7 +3,7 @@ import PIXI from "src/vendor/PIXI.js";
 import UiActionGenerator from "./UiActionGenerator";
 import ItemsFactory from "./ItemsFactory";
 import Animator from "./Animator";
-import decorateWithEvents from "src/utils/decorateWithEvents";
+import decorateWithEvents from "src/../../core/utils/decorateWithEvents";
 
 class View {
     constructor() {
@@ -126,12 +126,18 @@ class View {
             if (Math.random() > 0.7){
                 message = "Let's get closer"
             }
+            // TODO
             this.handleSay({ unitId: sourceUnit.id, message });
         });
     }
 
+    getScreenUPointOfUnit(unitId) {
+        const item = this._findItem({ unitId });
+        return item.toGlobal({ x: 0, y: 0 });
+    }
+
     _setCursor(cursor) {
-        this.app.view.style.cursor = cursor
+        window.document.body.style.cursor = cursor;
     }
 
     _trackCenter(unit) {

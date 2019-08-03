@@ -3,13 +3,14 @@ import RemoteServerConnection from "./RemoteServerConnection";
 import keyMouseActions from "./keyMouseActions";
 import WorldState from "../../../core/state/WorldState";
 import WS_ACTIONS from "../../../core/WS_ACTIONS";
+import decorateWithEvents from "src/../../core/utils/decorateWithEvents";
 
 const servers = {
     production: "ws://35.240.39.143:8080",
     local: "ws://localhost:8080",
 };
 
-export default class Game2D {
+class Game2D {
     constructor({ version }) {
         this.serverConnection = new RemoteServerConnection({ VERSION: version });
         this.worldState = new WorldState();
@@ -66,7 +67,11 @@ export default class Game2D {
         }
         if (actionName === "say") {
             const { unitId, message } = action;
-            this.view.handleSay({ unitId, message });
+            // react html way
+            const uPoint = this.view.getScreenUPointOfUnit(unitId);
+            this.emit("uiStateAction", { name: "say", message, uPoint });
+            // canvas way
+            // this.view.handleSay(action);
         }
         if (actionName === "hit") {
             this.view.handleHit(action);
@@ -115,3 +120,5 @@ export default class Game2D {
         });
     }
 }
+
+export default decorateWithEvents(Game2D);
