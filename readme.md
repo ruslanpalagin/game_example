@@ -32,4 +32,5 @@ cd client && ./deploy.sh [GIT_BRANCH]
 - UI/S target units
 - UI/S implement cameras
 - UI/S bulk WS actions transport
-
+- UI add loading screen
+- UI add keymap reference
