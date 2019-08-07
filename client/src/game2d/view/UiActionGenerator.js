@@ -12,6 +12,11 @@ class UiActionGenerator {
         this.items = null;
     }
 
+    setItems(items){
+        this.items = items;
+        this.interactiveItems = items.filter((item) => item.isInteractive);
+    }
+
     listenToInput(keyMouseActions) {
         keyMouseActions.on("rotateCamera", ({rad}) => {
             if (!this.controlledUnit) { return; }
@@ -124,7 +129,7 @@ class UiActionGenerator {
     }
 
     testHover(worldPoint) {
-        const hoveredItem = collisions.findItemByPoint(this.items, worldPoint);
+        const hoveredItem = collisions.findItemByPoint(this.interactiveItems, worldPoint);
         if (this.hoveredUnit && !hoveredItem) {
             this.emit("mouseOut", this.hoveredUnit);
             this.hoveredUnit = null;
