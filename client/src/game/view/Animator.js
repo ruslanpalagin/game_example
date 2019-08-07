@@ -31,15 +31,15 @@ class Animator {
         .start();
     }
 
-    animateRangedHit(char, distance) {
+    animateRangedHit(char, distance, duration = 1000) {
         const projectile = Animator.createTriangle(char.position.x, char.position.y, (char.angle % 360) + 180);
-        // console.log(projectile.rotation, Math.cos(projectile.rotation), Math.sin(projectile.rotation));
+        console.log(char.position, projectile.position, projectile.getBounds());
 
         new TWEEN.Tween(projectile)
         .to({
             x: projectile.position.x + Math.cos(char.rotation - Math.PI / 2) * distance,
             y: projectile.position.y + Math.sin(char.rotation - Math.PI / 2) * distance,
-        }, 1000)
+        }, duration)
         // .easing(TWEEN.Easing.Quadratic.Out)
         .onComplete((tweensTarget) => {
             tweensTarget.parent.removeChild(tweensTarget);
@@ -94,11 +94,12 @@ class Animator {
             .moveTo(triangleWidth, 0)
             .lineTo(triangleHalfway, triangleHeight)
             .lineTo(0, 0)
-            .lineTo(triangleHalfway, 0)
+            .lineTo(triangleWidth, 0)
             .endFill();
 
         triangle.x = xPos;
         triangle.y = yPos;
+        triangle.pivot.set(triangleHalfway, triangleHeight / 2);
         triangle.angle = angle;
 
         return triangle;
