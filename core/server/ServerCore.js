@@ -3,6 +3,7 @@ const collisions = require("../utils/collisions");
 const CharFactory = require("../state/CharFactory");
 const LoopActionsQ = require("./LoopActionsQ");
 const DemoWish = require("./wishes/DemoWish");
+const Projectile = require('./projectiles/Projectile');
 
 const VERSION = "0.0.5";
 console.log("ServerCore v:" + VERSION);
@@ -65,7 +66,7 @@ class ServerCore {
                 this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "hit", sourceUnit }); //meleeHit
             }
             if (action.slot === 2) {
-                this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "rangedHit", sourceUnit, distance: 270 });
+                this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "rangedHit", sourceUnit });
             }
             if (action.slot === 3) {
                 this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "attackOnArea", sourceUnit });
@@ -127,7 +128,46 @@ class ServerCore {
             this.loopActionsQ.mergeActions(actions);
         });
         this._processActionsAndFlush(this.loopActionsQ);
+        this._processProjectilesFlight(delta);
         this.wishes = this.wishes.filter(wish => !wish.isCompleted());
+    }
+
+    _processProjectilesFlight(delta) {
+        this.projectiles.forEach((element, index) => {
+            const futurePos = element.calcNextPosition(delta);
+            const collisionArea = element.getCollisionArea(futurePos);
+            const hitedUnits = collisions.findUnitsHittingByProjectile(this.worldState.getHitableUnits(), collisionArea);
+            let smbdHitted = false;
+            // if (hitedUnits) {
+            const sourceUnit = element.sourceEntity;
+            //do some action
+            hitedUnits.forEach((targetUnit) => {
+                if (targetUnit.id === sourceUnit.id) {
+                    return;
+                }
+                if (targetUnit.state.isDead) {
+                    return;
+                }
+                smbdHitted = true;
+                const newHp = targetUnit.state.hp - 20;
+                const isDead = newHp <= 0;
+                const newState = Object.assign(targetUnit.state, { hp: newHp, isDead });
+                const updTargetUnit = this.worldState.updUnitById(targetUnit.id, { state: newState });
+                this.broadcast({ name: "damage", sourceUnit, targetUnit: updTargetUnit });
+            });
+            // if (smbdHitted) this.broadcast({ name: 'projectileHit' }, { accountId: sourceUnit.accountId });
+            // }
+
+            element.move(futurePos);
+            if (element.flightLimitsReached || smbdHitted) {
+                //debug
+                console.assert(
+                    new Date().getTime() - element.startTime <= element.flightDuration,
+                    'warn! projectile\' flight time prediction failed'
+                );
+                this.projectiles.splice(index, 1);
+            }
+        });
     }
 
     _processActionsAndFlush() {
@@ -169,6 +209,17 @@ class ServerCore {
                     setTimeout(() => this.broadcast({ name: "say", unitId: updTargetUnit.id, message: "F5..." }), 22000);
                 }
             });
+        }
+        if (action.name === 'rangedHit') {
+            // props for projectile
+            const distance = 270;
+            const speed = 0.2; // per ms
+            const bounds = { x: -2.5, y: -7.5, width: 5, height: 15 }; // calculated by PIXI
+            const newProjectile = new Projectile(action.sourceUnit, speed, distance, bounds);
+            newProjectile.startTime = new Date().getTime(); // for tests
+            action.distance = distance;
+            action.flightDuration = newProjectile.flightDuration;
+            this.projectiles.push(newProjectile);
         }
     }
 
