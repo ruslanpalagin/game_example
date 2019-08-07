@@ -86,11 +86,11 @@ export default class View {
 
     handleRangedHit(action) {
         const sourceUnit = this._findItem({unitId: action.sourceUnit.id});
-        this.worldContainer.addChild(this.animator.animateRangedHit(sourceUnit, action.distance));
+        this.worldContainer.addChild(this.animator.animateRangedHit(sourceUnit, action.distance, action.flightDuration));
     }
 
     handleAttackOnArea(action) {
-        const sourceUnit = this._findItem({unitId: action.sourceUnit.id});
+        // const sourceUnit = this._findItem({unitId: action.sourceUnit.id});
         // this.worldContainer.addChild(this.animator.animateAttackOnArea(sourceUnit, action.distance, action.area));
     }
 
