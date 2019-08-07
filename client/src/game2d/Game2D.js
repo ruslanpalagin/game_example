@@ -117,6 +117,9 @@ class Game2D {
             this.view.uiActionGenerator.on("useAbility", (data) => {
                 this.serverConnection.toServer(data);
             });
+            this.view.on("targetItem", (item) => {
+                this.serverConnection.toServer({ name: WS_ACTIONS.TARGET_UNIT, sourceUnitId: this.view.controlledUnit.id, targetUnitId: item.unitId });
+            });
 
             this.view.setUnitLibrary(this.worldState.getUnitLibrary());
             this.view.resize();

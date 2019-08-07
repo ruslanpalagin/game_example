@@ -14,37 +14,57 @@ class UiActionGenerator {
 
     setItems(items){
         this.items = items;
-        this.interactiveItems = items.filter((item) => item.isInteractive);
+        this.interactiveItems = items.filter((item) => item.behaviors.isInteractive);
+        this.targetableItems = items.filter((item) => item.behaviors.canBeTarget);
     }
 
     listenToInput(keyMouseActions) {
         keyMouseActions.on("rotateCamera", ({rad}) => {
-            if (!this.controlledUnit) { return; }
-            if (this.controlledUnit.state.isDead) { return; }
-            this.rotate(rad);
+            if (!this._isUnitActive(this.controlledUnit)){
+                return;
+            }
+            this._rotate(rad);
         });
-        keyMouseActions.on("mouseRightClick", (e) => {
-            if (!this.controlledUnit) { return; }
-            if (this.controlledUnit.state.isDead) { return; }
-            const worldPoint = this.worldContainer.toLocal(e);
-            this.testInteraction(worldPoint);
+        keyMouseActions.on("mouseLeftClick", (position) => {
+            if (!this.controlledUnit){
+                return;
+            }
+            const worldPoint = this.worldContainer.toLocal(position);
+            this._testTarget(worldPoint);
         });
-        keyMouseActions.on("mouseMove", (e) => {
-            if (!this.controlledUnit) { return; }
-            if (this.controlledUnit.state.isDead) { return; }
-            const worldPoint = this.worldContainer.toLocal(e);
-            this.testHover(worldPoint);
+        keyMouseActions.on("mouseRightClick", (position) => {
+            if (!this.controlledUnit){
+                return;
+            }
+            const worldPoint = this.worldContainer.toLocal(position);
+            this._testInteraction(worldPoint);
+        });
+        keyMouseActions.on("mouseMove", (position) => {
+            if (!this.controlledUnit){
+                return;
+            }
+            const worldPoint = this.worldContainer.toLocal(position);
+            this._testHover(worldPoint);
         });
         keyMouseActions.on("abilityKey", ({slot}) => {
-            if (!this.controlledUnit) { return; }
-            if (this.controlledUnit.state.isDead) { return; }
+            if (!this._isUnitActive(this.controlledUnit)){
+                return;
+            }
             this.emit("useAbility", { slot, sourceUnit: this.controlledUnit, name: "useAbility" });
         });
     }
 
     loop(controls) {
-        if (!this.controlledUnit) { return; }
-        if (this.controlledUnit.state.isDead) { return; }
+        if (this._isUnitActive(this.controlledUnit)) {
+            this._checkMoveAndRotate(controls);
+        }
+    }
+
+    _isUnitActive(unit) {
+        return unit && !unit.state.isDead;
+    }
+
+    _checkMoveAndRotate(controls){
         const controlledUnit = this.controlledUnit;
         this.lastLoopTime = this.lastLoopTime || (new Date()).getTime();
         const MOVE_SPEED = 90;
@@ -99,7 +119,7 @@ class UiActionGenerator {
         }
     }
 
-    rotate(rad) {
+    _rotate(rad) {
         this.emit("moveUnit", {
             name: "moveUnit",
             unitId: this.controlledUnit.id,
@@ -107,8 +127,16 @@ class UiActionGenerator {
         });
     }
 
-    testInteraction(worldPoint) {
-        const clickedItem = collisions.findItemByPoint(this.items, worldPoint);
+    _testTarget(worldPosition) {
+        const clickedItem = collisions.findItemByPoint(this.targetableItems, worldPosition);
+        if (!clickedItem) {
+            return;
+        }
+        this.emit("targetItem", clickedItem);
+    }
+
+    _testInteraction(worldPosition) {
+        const clickedItem = collisions.findItemByPoint(this.interactiveItems, worldPosition);
         if (!clickedItem) {
             return;
         }
@@ -128,7 +156,7 @@ class UiActionGenerator {
         }
     }
 
-    testHover(worldPoint) {
+    _testHover(worldPoint) {
         const hoveredItem = collisions.findItemByPoint(this.interactiveItems, worldPoint);
         if (this.hoveredUnit && !hoveredItem) {
             this.emit("mouseOut", this.hoveredUnit);

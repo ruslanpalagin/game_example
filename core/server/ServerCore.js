@@ -44,6 +44,11 @@ class ServerCore {
         if (actionName === "sysLoadUser") {
             this.broadcast({ name: "sysLoadWorld", worldState: { state: this.worldState.state } }, session);
         }
+        if (actionName === WS_ACTIONS.TARGET_UNIT) {
+            const sourceUnit = this.worldState.findUnit({id: action.sourceUnitId});
+            this.worldState.updUnitStateById(sourceUnit.id, {targetUnitId: action.targetUnitId});
+            this.broadcast(action);
+        }
         if (actionName === WS_ACTIONS.SEE_THE_WORLD) {
             let controlledUnit = this.worldState.findUnit({accountId: session.accountId});
             if (!controlledUnit) {

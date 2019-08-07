@@ -1,10 +1,12 @@
 const collisions = {
-    // TODO rework to area
+    /**
+     * working with view (PIXI) only
+     * using rectangle
+     */
     findItemByPoint(items, {x, y}) {
         let result = null;
         for(let i = items.length - 1; i >= 0; i--) {
             const item = items[i];
-            console.log("item", item);
             if (!item.isInteractive) {
                 continue;
             }

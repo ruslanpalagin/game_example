@@ -129,6 +129,9 @@ class View {
             // TODO
             this.handleSay({ unitId: sourceUnit.id, message });
         });
+        this.uiActionGenerator.on("targetItem", (item) => {
+            this.emit("targetItem", item);
+        });
     }
 
     getScreenUPointOfUnit(unitId) {
