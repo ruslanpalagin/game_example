@@ -8,7 +8,14 @@ export default class ItemsFactory{
     }
 
     async createFromUnit(unit) {
-        return this[unit.viewSkin] ? this[unit.viewSkin](unit) : this.mapItem(unit);
+        const factoryMethod = this[unit.viewSkin] ? unit.viewSkin : "mapItem";
+        return this[factoryMethod](unit).then((item) => {
+            item.behaviors = {
+                isInteractive: unit.isInteractive,
+                canBeTarget: unit.canBeTarget,
+            };
+            return item;
+        })
     }
 
     async createFromUnits(units) {

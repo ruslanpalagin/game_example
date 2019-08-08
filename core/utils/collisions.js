@@ -1,15 +1,17 @@
 const collisions = {
-    // TODO rework to area
+    /**
+     * working with view (PIXI) only
+     * using rectangle
+     */
     findItemByPoint(items, {x, y}) {
         let result = null;
         for(let i = items.length - 1; i >= 0; i--) {
             const item = items[i];
-            // console.log("item", item);
             if (!item.isInteractive) {
                 continue;
             }
-            const xShift = - item.width * 0.5;
-            const yShift = - item.height * 0.5;
+            const xShift = - item.pivot.x;
+            const yShift = - item.pivot.y;
             const left = item.position.x + xShift;
             const top = item.position.y + yShift;
             const right = left + item.width;

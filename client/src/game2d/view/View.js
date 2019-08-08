@@ -129,6 +129,9 @@ class View {
             // TODO
             this.handleSay({ unitId: sourceUnit.id, message });
         });
+        this.uiActionGenerator.on("targetItem", (item) => {
+            this.emit("targetItem", item);
+        });
     }
 
     getScreenUPointOfUnit(unitId) {
@@ -159,14 +162,14 @@ class View {
 
     _addItems(items) {
         this.items = items;
-        this.uiActionGenerator.items = items;
         items.forEach(item => this.worldContainer.addChild(item));
+        this.uiActionGenerator.setItems(this.items);
     }
 
     _addNewItem(item) {
         this.items.push(item);
-        // this.uiActionGenerator.items auto-updated
         this.worldContainer.addChild(item);
+        this.uiActionGenerator.setItems(this.items);
     }
 
     _findItem(q) {

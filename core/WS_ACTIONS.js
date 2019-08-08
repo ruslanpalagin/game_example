@@ -1,3 +1,4 @@
 module.exports = {
-    SEE_THE_WORLD: 1,
+    SEE_THE_WORLD: "SEE_THE_WORLD",
+    TARGET_UNIT: "TARGET_UNIT",
 };
