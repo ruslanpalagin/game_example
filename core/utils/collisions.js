@@ -32,6 +32,17 @@ const collisions = {
         area.position = this.rotatePointInversedY(area.position, { pivot: unit.position, angle: unit.rotation });
         return area;
     },
+    findUnitsHittingByProjectile(units, collisionArea) {
+        return units.filter(unit => this.circleRect(
+            unit.position.x,
+            unit.position.y,
+            18,
+            collisionArea.x,
+            collisionArea.y,
+            collisionArea.width,
+            collisionArea.height
+        ));
+    },
     findUnitsInArea(units, area) {
         return units.filter((unit) => this._isUnitInArea(unit, area));
     },
@@ -80,6 +91,36 @@ const collisions = {
             position: rotatedPoint,
             rotation: this.calcAngleBetweenInversedY(from, to),
         };
+    },
+    /**
+     * Checks the collision of a circle and a rectangle.
+     * @returns Figures intersect?
+     * @param {Number} cx 
+     * @param {Number} cy 
+     * @param {Number} radius 
+     * @param {Number} rx 
+     * @param {Number} ry 
+     * @param {Number} rw 
+     * @param {Number} rh 
+     */
+    circleRect(cx, cy, radius, rx, ry, rw, rh) {
+        // temporary variables to set edges for testing
+        let testX = cx;
+        let testY = cy;
+
+        // which edge is closest?
+        if (cx < rx)           testX = rx;      // test left edge
+        else if (cx > rx + rw) testX = rx + rw;   // right edge
+        if (cy < ry)           testY = ry;      // top edge
+        else if (cy > ry + rh) testY = ry + rh;   // bottom edge
+
+        // get distance from closest edges
+        const distX = cx - testX;
+        const distY = cy - testY;
+        const distance = Math.sqrt((distX * distX) + (distY * distY));
+
+        // if the distance is less than the radius, collision!
+        return distance <= radius;
     },
     getDistance(controlledUnit, clickedItem) {
         const xDiff = Math.abs(controlledUnit.position.x - clickedItem.position.x);

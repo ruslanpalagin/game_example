@@ -76,6 +76,12 @@ class Game2D {
         if (actionName === "hit") {
             this.view.handleHit(action);
         }
+        if (actionName === "rangedHit") {
+            this.view.handleRangedHit(action);
+        }
+        if (actionName === "attackOnArea") {
+            this.view.handleAttackOnArea(action);
+        }
         if (actionName === "debugArea") {
             this.view.handleDebugArea(action);
         }

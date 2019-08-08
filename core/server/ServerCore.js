@@ -3,9 +3,10 @@ const collisions = require("../utils/collisions");
 const CharFactory = require("../state/CharFactory");
 const LoopActionsQ = require("./LoopActionsQ");
 const DemoWish = require("./wishes/DemoWish");
+const Projectile = require('./projectiles/Projectile');
 const WS_ACTIONS = require("../WS_ACTIONS");
 
-const VERSION = "0.0.6";
+const VERSION = "0.0.5";
 console.log("ServerCore v:" + VERSION);
 
 class ServerCore {
@@ -14,6 +15,7 @@ class ServerCore {
         this.unitLibrary = this.worldState.getUnitLibrary();
         this.lastLoopTime = null;
         this.wishes = [];
+        this.projectiles = [];
         this.loopActionsQ = new LoopActionsQ();
         this.broadcastHandler = null;
     }
@@ -44,7 +46,7 @@ class ServerCore {
         if (actionName === "sysLoadUser") {
             this.broadcast({ name: "sysLoadWorld", worldState: { state: this.worldState.state } }, session);
         }
-        if (actionName === WS_ACTIONS.TARGET_UNIT) {
+if (actionName === WS_ACTIONS.TARGET_UNIT) {
             const sourceUnit = this.worldState.findUnit({id: action.sourceUnitId});
             this.worldState.updUnitStateById(sourceUnit.id, {targetUnitId: action.targetUnitId});
             this.broadcast(action);
@@ -64,9 +66,17 @@ class ServerCore {
             const { unitId, uPoint } = action;
             this.loopActionsQ.setAction({ unitId, name: actionName, uPoint });
         }
-        if (actionName === "useAbility" && action.slot === 1) {
-            const sourceUnit = this.worldState.findUnit({id: action.sourceUnit.id});
-            this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "hit", sourceUnit });
+        if (actionName === "useAbility") {
+            const sourceUnit = this.worldState.findUnit({ id: action.sourceUnit.id });
+            if (action.slot === 1) {
+                this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "hit", sourceUnit }); //meleeHit
+            }
+            if (action.slot === 2) {
+                this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "rangedHit", sourceUnit });
+            }
+            if (action.slot === 3) {
+                this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "attackOnArea", sourceUnit });
+            }
         }
         if (actionName === "interactWith") {
             const { sourceUnit, targetUnit } = action;
@@ -124,7 +134,46 @@ class ServerCore {
             this.loopActionsQ.mergeActions(actions);
         });
         this._processActionsAndFlush(this.loopActionsQ);
+        this._processProjectilesFlight(delta);
         this.wishes = this.wishes.filter(wish => !wish.isCompleted());
+    }
+
+    _processProjectilesFlight(delta) {
+        this.projectiles.forEach((element, index) => {
+            const futurePos = element.calcNextPosition(delta);
+            const collisionArea = element.getCollisionArea(futurePos);
+            const hitedUnits = collisions.findUnitsHittingByProjectile(this.worldState.getHitableUnits(), collisionArea);
+            let smbdHitted = false;
+            // if (hitedUnits) {
+            const sourceUnit = element.sourceEntity;
+            //do some action
+            hitedUnits.forEach((targetUnit) => {
+                if (targetUnit.id === sourceUnit.id) {
+                    return;
+                }
+                if (targetUnit.state.isDead) {
+                    return;
+                }
+                smbdHitted = true;
+                const newHp = targetUnit.state.hp - 20;
+                const isDead = newHp <= 0;
+                const newState = Object.assign(targetUnit.state, { hp: newHp, isDead });
+                const updTargetUnit = this.worldState.updUnitById(targetUnit.id, { state: newState });
+                this.broadcast({ name: "damage", sourceUnit, targetUnit: updTargetUnit });
+            });
+            // if (smbdHitted) this.broadcast({ name: 'projectileHit' }, { accountId: sourceUnit.accountId });
+            // }
+
+            element.move(futurePos);
+            if (element.flightLimitsReached || smbdHitted) {
+                //debug
+                console.assert(
+                    new Date().getTime() - element.startTime <= element.flightDuration,
+                    'warn! projectile\' flight time prediction failed'
+                );
+                this.projectiles.splice(index, 1);
+            }
+        });
     }
 
     _processActionsAndFlush() {
@@ -166,6 +215,17 @@ class ServerCore {
                     setTimeout(() => this.broadcast({ name: "say", unitId: updTargetUnit.id, message: "F5..." }), 22000);
                 }
             });
+        }
+        if (action.name === 'rangedHit') {
+            // props for projectile
+            const distance = 270;
+            const speed = 0.2; // per ms
+            const bounds = { x: -2.5, y: -7.5, width: 5, height: 15 }; // calculated by PIXI
+            const newProjectile = new Projectile(action.sourceUnit, speed, distance, bounds);
+            newProjectile.startTime = new Date().getTime(); // for tests
+            action.distance = distance;
+            action.flightDuration = newProjectile.flightDuration;
+            this.projectiles.push(newProjectile);
         }
     }
 
