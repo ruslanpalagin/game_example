@@ -23,13 +23,14 @@ class Projectile {
   get flightDuration() { return this.distance / this.speed; }
   get flightLimitsReached() { return this._remainingDistance < 0; }
 
+  // projection path
   getCollisionArea(newPosition) {
     const { x, y, width, height } = this.bounds;
     return {
-      x: newPosition.x + x, 
-      y: newPosition.y + y,
+      x: this.position.x + x, 
+      y: this.position.y + y,
       width,
-      height
+      height: Math.abs(this.position.y - newPosition.y) + height
     };
   }
 
