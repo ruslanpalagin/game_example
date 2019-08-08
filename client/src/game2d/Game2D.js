@@ -87,17 +87,26 @@ class Game2D {
         }
         if (actionName === "damage") {
             const damagedUnit = this.worldState.updUnitById(action.targetUnit.id, { state: action.targetUnit.state });
-            this.view.handleDamageUnit(damagedUnit);
+            const sourceUnit = this.worldState.findUnit({id: action.sourceUnit.id});
+            this.view.handleDamageUnit(damagedUnit).then(() => {});
             // upd hp bar
-            const controlledUnit = this.view.controlledUnit;
-            if (controlledUnit.id === damagedUnit.id) {
-                this.emit("uiStateAction", { name: "updateControlledUnit", controlledUnit });
-            }
+            this.emit("uiStateAction", { name: "updateControlledUnit", controlledUnit: this.view.controlledUnit });
+            this.emit("uiStateAction", { name: "updateTargetUnit", targetUnit: this.view.targetUnit });
         }
         if (actionName === "takeControl") {
             const controlledUnit = this.worldState.findUnit({id: action.unitId});
             this.view.setControlledUnit(controlledUnit);
             this.emit("uiStateAction", { name: "updateControlledUnit", controlledUnit });
+        }
+        if (actionName === WS_ACTIONS.TARGET_UNIT) {
+            const sourceUnit = this.worldState.updUnitStateById(action.sourceUnitId, { targetUnitId: action.targetUnitId });
+            const targetUnit = this.worldState.findUnit({id: action.targetUnitId});
+            // upd hp bar
+            if (this.view.controlledUnit.id === sourceUnit.id) {
+                this.view.setTargetUnit(targetUnit);
+            }
+            this.emit("uiStateAction", { name: "updateControlledUnit", controlledUnit: this.view.controlledUnit });
+            this.emit("uiStateAction", { name: "updateTargetUnit", targetUnit: this.view.targetUnit });
         }
     };
 

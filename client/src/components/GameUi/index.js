@@ -14,13 +14,13 @@ class GameUi extends React.Component {
     }
 
     render = () => {
-        const { messageBoxes, controlledUnit } = this.props;
+        const { messageBoxes, controlledUnit, targetUnit } = this.props;
 
         return <div className="game-ui">
             {
                 messageBoxes.map((messageBox) => (
                     <div
-                        key={JSON.stringify(messageBox)}
+                        key={Math.random()}
                         className="message-box"
                         style={{ top: messageBox.uPoint.y + "px", left: messageBox.uPoint.x + "px"}}
                     >
@@ -30,9 +30,15 @@ class GameUi extends React.Component {
             }
             {
                 controlledUnit &&
-                    <div className="bar">
-                        <div className="bar__value" style={{ width: calcHpBarWidth(controlledUnit) + "%" }} />
-                    </div>
+                <div className="bar">
+                    <div className="bar__value" style={{ width: calcHpBarWidth(controlledUnit) + "%" }} />
+                </div>
+            }
+            {
+                targetUnit &&
+                <div className="target">
+                    {targetUnit.name}: {targetUnit.state.hp}/{targetUnit.stats.maxHp}
+                </div>
             }
         </div>;
     };

@@ -44,24 +44,34 @@ class App extends React.Component {
 
     handleUiStateAction = (action) => {
         if (action.name === "say") {
-            this.setState(({uiState}) => {
-                uiState.messageBoxes = uiState.messageBoxes || [];
-                uiState.messageBoxes.push(action);
-                return { uiState };
+            this.updateUiState((uiState) => {
+                const messageBoxes = uiState.messageBoxes || [];
+                messageBoxes.push(action);
+                return { messageBoxes };
             });
             setTimeout(() => {
-                this.setState(({uiState}) => {
-                    uiState.messageBoxes = uiState.messageBoxes || [];
-                    uiState.messageBoxes.splice(uiState.messageBoxes.indexOf(action), 1);
-                    return { uiState };
+                this.updateUiState((uiState) => {
+                    const messageBoxes = uiState.messageBoxes || [];
+                    messageBoxes.splice(messageBoxes.indexOf(action), 1);
+                    return { messageBoxes };
                 });
             }, 4000);
         }
         if (action.name === "updateControlledUnit") {
-            this.setState(({uiState}) => ({
-                uiState: Object.assign(uiState, { controlledUnit: action.controlledUnit }),
-            }));
+            this.updateUiState((uiState) => ({ controlledUnit: action.controlledUnit }));
         }
+        if (action.name === "updateTargetUnit") {
+            this.updateUiState((uiState) => ({ targetUnit: action.targetUnit }));
+        }
+    };
+
+    updateUiState = (cb) => {
+        this.setState(({uiState}) => {
+            // console.log("uiState1", uiState);
+            const newUiState = Object.assign(uiState, cb(uiState));
+            // console.log("newUiState", newUiState);
+            return { uiState: newUiState };
+        });
     };
 
     render = () => {
