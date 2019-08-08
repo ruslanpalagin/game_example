@@ -33,7 +33,7 @@ class Animator {
 
     animateRangedHit(char, distance, duration = 1000) {
         const projectile = Animator.createTriangle(char.position.x, char.position.y, (char.angle % 360) + 180);
-        console.log(char.position, projectile.position, projectile.getBounds());
+        // console.log(char.position, projectile.position, projectile.getBounds());
 
         new TWEEN.Tween(projectile)
         .to({
@@ -52,7 +52,8 @@ class Animator {
 
     }
 
-    animateCharDeath(char){
+    animateCharDeath(char, deadMark){
+        char.addChild(deadMark);
         let line = new PIXI.Graphics();
         line.lineStyle(1, 0xFF0000, 1);
         line.moveTo(0, 0);

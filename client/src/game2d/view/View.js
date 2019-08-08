@@ -3,8 +3,9 @@ import PIXI from "src/vendor/PIXI.js";
 import UiActionGenerator from "./UiActionGenerator";
 import ItemsFactory from "./ItemsFactory";
 import Animator from "./Animator";
+import decorateWithEvents from "src/../../core/utils/decorateWithEvents";
 
-export default class View {
+class View {
     constructor() {
         this.app = null;
         this.items = [];
@@ -33,7 +34,7 @@ export default class View {
         this.app.stage.addChild(this.worldContainer);
     }
 
-    loadAndAddItems(units) {
+    loadAndAddItemsToStage(units) {
         return this.itemsFactory.createFromUnits(units).then(items => this._addItems(items));
     }
 
@@ -101,10 +102,11 @@ export default class View {
         });
     }
 
-    handleDamageUnit(unit) {
+    async handleDamageUnit(unit) {
         if (unit.state.isDead) {
             const item = this._findItem({unitId: unit.id});
-            this.animator.animateCharDeath(item);
+            const deadMark = await this.itemsFactory.deadMark();
+            this.animator.animateCharDeath(item, deadMark);
         }
         console.log("damaged: ", unit.id, unit.state.hp);
     }
@@ -134,12 +136,21 @@ export default class View {
             if (Math.random() > 0.7){
                 message = "Let's get closer"
             }
+            // TODO
             this.handleSay({ unitId: sourceUnit.id, message });
+        });
+        this.uiActionGenerator.on("targetItem", (item) => {
+            this.emit("targetItem", item);
         });
     }
 
+    getScreenUPointOfUnit(unitId) {
+        const item = this._findItem({ unitId });
+        return item.toGlobal({ x: 0, y: 0 });
+    }
+
     _setCursor(cursor) {
-        this.app.view.style.cursor = cursor
+        window.document.body.style.cursor = cursor;
     }
 
     _trackCenter(unit) {
@@ -161,14 +172,14 @@ export default class View {
 
     _addItems(items) {
         this.items = items;
-        this.uiActionGenerator.items = items;
         items.forEach(item => this.worldContainer.addChild(item));
+        this.uiActionGenerator.setItems(this.items);
     }
 
     _addNewItem(item) {
         this.items.push(item);
-        // this.uiActionGenerator.items auto-updated
         this.worldContainer.addChild(item);
+        this.uiActionGenerator.setItems(this.items);
     }
 
     _findItem(q) {
@@ -179,3 +190,5 @@ export default class View {
         this.worldContainer.removeChild(item);
     }
 };
+
+export default decorateWithEvents(View);

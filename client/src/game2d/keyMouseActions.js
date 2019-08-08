@@ -117,6 +117,9 @@ export default decorateWithEvents({
             this.up("mouseRightButton");
             this.cameraRotationMouseMoveHistory = null;
         }
+        if (e.button === 0) {
+            this.emit("mouseLeftClick", { x: e.pageX, y: e.pageY });
+        }
         if (e.button === 2) {
             this.emit("mouseRightClick", { x: e.pageX, y: e.pageY });
         }

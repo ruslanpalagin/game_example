@@ -39,7 +39,6 @@ export default class RemoteServerConnection {
             };
 
             socket.onmessage = (event) => {
-                // console.log("WS c event data", event.data);
                 const data = JSON.parse(event.data);
                 this.onMessageFromServerCallback(data);
                 data.name === "pong" && console.timeEnd(this.pingTimeId);

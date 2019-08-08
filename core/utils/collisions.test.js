@@ -33,7 +33,6 @@ describe("collisions", () => {
     describe("calcAngleBetweenInversedY", () => {
         it("to get ~0 deg ", () => {
             const angle = collisions.calcAngleBetweenInversedY({x: 0.000001, y: 0}, {x: 0, y: -350});
-            console.log("angle", angle);
             expectToBeCloseTo(angle, 0);
         });
         it("to get 45 deg", () => {

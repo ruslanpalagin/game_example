@@ -4,6 +4,7 @@ const CharFactory = require("../state/CharFactory");
 const LoopActionsQ = require("./LoopActionsQ");
 const DemoWish = require("./wishes/DemoWish");
 const Projectile = require('./projectiles/Projectile');
+const WS_ACTIONS = require("../WS_ACTIONS");
 
 const VERSION = "0.0.5";
 console.log("ServerCore v:" + VERSION);
@@ -45,7 +46,12 @@ class ServerCore {
         if (actionName === "sysLoadUser") {
             this.broadcast({ name: "sysLoadWorld", worldState: { state: this.worldState.state } }, session);
         }
-        if (actionName === "seeTheWorld") {
+if (actionName === WS_ACTIONS.TARGET_UNIT) {
+            const sourceUnit = this.worldState.findUnit({id: action.sourceUnitId});
+            this.worldState.updUnitStateById(sourceUnit.id, {targetUnitId: action.targetUnitId});
+            this.broadcast(action);
+        }
+        if (actionName === WS_ACTIONS.SEE_THE_WORLD) {
             let controlledUnit = this.worldState.findUnit({accountId: session.accountId});
             if (!controlledUnit) {
                 controlledUnit = CharFactory.initEmptyCharacter({accountId: session.accountId, name: `Account#${session.accountId}`});

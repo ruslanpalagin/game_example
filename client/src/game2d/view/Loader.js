@@ -1,14 +1,14 @@
 import PIXI from "src/vendor/PIXI.js";
-import char from "src/textures/char.png";
-import grass1 from "src/textures/grass1.png";
-import grass4items from "src/textures/grass4items.png";
-import hills from "src/textures/hills.png";
-import mountain from "src/textures/mountain.png";
-import road from "src/textures/road.png";
-import tree3items from "src/textures/tree3items.png";
-import treeApple from "src/textures/treeApple.png";
-import treesBurned from "src/textures/treesBurned.png";
-import lake from "src/textures/lake.png";
+import char from "./textures/char.png";
+import grass1 from "./textures/grass1.png";
+import grass4items from "./textures/grass4items.png";
+import hills from "./textures/hills.png";
+import mountain from "./textures/mountain.png";
+import road from "./textures/road.png";
+import tree3items from "./textures/tree3items.png";
+import treeApple from "./textures/treeApple.png";
+import treesBurned from "./textures/treesBurned.png";
+import lake from "./textures/lake.png";
 
 const typesMap = {
     char,

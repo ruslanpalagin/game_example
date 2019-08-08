@@ -39,6 +39,12 @@ class WorldState {
         return unit;
     }
 
+    updUnitStateById(id, props) {
+        const unit = this.findUnit({id});
+        Object.assign(unit.state, props);
+        return unit;
+    }
+
     getUnitLibrary() {
         return this.unitLibrary;
     }
@@ -75,6 +81,7 @@ class WorldState {
             {
                 id: 1,
                 viewSkin: "char", name: "Diego", position: { x: 220, y: 330 }, rotation: 1.57, isInteractive: true,
+                canBeTarget: true,
                 canBeDamaged: true,
                 state: { hp: 100, isDead: false },
                 stats: { maxHp: 100, lvl: 1 },
@@ -95,6 +102,7 @@ class WorldState {
             {
                 id: 2,
                 viewSkin: "char", name: "Jack", position: { x: 0, y: 0 }, rotation: 3.5, isInteractive: true,
+                canBeTarget: true,
                 canBeDamaged: true,
                 state: { hp: 100, isDead: false },
                 stats: { maxHp: 100, lvl: 1 },

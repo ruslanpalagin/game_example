@@ -2,5 +2,11 @@
   "dependencies": {
     "lodash": "^4.17.15"
   },
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "jest": "^24.8.0"
+  },
+  "scripts": {
+    "test": "./node_modules/jest/bin/jest.js"
+  }
 }

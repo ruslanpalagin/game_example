@@ -1,8 +1,12 @@
 import React from 'react';
-import Game2D from "./game/Game2D";
 import qs from "qs";
+import Game2D from "./game2d/Game2D";
+import Login from "src/components/Login";
+import GameUi from "src/components/GameUi";
 
-const game = new Game2D();
+const VERSION = "0.0.8";
+console.log("Client v: " + VERSION);
+const game = new Game2D({ version: VERSION });
 
 class App extends React.Component {
     constructor(props) {
@@ -17,6 +21,7 @@ class App extends React.Component {
         this.state = {
             options,
             isGameInitialized: false,
+            uiState: {},
         };
     }
 
@@ -30,52 +35,45 @@ class App extends React.Component {
 
     initGame = () => {
         const { options } = this.state;
-        console.log("options", options);
-        game.init(options); // TODO handle disconnect and back to logic screen
+        game.init(options);
+        game.on("uiStateAction", this.handleUiStateAction);
         this.setState({
             isGameInitialized: true,
         });
     };
 
+    handleUiStateAction = (action) => {
+        if (action.name === "say") {
+            this.setState(({uiState}) => {
+                uiState.messageBoxes = uiState.messageBoxes || [];
+                uiState.messageBoxes.push(action);
+                return { uiState };
+            });
+            setTimeout(() => {
+                this.setState(({uiState}) => {
+                    uiState.messageBoxes = uiState.messageBoxes || [];
+                    uiState.messageBoxes.splice(uiState.messageBoxes.indexOf(action), 1);
+                    return { uiState };
+                });
+            }, 4000);
+        }
+        if (action.name === "updateControlledUnit") {
+            this.setState(({uiState}) => ({
+                uiState: Object.assign(uiState, { controlledUnit: action.controlledUnit }),
+            }));
+        }
+    };
+
     render = () => {
-        const { options, isGameInitialized } = this.state;
+        const { options, isGameInitialized, uiState } = this.state;
 
         return (
             <div className="">
                 <div className="game__main-frame" id="game__main-frame" />
                 {
-                    !isGameInitialized &&
-                    <div>
-                        <h1>Dungeon</h1>
-                        <h3>of Might & Flower</h3>
-                        <label>
-                            Account ID:
-                            <input
-                                type="text"
-                                onChange={(event) => this.setOption("accountId", parseInt(event.target.value, 10)) }
-                                value={options.accountId}
-                            />
-                        </label>
-                        <label>
-                            Server Name:
-                            <select
-                                value={options.serverName}
-                                onChange={(event) => this.setOption("serverName", event.target.value) }
-                            >
-                                <option value="production">production</option>
-                                <option value="local">local</option>
-                            </select>
-                        </label>
-                        <label>
-                            Add ping:
-                            <input
-                                type="text"
-                                onChange={(event) => this.setOption("addPing", parseInt(event.target.value, 10)) }
-                                value={options.addPing}
-                            />
-                        </label>
-                        <button onClick={this.initGame}>Start free trial now</button>
-                    </div>
+                    isGameInitialized
+                        ? <GameUi {...uiState} />
+                        : <Login options={options} onChangeOption={this.setOption} onInitGameClick={this.initGame} />
                 }
             </div>
         );
