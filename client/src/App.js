@@ -55,7 +55,7 @@ class App extends React.Component {
                     messageBoxes.splice(messageBoxes.indexOf(action), 1);
                     return { messageBoxes };
                 });
-            }, 4000);
+            }, 12000);
         }
         if (action.name === "updateControlledUnit") {
             this.updateUiState((uiState) => ({ controlledUnit: action.controlledUnit }));

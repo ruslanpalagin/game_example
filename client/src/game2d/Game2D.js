@@ -68,8 +68,8 @@ class Game2D {
         if (actionName === "say") {
             const { unitId, message } = action;
             // react html way
-            const uPoint = this.view.getScreenUPointOfUnit(unitId);
-            this.emit("uiStateAction", { name: "say", message, uPoint });
+            const unit = this.worldState.findUnit({ id: unitId });
+            this.emit("uiStateAction", { name: "say", message, unit });
             // canvas way
             // this.view.handleSay(action);
         }

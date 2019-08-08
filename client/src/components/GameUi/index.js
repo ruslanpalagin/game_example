@@ -1,6 +1,7 @@
 import "./style.css";
 import PropTypes from "prop-types";
 import React from "react";
+import HpBarBig from "./HpBarBig";
 
 const calcHpBarWidth = (controlledUnit) => {
     const width = (controlledUnit.state.hp / controlledUnit.stats.maxHp) * 100;
@@ -17,28 +18,32 @@ class GameUi extends React.Component {
         const { messageBoxes, controlledUnit, targetUnit } = this.props;
 
         return <div className="game-ui">
-            {
-                messageBoxes.map((messageBox) => (
-                    <div
-                        key={Math.random()}
-                        className="message-box"
-                        style={{ top: messageBox.uPoint.y + "px", left: messageBox.uPoint.x + "px"}}
-                    >
-                        {messageBox.message}
-                    </div>
-                ))
-            }
+            <div className="message-panel">
+                {
+                    messageBoxes.map((messageBox) => (
+                        <div
+                            key={Math.random()}
+                            className="message-panel__message"
+                        >
+                            <span className="message-panel__unit">[{messageBox.unit.name}]</span>: {messageBox.message}
+                        </div>
+                    ))
+                }
+            </div>
             {
                 controlledUnit &&
-                <div className="bar">
-                    <div className="bar__value" style={{ width: calcHpBarWidth(controlledUnit) + "%" }} />
-                </div>
+                <HpBarBig
+                    width={calcHpBarWidth(controlledUnit)}
+                    label={`${controlledUnit.name}: ${controlledUnit.state.hp}/${controlledUnit.stats.maxHp}`}
+                />
             }
             {
                 targetUnit &&
-                <div className="target">
-                    {targetUnit.name}: {targetUnit.state.hp}/{targetUnit.stats.maxHp}
-                </div>
+                <HpBarBig
+                    width={calcHpBarWidth(targetUnit)}
+                    label={`${targetUnit.name}: ${targetUnit.state.hp}/${targetUnit.stats.maxHp}`}
+                    theme="target"
+                />
             }
         </div>;
     };
