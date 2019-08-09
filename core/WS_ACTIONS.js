@@ -48,4 +48,11 @@ module.exports = {
      * sourceUnit: { id },
      */
     USE_ABILITY: "USE_ABILITY",
+    /**
+     * s -> c
+     * sourceUnit: { id },
+     * distance,
+     * flightDuration
+     */
+    RANGED_ATTACK: "RANGED_ATTACK",
 };

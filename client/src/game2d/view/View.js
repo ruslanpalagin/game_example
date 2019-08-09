@@ -85,14 +85,9 @@ class View {
         this.animator.animateHit(item);
     }
 
-    handleRangedHit(action) {
-        const sourceUnit = this._findItem({unitId: action.sourceUnit.id});
-        this.worldContainer.addChild(this.animator.animateRangedHit(sourceUnit, action.distance, action.flightDuration));
-    }
-
-    handleAttackOnArea(action) {
-        // const sourceUnit = this._findItem({unitId: action.sourceUnit.id});
-        // this.worldContainer.addChild(this.animator.animateAttackOnArea(sourceUnit, action.distance, action.area));
+    handleRangedHit({sourceUnit, distance, flightDuration}) {
+        const unit = this._findItem({unitId: sourceUnit.id});
+        this.worldContainer.addChild(this.animator.animateRangedHit(unit, distance, flightDuration));
     }
 
     handleDebugArea(unit) {

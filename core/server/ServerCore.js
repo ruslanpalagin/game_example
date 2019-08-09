@@ -219,9 +219,11 @@ class ServerCore {
             const bounds = { x: -2.5, y: -7.5, width: 5, height: 15 }; // calculated by PIXI
             const newProjectile = new Projectile(action.sourceUnit, speed, distance, bounds);
             newProjectile.startTime = new Date().getTime(); // for tests
-            action.distance = distance;
-            action.flightDuration = newProjectile.flightDuration;
+            // TODO -v do not affect vars. be functional
+            // action.distance = distance;
+            // action.flightDuration = newProjectile.flightDuration;
             this.projectiles.push(newProjectile);
+            this.broadcast({ name: WS_ACTIONS.RANGED_ATTACK, sourceUnit: { id: action.sourceUnit.id }, distance, flightDuration: newProjectile.flightDuration })
         }
     }
 

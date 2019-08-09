@@ -76,11 +76,8 @@ class Game2D {
         if (wsActionName === "hit") {
             this.view.handleHit(wsAction);
         }
-        if (wsActionName === "rangedHit") {
+        if (wsActionName === WS_ACTIONS.RANGED_ATTACK) {
             this.view.handleRangedHit(wsAction);
-        }
-        if (wsActionName === "attackOnArea") {
-            this.view.handleAttackOnArea(wsAction);
         }
         if (wsActionName === "debugArea") {
             this.view.handleDebugArea(wsAction);
