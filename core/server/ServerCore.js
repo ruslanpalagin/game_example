@@ -6,7 +6,7 @@ const DemoWish = require("./wishes/DemoWish");
 const Projectile = require('./projectiles/Projectile');
 const WS_ACTIONS = require("../WS_ACTIONS");
 
-const VERSION = "0.0.5";
+const VERSION = "0.0.10";
 console.log("ServerCore v:" + VERSION);
 
 class ServerCore {
@@ -36,50 +36,50 @@ class ServerCore {
         this.broadcastHandler = callback;
     }
 
-    pushActionRequest(action, session) {
-        console.log(`< received:${action.v} ${action.name} from ${session.accountId}`);
-        const actionName = action.name;
-        if (!actionName) {
+    pushActionRequest(wsAction, session) {
+        console.log(`< received:${wsAction.v} ${wsAction.name} from ${session.accountId}`);
+        const wsActionName = wsAction.name;
+        if (!wsActionName) {
             throw new Error("ServerCore: actionName must be defined");
         }
         // TODO validate session
-        if (actionName === "sysLoadUser") {
-            this.broadcast({ name: "sysLoadWorld", worldState: { state: this.worldState.state } }, session);
+        if (wsActionName === WS_ACTIONS.SYS_LOAD_USER) {
+            this.broadcast({ name: WS_ACTIONS.SYS_LOAD_WORLD, worldState: { state: this.worldState.state } }, session);
         }
-if (actionName === WS_ACTIONS.TARGET_UNIT) {
-            const sourceUnit = this.worldState.findUnit({id: action.sourceUnitId});
-            this.worldState.updUnitStateById(sourceUnit.id, {targetUnitId: action.targetUnitId});
-            this.broadcast(action);
+        if (wsActionName === WS_ACTIONS.TARGET_UNIT) {
+            const sourceUnit = this.worldState.findUnit({id: wsAction.sourceUnitId});
+            this.worldState.updUnitStateById(sourceUnit.id, {targetUnitId: wsAction.targetUnitId});
+            this.broadcast(wsAction);
         }
-        if (actionName === WS_ACTIONS.SEE_THE_WORLD) {
+        if (wsActionName === WS_ACTIONS.SEE_THE_WORLD) {
             let controlledUnit = this.worldState.findUnit({accountId: session.accountId});
             if (!controlledUnit) {
                 controlledUnit = CharFactory.initEmptyCharacter({accountId: session.accountId, name: `Account#${session.accountId}`});
                 this.worldState.addDynamicUnit(controlledUnit);
-                this.broadcast({ name: "sysAddDynamicUnit", unit: controlledUnit });
+                this.broadcast({ name: WS_ACTIONS.SYS_ADD_DYNAMIC_UNIT, unit: controlledUnit });
             };
             setTimeout(() => {
-                this.broadcast({ name: "takeControl", unitId: controlledUnit.id }, session);
+                this.broadcast({ name: WS_ACTIONS.TAKE_CONTROL, unitId: controlledUnit.id }, session);
             }, 500); // TODO batch updates
         }
-        if (actionName === "moveUnit") {
-            const { unitId, uPoint } = action;
-            this.loopActionsQ.setAction({ unitId, name: actionName, uPoint });
+        if (wsActionName === WS_ACTIONS.MOVE_UNIT) {
+            const { unitId, uPoint } = wsAction;
+            this.loopActionsQ.setAction({ name: "moveUnit", unitId, uPoint });
         }
-        if (actionName === "useAbility") {
-            const sourceUnit = this.worldState.findUnit({ id: action.sourceUnit.id });
-            if (action.slot === 1) {
+        if (wsActionName === WS_ACTIONS.USE_ABILITY) {
+            const sourceUnit = this.worldState.findUnit({ id: wsAction.sourceUnit.id });
+            if (wsAction.slot === 1) {
                 this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "hit", sourceUnit }); //meleeHit
             }
-            if (action.slot === 2) {
+            if (wsAction.slot === 2) {
                 this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "rangedHit", sourceUnit });
             }
-            if (action.slot === 3) {
+            if (wsAction.slot === 3) {
                 this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "attackOnArea", sourceUnit });
             }
         }
-        if (actionName === "interactWith") {
-            const { sourceUnit, targetUnit } = action;
+        if (wsActionName === WS_ACTIONS.INTERACT_WITH) {
+            const { sourceUnit, targetUnit } = wsAction;
             const serverTargetUnit = this.unitLibrary.findUnit({ id: targetUnit.id });
             this.broadcast({ name: "say", unitId: sourceUnit.id, message: `Hello ${serverTargetUnit.name}` });
             // reply
@@ -180,16 +180,16 @@ if (actionName === WS_ACTIONS.TARGET_UNIT) {
         for (let unitId in this.loopActionsQ.q) {
             const unitActions = this.loopActionsQ.q[unitId];
             for (let actionName in unitActions) {
-                this._changeStateByAction(unitActions[actionName]);
-                this.broadcast(unitActions[actionName]);
+                this._changeStateAndBroadcastByAction(unitActions[actionName]);
             }
         }
         this.loopActionsQ.flush();
     }
 
-    _changeStateByAction(action) {
+    _changeStateAndBroadcastByAction(action) {
         if (action.name === "moveUnit") {
             this.worldState.updUnitById(action.unitId, action.uPoint);
+            this.broadcast({ name: WS_ACTIONS.MOVE_UNIT, unitId: action.unitId, uPoint: action.uPoint });
         }
         if (action.name === "hit") {
             const sourceUnit = this.worldState.findUnit({id: action.sourceUnit.id});
@@ -210,10 +210,6 @@ if (actionName === WS_ACTIONS.TARGET_UNIT) {
                 const updTargetUnit = this.worldState.updUnitById(targetUnit.id, { state: newState });
                 this.broadcast({ name: "damage", sourceUnit, targetUnit: updTargetUnit });
                 this.broadcast({ name: "say", unitId: updTargetUnit.id, message: isDead ? "Oh, need to rest." : (newHp > 50 ? "Careful!" : "Stop It!") });
-
-                if (isDead && targetUnit.id === 1) {
-                    setTimeout(() => this.broadcast({ name: "say", unitId: updTargetUnit.id, message: "F5..." }), 22000);
-                }
             });
         }
         if (action.name === 'rangedHit') {
@@ -236,15 +232,15 @@ if (actionName === WS_ACTIONS.TARGET_UNIT) {
                 continue;
             }
             unit.wishes.forEach((wish) => {
-                this.wishes.push(
-                    new DemoWish(unit, wish)
-                );
+                if (wish.name === "DemoWish") {
+                    this.wishes.push(new DemoWish(unit, wish));
+                }
             });
         }
     }
 
     initDisconnectedAction(){
-        return { name: "sysDisconnected" };
+        return { name: WS_ACTIONS.SYS_DISCONNECTED };
     }
 }
 

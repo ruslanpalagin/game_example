@@ -15,7 +15,6 @@ class View {
         this.itemsFactory = new ItemsFactory();
         this.uiActionGenerator = new UiActionGenerator();
         this.unitLibrary = null;
-        this.targetUnit = null;
         this.animator = new Animator();
     }
 
@@ -144,9 +143,10 @@ class View {
             // TODO
             this.handleSay({ unitId: sourceUnit.id, message });
         });
-        this.uiActionGenerator.on("targetItem", (item) => {
-            this.emit("targetItem", item);
-        });
+        this.uiActionGenerator.on("targetItem", (item) => this.emit("targetItem", item));
+        this.uiActionGenerator.on("moveUnit", (data) => this.emit("moveUnit", data));
+        this.uiActionGenerator.on("interactWith", (data) => this.emit("interactWith", data));
+        this.uiActionGenerator.on("useAbility", (data) => this.emit("useAbility", data));
     }
 
     getScreenUPointOfUnit(unitId) {

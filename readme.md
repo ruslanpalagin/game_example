@@ -28,9 +28,8 @@ cd client && ./deploy.sh [GIT_BRANCH]
 "UI" - UI
 "I" - Infrastructure
 
-- UI hp bar 
-- UI/S target units
-- UI/S implement cameras
-- UI/S bulk WS actions transport
+- UI/S add bandits
 - UI add loading screen
 - UI add keymap reference
+- UI/S bulk WS actions transport
+- UI/S implement cameras

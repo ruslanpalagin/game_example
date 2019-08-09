@@ -1,4 +1,4 @@
-import decorateWithEvents from "src/utils/decorateWithEvents";
+import decorateWithEvents from "src/../../core/utils/decorateWithEvents";
 import collisions from "src/../../core/utils/collisions.js";
 
 const MAX_INTRACTION_RANGE = 100;
@@ -50,7 +50,7 @@ class UiActionGenerator {
             if (!this._isUnitActive(this.controlledUnit)){
                 return;
             }
-            this.emit("useAbility", { slot, sourceUnit: this.controlledUnit, name: "useAbility" });
+            this.emit("useAbility", { slot });
         });
     }
 
@@ -110,7 +110,7 @@ class UiActionGenerator {
         ) {
             this.emit("moveUnit", {
                 name: "moveUnit",
-                unitId: controlledUnit.id,
+                unitId: this.controlledUnit.id,
                 uPoint: {
                     position: newV.position,
                     rotation: newV.rotation,
