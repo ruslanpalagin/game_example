@@ -15,6 +15,7 @@ class View {
         this.itemsFactory = new ItemsFactory();
         this.uiActionGenerator = new UiActionGenerator();
         this.unitLibrary = null;
+        this.targetUnit = null;
         this.animator = new Animator();
     }
 
@@ -115,6 +116,10 @@ class View {
         this.controlledUnit = unit;
         this.uiActionGenerator.controlledUnit = unit;
         this._trackCenter(unit);
+    }
+
+    setTargetUnit(unit) {
+        this.targetUnit = unit;
     }
 
     resize() {

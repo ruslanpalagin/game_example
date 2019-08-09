@@ -83,8 +83,8 @@ class WorldState {
                 viewSkin: "char", name: "Diego", position: { x: 220, y: 330 }, rotation: 1.57, isInteractive: true,
                 canBeTarget: true,
                 canBeDamaged: true,
-                state: { hp: 100, isDead: false },
-                stats: { maxHp: 100, lvl: 1 },
+                state: { hp: 10000, isDead: false },
+                stats: { maxHp: 10000, lvl: 1 },
                 wishes: [
                     { name: "DemoWish", points: [
                         {position: {x: 0, y: -50}},

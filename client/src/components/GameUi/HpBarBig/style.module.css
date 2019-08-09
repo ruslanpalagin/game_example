@@ -1,0 +1,23 @@
+.hpBarBig{
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: 250px;
+    border: 2px solid #000;
+    background-color: #fff;
+    text-align: center;
+    height: 20px;
+    opacity: 0.9;
+}
+
+.value{
+    height: 20px;
+    background-color: red;
+    z-index: -1;
+    position: absolute;
+    top: 0;
+}
+
+.hpBarBig.target{
+    left: 274px;
+}
