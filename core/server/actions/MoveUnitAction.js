@@ -3,7 +3,7 @@ const WS_ACTIONS = require("../../WS_ACTIONS");
 
 class MoveUnitAction extends BaseAction{
     static changeTheWorld({ unitId, uPoint }, worldState) {
-        worldState.updUnitById(unitId, uPoint);
+        worldState.updateUnitById(unitId, uPoint);
         return {
             wsActions: [
                 { name: WS_ACTIONS.MOVE_UNIT, unitId, uPoint }

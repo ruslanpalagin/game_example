@@ -2,7 +2,8 @@ const WorldState = require("../state/WorldState");
 const collisions = require("../utils/collisions");
 const CharFactory = require("../state/CharFactory");
 const LoopActionsQ = require("./LoopActionsQ");
-const DemoWish = require("./wishes/DemoWish");
+const PatrolWish = require("./wishes/PatrolWish");
+const SayLaterWish = require("./wishes/SayLaterWish");
 const Projectile = require('./projectiles/Projectile');
 const WS_ACTIONS = require("../WS_ACTIONS");
 const ActionsConsumer = require("./ActionsConsumer");
@@ -24,7 +25,7 @@ class ServerCore {
 
     load() {
         return this.worldState.loadSave()
-        .then(() => this._instantiateWishes(this.worldState.getUnits()))
+        .then(() => this._instantiateWishesFromUnits(this.worldState.getUnits()))
         .then(() => this._startGameLoop())
             ;
     }
@@ -53,7 +54,7 @@ class ServerCore {
         }
         if (wsActionName === WS_ACTIONS.TARGET_UNIT) {
             const sourceUnit = this.worldState.findUnit({id: wsAction.sourceUnitId});
-            this.worldState.updUnitStateById(sourceUnit.id, {targetUnitId: wsAction.targetUnitId});
+            this.worldState.updateUnitStateById(sourceUnit.id, {targetUnitId: wsAction.targetUnitId});
             this.broadcast(wsAction);
         }
         if (wsActionName === WS_ACTIONS.SEE_THE_WORLD) {
@@ -74,49 +75,14 @@ class ServerCore {
         if (wsActionName === WS_ACTIONS.USE_ABILITY) {
             const sourceUnit = this.worldState.findUnit({ id: wsAction.sourceUnit.id });
             if (wsAction.slot === 1) {
-                this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "hit", sourceUnit }); //meleeHit
+                this.loopActionsQ.setAction({ name: "MeleeAttackAction", unitId: sourceUnit.id, sourceUnit }); //meleeHit
             }
             if (wsAction.slot === 2) {
-                this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "rangedHit", sourceUnit });
+                this.loopActionsQ.setAction({ name: "rangedHit", unitId: sourceUnit.id, sourceUnit });
             }
         }
         if (wsActionName === WS_ACTIONS.INTERACT_WITH) {
-            const { sourceUnit, targetUnit } = wsAction;
-            const serverTargetUnit = this.unitLibrary.findUnit({ id: targetUnit.id });
-            this.broadcast({ name: WS_ACTIONS.SAY_AREA, unitId: sourceUnit.id, message: `Hello ${serverTargetUnit.name}` });
-            // reply
-            if (serverTargetUnit.id === 2) {
-                setTimeout(() => {
-                    let reply = "Hi man";
-                    if (Math.random() > 0.4) {
-                        reply = "Hello";
-                    }
-                    if (Math.random() > 0.6) {
-                        reply = "What do you want?";
-                    }
-                    if (Math.random() > 0.8) {
-                        reply = "Yeah...";
-                    }
-                    if (Math.random() > 0.9) {
-                        reply = "Leave me alone!";
-                    }
-                    if (serverTargetUnit.state.isDead) {
-                        reply = "...";
-                        setTimeout(() => {
-                            this.broadcast({ name: WS_ACTIONS.SAY_AREA, unitId: sourceUnit.id, message: "Oh dear..." });
-                        }, 3000);
-                    }
-                    this.broadcast({ name: WS_ACTIONS.SAY_AREA, unitId: serverTargetUnit.id, message: reply });
-                }, 1500);
-            }
-            if (serverTargetUnit.id === 17) {
-                setTimeout(() => {
-                    this.broadcast({ name: WS_ACTIONS.SAY_AREA, unitId: serverTargetUnit.id, message: "..." });
-                }, 1500);
-                setTimeout(() => {
-                    this.broadcast({ name: WS_ACTIONS.SAY_AREA, unitId: sourceUnit.id, message: "A'm talking to lake... Need more NPCs here!" });
-                }, 5000);
-            }
+            this.loopActionsQ.setAction({ ...wsAction, name: "InteractWithAction", unitId: wsAction.sourceUnit.id });
         }
     }
 
@@ -133,7 +99,7 @@ class ServerCore {
         this.lastLoopTime = now;
         this.wishes.forEach((wish) => {
             const actions = wish.getActions(delta, this.unitLibrary);
-            this.loopActionsQ.mergeActions(actions);
+            actions && this.loopActionsQ.mergeActions(actions);
         });
         this._processActionsAndFlush(this.loopActionsQ);
         this._processProjectilesFlight(delta);
@@ -160,7 +126,7 @@ class ServerCore {
                 const newHp = targetUnit.state.hp - 20;
                 const isDead = newHp <= 0;
                 const newState = Object.assign(targetUnit.state, { hp: newHp, isDead });
-                const updTargetUnit = this.worldState.updUnitById(targetUnit.id, { state: newState });
+                const updTargetUnit = this.worldState.updateUnitById(targetUnit.id, { state: newState });
                 this.broadcast({ name: WS_ACTIONS.DAMAGE_UNIT, sourceUnit, targetUnit: updTargetUnit });
             });
             // if (smbdHitted) this.broadcast({ name: 'projectileHit' }, { accountId: sourceUnit.accountId });
@@ -182,8 +148,9 @@ class ServerCore {
         for (let unitId in this.loopActionsQ.q) {
             const unitActions = this.loopActionsQ.q[unitId];
             for (let actionName in unitActions) {
-                const { wsActions } = ActionsConsumer.consume(unitActions[actionName], this.worldState);
+                const { wsActions, wishes } = ActionsConsumer.consume(unitActions[actionName], this.worldState);
                 wsActions && this.broadcast(wsActions);
+                wishes && this._instantiateWishesFromAction(wishes);
                 // TODO eliminate
                 this._changeStateAndBroadcastByAction(unitActions[actionName]);
             }
@@ -192,28 +159,6 @@ class ServerCore {
     }
 
     _changeStateAndBroadcastByAction(action) {
-        if (action.name === "hit") {
-            const sourceUnit = this.worldState.findUnit({id: action.sourceUnit.id});
-            const hitArea = collisions.calcWeaponHitArea(sourceUnit);
-            const hitedUnits = collisions.findUnitsInArea(this.worldState.getHitableUnits(), hitArea);
-            // this.broadcast({ name: WS_ACTIONS.DEBUG_AREA, ...hitArea });
-            this.broadcast({ name: WS_ACTIONS.MELEE_ATTACK, sourceUnit: { id: sourceUnit.id } });
-
-            hitedUnits.forEach((targetUnit) => {
-                if (targetUnit.id === sourceUnit.id) {
-                    return;
-                }
-                if (targetUnit.state.isDead) {
-                    return;
-                }
-                const newHp = targetUnit.state.hp - 40;
-                const isDead = newHp <= 0;
-                const newState = Object.assign(targetUnit.state, { hp: newHp, isDead });
-                const updTargetUnit = this.worldState.updUnitById(targetUnit.id, { state: newState });
-                this.broadcast({ name: WS_ACTIONS.DAMAGE_UNIT, sourceUnit: {id: sourceUnit.id}, targetUnit: {id: updTargetUnit.id, state: updTargetUnit.state} });
-                this.broadcast({ name: WS_ACTIONS.SAY_AREA, unitId: updTargetUnit.id, message: isDead ? "Oh, need to rest." : (newHp > 50 ? "Careful!" : "Stop It!") });
-            });
-        }
         if (action.name === 'rangedHit') {
             // props for projectile
             const distance = 270;
@@ -229,18 +174,38 @@ class ServerCore {
         }
     }
 
-    _instantiateWishes(units){
+    _instantiateWishesFromUnits(units){
         for (let i in units) {
             const unit = units[i];
             if (!unit.wishes) {
                 continue;
             }
-            unit.wishes.forEach((wish) => {
-                if (wish.name === "DemoWish") {
-                    this.wishes.push(new DemoWish(unit, wish));
-                }
+            unit.wishes.forEach((wishDescription) => {
+                const wish = this._instantiateWish(unit, wishDescription);
+                wish && this.wishes.push(wish);
             });
         }
+    }
+
+    _instantiateWishesFromAction(wishDescriptions){
+        wishDescriptions.forEach((wishDescription) => {
+            const unit = this.worldState.findUnit({ id: wishDescription.unitId });
+            const wish = this._instantiateWish(unit, wishDescription);
+            wish && this.wishes.push(wish);
+        });
+    }
+
+    _instantiateWish(unit, wishDescription){
+        const mapping = {
+            "PatrolWish": PatrolWish,
+            "SayLaterWish": SayLaterWish,
+        };
+        const Wish = mapping[wishDescription.name];
+        if (!Wish) {
+            console.log("Wish not found: " + wishDescription.name);
+            return;
+        }
+        return new Wish(unit, wishDescription);
     }
 
     initDisconnectedAction(){

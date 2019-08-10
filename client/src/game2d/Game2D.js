@@ -61,7 +61,7 @@ class Game2D {
         // game messages
         if (wsActionName === WS_ACTIONS.MOVE_UNIT) {
             if (this.view.controlledUnit && this.view.controlledUnit.id !== wsAction.unitId) {
-                const unit = this.worldState.updUnitById(wsAction.unitId, wsAction.uPoint);
+                const unit = this.worldState.updateUnitById(wsAction.unitId, wsAction.uPoint);
                 this.view.moveNotControlledUnit(unit);
             }
         }
@@ -83,7 +83,7 @@ class Game2D {
             this.view.handleDebugArea(wsAction);
         }
         if (wsActionName === WS_ACTIONS.DAMAGE_UNIT) {
-            const damagedUnit = this.worldState.updUnitById(wsAction.targetUnit.id, { state: wsAction.targetUnit.state });
+            const damagedUnit = this.worldState.updateUnitById(wsAction.targetUnit.id, { state: wsAction.targetUnit.state });
             this.view.handleDamageUnit(damagedUnit).then(() => {});
             // upd hp bar
             this.emit("uiStateAction", { name: "updateControlledUnit", controlledUnit: this.view.controlledUnit });
@@ -95,7 +95,7 @@ class Game2D {
             this.emit("uiStateAction", { name: "updateControlledUnit", controlledUnit });
         }
         if (wsActionName === WS_ACTIONS.TARGET_UNIT) {
-            const sourceUnit = this.worldState.updUnitStateById(wsAction.sourceUnitId, { targetUnitId: wsAction.targetUnitId });
+            const sourceUnit = this.worldState.updateUnitStateById(wsAction.sourceUnitId, { targetUnitId: wsAction.targetUnitId });
             const targetUnit = this.worldState.findUnit({id: wsAction.targetUnitId});
             // upd hp bar
             if (this.view.controlledUnit.id === sourceUnit.id) {
@@ -118,7 +118,7 @@ class Game2D {
 
             // send data to server
             this.view.on("moveUnit", (data) => {
-                const unit = this.worldState.updUnitById(data.unitId, data.uPoint);
+                const unit = this.worldState.updateUnitById(data.unitId, data.uPoint);
                 this.view.moveControlledUnit(unit);
                 this.serverConnection.toServer({ name: WS_ACTIONS.MOVE_UNIT, unitId: data.unitId, uPoint: data.uPoint });
             });

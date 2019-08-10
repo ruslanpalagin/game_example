@@ -1,6 +1,3 @@
-// const isEqual = require("lodash/isEqual");
-// const collisions = require("../../utils/collisions");
-
 class Projectile {
   constructor(sourceEntity, speed, distance, bounds) {
     this.sourceEntity = sourceEntity;
@@ -14,10 +11,6 @@ class Projectile {
       x: sourceEntity.position.x,
       y: sourceEntity.position.y
     };
-    // this.destinationPoint = {
-    //   x: sourceEntity.position.x + Math.cos(this.rotation) * distance,
-    //   y: sourceEntity.position.y + Math.sin(this.rotation) * distance,
-    // };
   }
 
   get flightDuration() { return this.distance / this.speed; }

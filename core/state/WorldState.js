@@ -33,13 +33,13 @@ class WorldState {
         return filter(this.state.units, { canBeDamaged: true });
     }
 
-    updUnitById(id, props) {
+    updateUnitById(id, props) {
         const unit = this.findUnit({id});
         Object.assign(unit, props);
         return unit;
     }
 
-    updUnitStateById(id, props) {
+    updateUnitStateById(id, props) {
         const unit = this.findUnit({id});
         Object.assign(unit.state, props);
         return unit;
@@ -86,7 +86,7 @@ class WorldState {
                 state: { hp: 10000, isDead: false },
                 stats: { maxHp: 10000, lvl: 1 },
                 wishes: [
-                    { name: "DemoWish2", points: [
+                    { name: "PatrolWish", points: [
                         {position: {x: 0, y: -50}},
                         {position: {x: 50, y: -100}},
                         {position: {x: 100, y: -100}},
@@ -107,7 +107,7 @@ class WorldState {
                 state: { hp: 100, isDead: false },
                 stats: { maxHp: 100, lvl: 1 },
                 wishes: [
-                    { name: "DemoWish2", points: [
+                    { name: "PatrolWish", points: [
                         {position: {x: 0, y: -50}},
                         {position: {x: 50, y: -100}},
                         {position: {x: 100, y: -100}},
