@@ -76,7 +76,7 @@ class Game2D {
         if (wsActionName === WS_ACTIONS.MELEE_ATTACK) {
             this.view.handleHit(wsAction);
         }
-        if (wsActionName === WS_ACTIONS.RANGED_ATTACK) {
+        if (wsActionName === WS_ACTIONS.RANGE_ATTACK) {
             this.view.handleRangedHit(wsAction);
         }
         if (wsActionName === WS_ACTIONS.DEBUG_AREA) {

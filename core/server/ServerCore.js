@@ -5,6 +5,8 @@ const LoopActionsQ = require("./LoopActionsQ");
 const DemoWish = require("./wishes/DemoWish");
 const Projectile = require('./projectiles/Projectile');
 const WS_ACTIONS = require("../WS_ACTIONS");
+const ActionsConsumer = require("./ActionsConsumer");
+const isArray = require("lodash/isArray");
 
 const VERSION = "0.0.10";
 console.log("ServerCore v:" + VERSION);
@@ -27,9 +29,12 @@ class ServerCore {
             ;
     }
 
-    broadcast(data, session) {
-        data.v = VERSION;
-        this.broadcastHandler(data, session);
+    broadcast(wsAction, session) {
+        const wsActions = isArray(wsAction) ? wsAction : [wsAction];
+        wsActions.forEach((wsAction) => {
+            wsAction.v = VERSION;
+            this.broadcastHandler(wsAction, session);
+        });
     }
 
     handleBroadcast(callback) {
@@ -64,7 +69,7 @@ class ServerCore {
         }
         if (wsActionName === WS_ACTIONS.MOVE_UNIT) {
             const { unitId, uPoint } = wsAction;
-            this.loopActionsQ.setAction({ name: "moveUnit", unitId, uPoint });
+            this.loopActionsQ.setAction({ name: "MoveUnitAction", unitId, uPoint });
         }
         if (wsActionName === WS_ACTIONS.USE_ABILITY) {
             const sourceUnit = this.worldState.findUnit({ id: wsAction.sourceUnit.id });
@@ -73,9 +78,6 @@ class ServerCore {
             }
             if (wsAction.slot === 2) {
                 this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "rangedHit", sourceUnit });
-            }
-            if (wsAction.slot === 3) {
-                this.loopActionsQ.setAction({ unitId: sourceUnit.id, name: "attackOnArea", sourceUnit });
             }
         }
         if (wsActionName === WS_ACTIONS.INTERACT_WITH) {
@@ -180,6 +182,9 @@ class ServerCore {
         for (let unitId in this.loopActionsQ.q) {
             const unitActions = this.loopActionsQ.q[unitId];
             for (let actionName in unitActions) {
+                const { wsActions } = ActionsConsumer.consume(unitActions[actionName], this.worldState);
+                wsActions && this.broadcast(wsActions);
+                // TODO eliminate
                 this._changeStateAndBroadcastByAction(unitActions[actionName]);
             }
         }
@@ -187,10 +192,6 @@ class ServerCore {
     }
 
     _changeStateAndBroadcastByAction(action) {
-        if (action.name === "moveUnit") {
-            this.worldState.updUnitById(action.unitId, action.uPoint);
-            this.broadcast({ name: WS_ACTIONS.MOVE_UNIT, unitId: action.unitId, uPoint: action.uPoint });
-        }
         if (action.name === "hit") {
             const sourceUnit = this.worldState.findUnit({id: action.sourceUnit.id});
             const hitArea = collisions.calcWeaponHitArea(sourceUnit);
@@ -224,7 +225,7 @@ class ServerCore {
             // action.distance = distance;
             // action.flightDuration = newProjectile.flightDuration;
             this.projectiles.push(newProjectile);
-            this.broadcast({ name: WS_ACTIONS.RANGED_ATTACK, sourceUnit: { id: action.sourceUnit.id }, distance, flightDuration: newProjectile.flightDuration })
+            this.broadcast({ name: WS_ACTIONS.RANGE_ATTACK, sourceUnit: { id: action.sourceUnit.id }, distance, flightDuration: newProjectile.flightDuration })
         }
     }
 
