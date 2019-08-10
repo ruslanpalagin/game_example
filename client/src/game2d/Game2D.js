@@ -65,7 +65,7 @@ class Game2D {
                 this.view.moveNotControlledUnit(unit);
             }
         }
-        if (wsActionName === "say") {
+        if (wsActionName === WS_ACTIONS.SAY_AREA) {
             const { unitId, message } = wsAction;
             // react html way
             const unit = this.worldState.findUnit({ id: unitId });
@@ -73,16 +73,16 @@ class Game2D {
             // canvas way
             // this.view.handleSay(action);
         }
-        if (wsActionName === "hit") {
+        if (wsActionName === WS_ACTIONS.MELEE_ATTACK) {
             this.view.handleHit(wsAction);
         }
         if (wsActionName === WS_ACTIONS.RANGED_ATTACK) {
             this.view.handleRangedHit(wsAction);
         }
-        if (wsActionName === "debugArea") {
+        if (wsActionName === WS_ACTIONS.DEBUG_AREA) {
             this.view.handleDebugArea(wsAction);
         }
-        if (wsActionName === "damage") {
+        if (wsActionName === WS_ACTIONS.DAMAGE_UNIT) {
             const damagedUnit = this.worldState.updUnitById(wsAction.targetUnit.id, { state: wsAction.targetUnit.state });
             this.view.handleDamageUnit(damagedUnit).then(() => {});
             // upd hp bar

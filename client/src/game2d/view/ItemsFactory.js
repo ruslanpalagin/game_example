@@ -38,16 +38,16 @@ export default class ItemsFactory{
         return g;
     }
 
-    async debugArea(unit) {
+    async debugArea(area) {
         const g = new PIXI.Graphics();
         g.beginFill(0xFF0000);
-        g.drawCircle(0, 0, unit.radius);
+        g.drawCircle(0, 0, area.radius);
         g.endFill();
         g.beginHole();
-        g.drawCircle(0, 0, unit.radius - 2);
+        g.drawCircle(0, 0, area.radius - 2);
         g.endHole();
-        unit.position && g.position.set(unit.position.x, unit.position.y);
-        unit.rotation && (g.rotation = unit.rotation);
+        area.position && g.position.set(area.position.x, area.position.y);
+        area.rotation && (g.rotation = area.rotation);
         return g;
     }
 

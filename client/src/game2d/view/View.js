@@ -80,8 +80,8 @@ class View {
         });
     }
 
-    handleHit(action) {
-        const item = this._findItem({unitId: action.sourceUnit.id});
+    handleHit({ sourceUnit }) {
+        const item = this._findItem({unitId: sourceUnit.id});
         this.animator.animateHit(item);
     }
 

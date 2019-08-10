@@ -19,6 +19,11 @@ cd server && ./deploy.sh [GIT_BRANCH]
 cd client
 yarn start
 
+### hints
+predefine options with URL params:
+http://localhost:3000/?accountId=2&serverName=production&addPing=50
+init=1 - will start immediately
+
 # Client: deploy
 cd client && ./deploy.sh [GIT_BRANCH]
 

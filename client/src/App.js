@@ -25,6 +25,13 @@ class App extends React.Component {
         };
     }
 
+    componentDidMount() {
+        const { options } = this.state;
+        if (options.init) {
+            this.initGame();
+        }
+    }
+
     setOption = (name, value) => {
         const { options } = this.state;
         const newOptions = Object.assign({}, options, {[name]: value});

@@ -81,7 +81,7 @@ class ServerCore {
         if (wsActionName === WS_ACTIONS.INTERACT_WITH) {
             const { sourceUnit, targetUnit } = wsAction;
             const serverTargetUnit = this.unitLibrary.findUnit({ id: targetUnit.id });
-            this.broadcast({ name: "say", unitId: sourceUnit.id, message: `Hello ${serverTargetUnit.name}` });
+            this.broadcast({ name: WS_ACTIONS.SAY_AREA, unitId: sourceUnit.id, message: `Hello ${serverTargetUnit.name}` });
             // reply
             if (serverTargetUnit.id === 2) {
                 setTimeout(() => {
@@ -101,18 +101,18 @@ class ServerCore {
                     if (serverTargetUnit.state.isDead) {
                         reply = "...";
                         setTimeout(() => {
-                            this.broadcast({ name: "say", unitId: sourceUnit.id, message: "Oh dear..." });
+                            this.broadcast({ name: WS_ACTIONS.SAY_AREA, unitId: sourceUnit.id, message: "Oh dear..." });
                         }, 3000);
                     }
-                    this.broadcast({ name: "say", unitId: serverTargetUnit.id, message: reply });
+                    this.broadcast({ name: WS_ACTIONS.SAY_AREA, unitId: serverTargetUnit.id, message: reply });
                 }, 1500);
             }
             if (serverTargetUnit.id === 17) {
                 setTimeout(() => {
-                    this.broadcast({ name: "say", unitId: serverTargetUnit.id, message: "..." });
+                    this.broadcast({ name: WS_ACTIONS.SAY_AREA, unitId: serverTargetUnit.id, message: "..." });
                 }, 1500);
                 setTimeout(() => {
-                    this.broadcast({ name: "say", unitId: sourceUnit.id, message: "A'm talking to lake... Need more NPCs here!" });
+                    this.broadcast({ name: WS_ACTIONS.SAY_AREA, unitId: sourceUnit.id, message: "A'm talking to lake... Need more NPCs here!" });
                 }, 5000);
             }
         }
@@ -159,7 +159,7 @@ class ServerCore {
                 const isDead = newHp <= 0;
                 const newState = Object.assign(targetUnit.state, { hp: newHp, isDead });
                 const updTargetUnit = this.worldState.updUnitById(targetUnit.id, { state: newState });
-                this.broadcast({ name: "damage", sourceUnit, targetUnit: updTargetUnit });
+                this.broadcast({ name: WS_ACTIONS.DAMAGE_UNIT, sourceUnit, targetUnit: updTargetUnit });
             });
             // if (smbdHitted) this.broadcast({ name: 'projectileHit' }, { accountId: sourceUnit.accountId });
             // }
@@ -195,7 +195,8 @@ class ServerCore {
             const sourceUnit = this.worldState.findUnit({id: action.sourceUnit.id});
             const hitArea = collisions.calcWeaponHitArea(sourceUnit);
             const hitedUnits = collisions.findUnitsInArea(this.worldState.getHitableUnits(), hitArea);
-            // this.broadcast({ name: "debugArea", ...hitArea });
+            // this.broadcast({ name: WS_ACTIONS.DEBUG_AREA, ...hitArea });
+            this.broadcast({ name: WS_ACTIONS.MELEE_ATTACK, sourceUnit: { id: sourceUnit.id } });
 
             hitedUnits.forEach((targetUnit) => {
                 if (targetUnit.id === sourceUnit.id) {
@@ -208,8 +209,8 @@ class ServerCore {
                 const isDead = newHp <= 0;
                 const newState = Object.assign(targetUnit.state, { hp: newHp, isDead });
                 const updTargetUnit = this.worldState.updUnitById(targetUnit.id, { state: newState });
-                this.broadcast({ name: "damage", sourceUnit, targetUnit: updTargetUnit });
-                this.broadcast({ name: "say", unitId: updTargetUnit.id, message: isDead ? "Oh, need to rest." : (newHp > 50 ? "Careful!" : "Stop It!") });
+                this.broadcast({ name: WS_ACTIONS.DAMAGE_UNIT, sourceUnit: {id: sourceUnit.id}, targetUnit: {id: updTargetUnit.id, state: updTargetUnit.state} });
+                this.broadcast({ name: WS_ACTIONS.SAY_AREA, unitId: updTargetUnit.id, message: isDead ? "Oh, need to rest." : (newHp > 50 ? "Careful!" : "Stop It!") });
             });
         }
         if (action.name === 'rangedHit') {

@@ -55,4 +55,23 @@ module.exports = {
      * flightDuration
      */
     RANGED_ATTACK: "RANGED_ATTACK",
+    /**
+     * userId
+     * message
+     */
+    SAY_AREA: "SAY_AREA",
+    /**
+     * sourceUnit: { id }
+     */
+    MELEE_ATTACK: "MELEE_ATTACK",
+    /**
+     * targetUnit: { id, state }
+     */
+    DAMAGE_UNIT: "DAMAGE_UNIT",
+    /**
+     * positions: {x,y}
+     * rotation
+     * radius
+     */
+    DEBUG_AREA: "DEBUG_AREA",
 };
