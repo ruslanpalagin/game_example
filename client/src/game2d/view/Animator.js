@@ -7,6 +7,10 @@ setInterval(() => {
 
 class Animator {
     animateHit(char){
+        if (!char) {
+            console.warn("char item not loaded yet");
+            return;
+        }
         char.weapon.animationReset = char.weapon.animationReset || {
             rotation: char.weapon.rotation,
             position: char.weapon.position.clone(),
@@ -32,6 +36,10 @@ class Animator {
     }
 
     animateRangedHit(char, distance, duration = 1000) {
+        if (!char) {
+            console.warn("char item not loaded yet");
+            return;
+        }
         const projectile = Animator.createTriangle(char.position.x, char.position.y, (char.angle % 360) + 180);
         // console.log(char.position, projectile.position, projectile.getBounds());
 
@@ -49,6 +57,10 @@ class Animator {
     }
 
     animateCharDeath(char, deadMark){
+        if (!char) {
+            console.warn("char item not loaded yet");
+            return;
+        }
         char.addChild(deadMark);
         let line = new PIXI.Graphics();
         line.lineStyle(1, 0xFF0000, 1);
@@ -77,6 +89,7 @@ class Animator {
         .start();
     }
 
+    // TODO -v move to factories
     static createTriangle(xPos, yPos, angle = 0) {
         const color = 0xff6600;
         

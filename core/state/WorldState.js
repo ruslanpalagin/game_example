@@ -120,6 +120,17 @@ class WorldState {
                     ] }
                 ],
             },
+            {
+                id: uniqueId(),
+                viewSkin: "char", name: "Bandit", position: { x: -100, y: 0 }, rotation: 0, isInteractive: true,
+                canBeTarget: true,
+                canBeDamaged: true,
+                state: { hp: 100, isDead: false },
+                stats: { maxHp: 100, lvl: 1 },
+                wishes: [
+                    { name: "AggressiveWish", agroRadius: 100 }
+                ],
+            },
             { id: uniqueId(), viewSkin: "debugPoint", position: { x: 0, y: 0 }, rotation: 0 },
             { id: uniqueId(), viewSkin: "debugArea", position: { x: 0, y: 0 }, rotation: 0, radius: 20 },
         ];
