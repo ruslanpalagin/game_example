@@ -48,10 +48,6 @@ class Animator {
         return projectile;
     }
 
-    animateAttackOnArea(char, targetPoint) {
-
-    }
-
     animateCharDeath(char, deadMark){
         char.addChild(deadMark);
         let line = new PIXI.Graphics();

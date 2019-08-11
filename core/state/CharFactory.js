@@ -16,6 +16,7 @@ class CharFactory {
             canBeDamaged: true,
             state: { hp: 100, isDead: false },
             stats: { maxHp: 100, lvl: 1 },
+            targetUnitId: null,
         }, data);
     }
 }

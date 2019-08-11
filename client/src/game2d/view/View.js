@@ -15,7 +15,6 @@ class View {
         this.itemsFactory = new ItemsFactory();
         this.uiActionGenerator = new UiActionGenerator();
         this.unitLibrary = null;
-        this.targetUnit = null;
         this.animator = new Animator();
     }
 
@@ -81,19 +80,14 @@ class View {
         });
     }
 
-    handleHit(action) {
-        const item = this._findItem({unitId: action.sourceUnit.id});
+    handleHit({ sourceUnit }) {
+        const item = this._findItem({unitId: sourceUnit.id});
         this.animator.animateHit(item);
     }
 
-    handleRangedHit(action) {
-        const sourceUnit = this._findItem({unitId: action.sourceUnit.id});
-        this.worldContainer.addChild(this.animator.animateRangedHit(sourceUnit, action.distance, action.flightDuration));
-    }
-
-    handleAttackOnArea(action) {
-        // const sourceUnit = this._findItem({unitId: action.sourceUnit.id});
-        // this.worldContainer.addChild(this.animator.animateAttackOnArea(sourceUnit, action.distance, action.area));
+    handleRangedHit({sourceUnit, distance, flightDuration}) {
+        const unit = this._findItem({unitId: sourceUnit.id});
+        this.worldContainer.addChild(this.animator.animateRangedHit(unit, distance, flightDuration));
     }
 
     handleDebugArea(unit) {
@@ -144,9 +138,10 @@ class View {
             // TODO
             this.handleSay({ unitId: sourceUnit.id, message });
         });
-        this.uiActionGenerator.on("targetItem", (item) => {
-            this.emit("targetItem", item);
-        });
+        this.uiActionGenerator.on("targetItem", (item) => this.emit("targetItem", item));
+        this.uiActionGenerator.on("moveUnit", (data) => this.emit("moveUnit", data));
+        this.uiActionGenerator.on("interactWith", (data) => this.emit("interactWith", data));
+        this.uiActionGenerator.on("useAbility", (data) => this.emit("useAbility", data));
     }
 
     getScreenUPointOfUnit(unitId) {

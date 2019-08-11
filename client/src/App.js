@@ -4,7 +4,7 @@ import Game2D from "./game2d/Game2D";
 import Login from "src/components/Login";
 import GameUi from "src/components/GameUi";
 
-const VERSION = "0.0.8";
+const VERSION = "0.0.10";
 console.log("Client v: " + VERSION);
 const game = new Game2D({ version: VERSION });
 
@@ -23,6 +23,13 @@ class App extends React.Component {
             isGameInitialized: false,
             uiState: {},
         };
+    }
+
+    componentDidMount() {
+        const { options } = this.state;
+        if (options.init) {
+            this.initGame();
+        }
     }
 
     setOption = (name, value) => {

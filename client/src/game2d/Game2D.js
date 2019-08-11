@@ -34,73 +34,69 @@ class Game2D {
         });
         this.serverConnection.connect(this.session, servers[serverName])
         .then(() => {
-            this.serverConnection.toServer({ name: "sysLoadUser" });
+            this.serverConnection.toServer({ name: WS_ACTIONS.SYS_LOAD_USER });
         });
     }
 
-    handleMessageFromServer = (action) => {
-        const actionName = action.name;
+    handleMessageFromServer = (wsAction) => {
+        const wsActionName = wsAction.name;
 
-        if (!actionName) {
+        if (!wsActionName) {
             throw new Error("handleMessageFromServer: action.name is required");
         }
 
         // system messages
-        if (action.name === "sysLoadWorld") {
-            this.loadWorld(action, this.session);
+        if (wsAction.name === WS_ACTIONS.SYS_LOAD_WORLD) {
+            this.loadWorld(wsAction, this.session);
         }
-        if (action.name === "sysAddDynamicUnit") {
-            this.worldState.addDynamicUnit(action.unit);
-            this.view.addNewUnit(action.unit);
+        if (wsAction.name === WS_ACTIONS.SYS_ADD_DYNAMIC_UNIT) {
+            this.worldState.addDynamicUnit(wsAction.unit);
+            this.view.addNewUnit(wsAction.unit);
         }
-        if (action.name === "sysDisconnected") {
+        if (wsAction.name === WS_ACTIONS.SYS_DISCONNECTED) {
             alert("Disconnected from the server.");
             window.location.reload();
         }
 
         // game messages
-        if (actionName === "moveUnit") {
-            if (this.view.controlledUnit && this.view.controlledUnit.id !== action.unitId) {
-                const unit = this.worldState.updUnitById(action.unitId, action.uPoint);
+        if (wsActionName === WS_ACTIONS.MOVE_UNIT) {
+            if (this.view.controlledUnit && this.view.controlledUnit.id !== wsAction.unitId) {
+                const unit = this.worldState.updUnitById(wsAction.unitId, wsAction.uPoint);
                 this.view.moveNotControlledUnit(unit);
             }
         }
-        if (actionName === "say") {
-            const { unitId, message } = action;
+        if (wsActionName === WS_ACTIONS.SAY_AREA) {
+            const { unitId, message } = wsAction;
             // react html way
             const unit = this.worldState.findUnit({ id: unitId });
             this.emit("uiStateAction", { name: "say", message, unit });
             // canvas way
             // this.view.handleSay(action);
         }
-        if (actionName === "hit") {
-            this.view.handleHit(action);
+        if (wsActionName === WS_ACTIONS.MELEE_ATTACK) {
+            this.view.handleHit(wsAction);
         }
-        if (actionName === "rangedHit") {
-            this.view.handleRangedHit(action);
+        if (wsActionName === WS_ACTIONS.RANGED_ATTACK) {
+            this.view.handleRangedHit(wsAction);
         }
-        if (actionName === "attackOnArea") {
-            this.view.handleAttackOnArea(action);
+        if (wsActionName === WS_ACTIONS.DEBUG_AREA) {
+            this.view.handleDebugArea(wsAction);
         }
-        if (actionName === "debugArea") {
-            this.view.handleDebugArea(action);
-        }
-        if (actionName === "damage") {
-            const damagedUnit = this.worldState.updUnitById(action.targetUnit.id, { state: action.targetUnit.state });
-            const sourceUnit = this.worldState.findUnit({id: action.sourceUnit.id});
+        if (wsActionName === WS_ACTIONS.DAMAGE_UNIT) {
+            const damagedUnit = this.worldState.updUnitById(wsAction.targetUnit.id, { state: wsAction.targetUnit.state });
             this.view.handleDamageUnit(damagedUnit).then(() => {});
             // upd hp bar
             this.emit("uiStateAction", { name: "updateControlledUnit", controlledUnit: this.view.controlledUnit });
             this.emit("uiStateAction", { name: "updateTargetUnit", targetUnit: this.view.targetUnit });
         }
-        if (actionName === "takeControl") {
-            const controlledUnit = this.worldState.findUnit({id: action.unitId});
+        if (wsActionName === WS_ACTIONS.TAKE_CONTROL) {
+            const controlledUnit = this.worldState.findUnit({id: wsAction.unitId});
             this.view.setControlledUnit(controlledUnit);
             this.emit("uiStateAction", { name: "updateControlledUnit", controlledUnit });
         }
-        if (actionName === WS_ACTIONS.TARGET_UNIT) {
-            const sourceUnit = this.worldState.updUnitStateById(action.sourceUnitId, { targetUnitId: action.targetUnitId });
-            const targetUnit = this.worldState.findUnit({id: action.targetUnitId});
+        if (wsActionName === WS_ACTIONS.TARGET_UNIT) {
+            const sourceUnit = this.worldState.updUnitStateById(wsAction.sourceUnitId, { targetUnitId: wsAction.targetUnitId });
+            const targetUnit = this.worldState.findUnit({id: wsAction.targetUnitId});
             // upd hp bar
             if (this.view.controlledUnit.id === sourceUnit.id) {
                 this.view.setTargetUnit(targetUnit);
@@ -121,16 +117,16 @@ class Game2D {
             this.view.listenToInput(keyMouseActions);
 
             // send data to server
-            this.view.uiActionGenerator.on("moveUnit", (data) => {
+            this.view.on("moveUnit", (data) => {
                 const unit = this.worldState.updUnitById(data.unitId, data.uPoint);
                 this.view.moveControlledUnit(unit);
-                this.serverConnection.toServer(data);
+                this.serverConnection.toServer({ name: WS_ACTIONS.MOVE_UNIT, unitId: data.unitId, uPoint: data.uPoint });
             });
-            this.view.uiActionGenerator.on("interactWith", (data) => {
-                this.serverConnection.toServer(data)
+            this.view.on("interactWith", ({sourceUnit, targetUnit}) => {
+                this.serverConnection.toServer({ name: WS_ACTIONS.INTERACT_WITH, sourceUnit, targetUnit })
             });
-            this.view.uiActionGenerator.on("useAbility", (data) => {
-                this.serverConnection.toServer(data);
+            this.view.on("useAbility", ({ slot }) => {
+                this.serverConnection.toServer({ name: WS_ACTIONS.USE_ABILITY, slot, sourceUnit: { id: this.view.controlledUnit.id } });
             });
             this.view.on("targetItem", (item) => {
                 this.serverConnection.toServer({ name: WS_ACTIONS.TARGET_UNIT, sourceUnitId: this.view.controlledUnit.id, targetUnitId: item.unitId });

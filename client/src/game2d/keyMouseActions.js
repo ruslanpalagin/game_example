@@ -1,4 +1,4 @@
-import decorateWithEvents from "src/utils/decorateWithEvents";
+import decorateWithEvents from "src/../../core/utils/decorateWithEvents";
 
 const CAMERA_X_PX_PER_RAD = 200;
 
