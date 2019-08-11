@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon node src/server.js",
+    "dev": "nodemon --watch src --watch ../core/server --watch ../core/state --watch ../core/utils --watch ../core/WS_ACTIONS.js --exec node src/server.js",
     "start": "./node_modules/foreman/nf.js start"
   },
   "author": "",

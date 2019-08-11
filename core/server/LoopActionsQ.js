@@ -3,7 +3,6 @@ class LoopActionsQ{
         this.q = {};
     }
 
-    // names: move, hit, say
     setAction(action) {
         if (!action.unitId) {
             throw new Error("action.unitId is required");

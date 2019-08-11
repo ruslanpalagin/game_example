@@ -54,7 +54,7 @@ module.exports = {
      * distance,
      * flightDuration
      */
-    RANGED_ATTACK: "RANGED_ATTACK",
+    RANGE_ATTACK: "RANGE_ATTACK",
     /**
      * userId
      * message
