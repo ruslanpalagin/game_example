@@ -27,6 +27,9 @@ init=1 - will start immediately
 # Client: deploy
 cd client && ./deploy.sh [GIT_BRANCH]
 
+# Tests
+cd core && yarn test
+
 # Roadmap 
 
 "S" - server
