@@ -55,6 +55,8 @@ class WorldState {
     }
 
     loadSave() {
+        const diegoId = uniqueId();
+
         const realmUnits = [
             { id: uniqueId(), viewSkin: "treesBurned", position: {x: -100, y: -650} },
             { id: uniqueId(), viewSkin: "treesBurned", position: {x: 20, y: -670} },
@@ -79,7 +81,7 @@ class WorldState {
             { id: uniqueId(), viewSkin: "road", position: {x: 0, y: 0} },
 
             {
-                id: uniqueId(),
+                id: diegoId,
                 viewSkin: "char", name: "Diego", position: { x: 220, y: 330 }, rotation: 1.57, isInteractive: true,
                 canBeTarget: true,
                 canBeDamaged: true,
@@ -129,6 +131,17 @@ class WorldState {
                 stats: { maxHp: 100, lvl: 1 },
                 wishes: [
                     { name: "AggressiveWish", agroRadius: 100 }
+                ],
+            },
+            {
+                id: uniqueId(),
+                viewSkin: "char", name: "Mad", position: { x: -50, y: 50 }, rotation: 0, isInteractive: true,
+                canBeTarget: true,
+                canBeDamaged: true,
+                state: { hp: 100, isDead: false },
+                stats: { maxHp: 100, lvl: 1 },
+                wishes: [
+                    { name: "FollowWish", targetUnitId: diegoId },
                 ],
             },
             { id: uniqueId(), viewSkin: "debugPoint", position: { x: 0, y: 0 }, rotation: 0 },
