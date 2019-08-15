@@ -4,6 +4,8 @@ const CharFactory = require("../state/CharFactory");
 const LoopActionsQ = require("./LoopActionsQ");
 const PatrolWish = require("./wishes/PatrolWish");
 const SayLaterWish = require("./wishes/SayLaterWish");
+const AggressiveWish = require("./wishes/AggressiveWish");
+const FollowWish = require("./wishes/FollowWish");
 const Projectile = require('./projectiles/Projectile');
 const WS_ACTIONS = require("../WS_ACTIONS");
 const ActionsConsumer = require("./ActionsConsumer");
@@ -199,13 +201,15 @@ class ServerCore {
         const mapping = {
             "PatrolWish": PatrolWish,
             "SayLaterWish": SayLaterWish,
+            "AggressiveWish": AggressiveWish,
+            "FollowWish": FollowWish,
         };
         const Wish = mapping[wishDescription.name];
         if (!Wish) {
             console.log("Wish not found: " + wishDescription.name);
             return;
         }
-        return new Wish(unit, wishDescription);
+        return new Wish(unit, wishDescription, this.unitLibrary);
     }
 
     initDisconnectedAction(){

@@ -27,6 +27,9 @@ init=1 - will start immediately
 # Client: deploy
 cd client && ./deploy.sh [GIT_BRANCH]
 
+# Tests
+cd core && yarn test
+
 # Roadmap 
 
 "S" - server
@@ -34,6 +37,9 @@ cd client && ./deploy.sh [GIT_BRANCH]
 "I" - Infrastructure
 
 - UI/S add bandits
+- S - attack throttle
+- S - attack range
+- S - move speed
 - UI add loading screen
 - UI add keymap reference
 - UI/S bulk WS actions transport
