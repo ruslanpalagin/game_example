@@ -38,3 +38,4 @@ cd client && ./deploy.sh [GIT_BRANCH]
 - UI add keymap reference
 - UI/S bulk WS actions transport
 - UI/S implement cameras
+- UI/S add unit's respawn
