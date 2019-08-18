@@ -2,7 +2,7 @@
 http://time-lancer.stage-env.info/
 
 # ALL: Update packages, start server & client
-yarn dev
+`yarn dev` OR `DEBUG=ws yarn dev`
 
 # ALL: deploy
 ./deploy.sh [GIT_BRANCH]

@@ -10,6 +10,7 @@ const Projectile = require('./projectiles/Projectile');
 const WS_ACTIONS = require("../WS_ACTIONS");
 const ActionsConsumer = require("./ActionsConsumer");
 const isArray = require("lodash/isArray");
+const debug = require('debug')('ws');
 
 const VERSION = "0.0.10";
 console.log("ServerCore v:" + VERSION);
@@ -45,7 +46,7 @@ class ServerCore {
     }
 
     pushActionRequest(wsAction, session) {
-        console.log(`< received:${wsAction.v} ${wsAction.name} from ${session.accountId}`);
+        debug(`< received:${wsAction.v} ${wsAction.name} from ${session.accountId}`);
         const wsActionName = wsAction.name;
         if (!wsActionName) {
             throw new Error("ServerCore: actionName must be defined");
