@@ -19,6 +19,22 @@ class CharFactory {
             targetUnitId: null,
         }, data);
     }
+
+    static initTiamat() {
+        return Object.assign({
+            id: uniqueId(),
+            viewSkin: "tiamat",
+            name: "Tiamat",
+            position: { x: 0, y: -1600 }, rotation: Math.PI,
+            isInteractive: true,
+            canBeTarget: true,
+            canBeDamaged: true,
+            state: { hp: 10000, isDead: false },
+            stats: { maxHp: 10000, lvl: 10 },
+            targetUnitId: null,
+            metadata: { crawlColor: "9a0098" }
+        }, data);
+    }
 }
 
 module.exports = CharFactory;
