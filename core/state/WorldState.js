@@ -124,7 +124,7 @@ class WorldState {
             },
             {
                 id: uniqueId(),
-                viewSkin: "charBandit", name: "Bandit", position: { x: 0, y: -700 }, rotation: 0, isInteractive: true,
+                viewSkin: "charBandit", name: "Bandit", position: { x: -25, y: -670 }, rotation: 0, isInteractive: true,
                 canBeTarget: true,
                 canBeDamaged: true,
                 state: { hp: 7800, isDead: false },
