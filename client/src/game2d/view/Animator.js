@@ -12,9 +12,9 @@ class Animator {
             return;
         }
         char.weapon.animationReset = char.weapon.animationReset || {
-            rotation: char.weapon.rotation,
-            position: char.weapon.position.clone(),
-        };
+                rotation: char.weapon.rotation,
+                position: char.weapon.position.clone(),
+            };
         const main = {
             rotation: char.weapon.rotation,
             x: char.weapon.position.x,
@@ -72,40 +72,42 @@ class Animator {
         line.y = 0;
         char.addChild(line);
 
-        const main = {
-            x: char.weapon.position.x,
-            rotation: char.weapon.rotation,
-        };
-        new TWEEN.Tween(main)
-        .to({
-            x: [main.x + 15],
-            rotation: [main.rotation + Math.PI / 6],
-        }, 2500)
-        .easing(TWEEN.Easing.Quadratic.Out)
-        .onUpdate(() => {
-            char.weapon.position.x = main.x;
-            char.weapon.rotation = main.rotation;
-        })
-        .start();
+        if (char.weapon) {
+            const main = {
+                x: char.weapon.position.x,
+                rotation: char.weapon.rotation,
+            };
+            new TWEEN.Tween(main)
+            .to({
+                x: [main.x + 15],
+                rotation: [main.rotation + Math.PI / 6],
+            }, 2500)
+            .easing(TWEEN.Easing.Quadratic.Out)
+            .onUpdate(() => {
+                char.weapon.position.x = main.x;
+                char.weapon.rotation = main.rotation;
+            })
+            .start();
+        }
     }
 
     // TODO -v move to factories
     static createTriangle(xPos, yPos, angle = 0) {
         const color = 0xff6600;
-        
+
         const triangleWidth = 5,
             triangleHeight = 15,
             triangleHalfway = triangleWidth / 2;
-        
+
         // draw triangle 
         const triangle = new PIXI.Graphics()
-            .beginFill(color, 1)
-            .lineStyle(0, color, 1)
-            .moveTo(triangleWidth, 0)
-            .lineTo(triangleHalfway, triangleHeight)
-            .lineTo(0, 0)
-            .lineTo(triangleWidth, 0)
-            .endFill();
+        .beginFill(color, 1)
+        .lineStyle(0, color, 1)
+        .moveTo(triangleWidth, 0)
+        .lineTo(triangleHalfway, triangleHeight)
+        .lineTo(0, 0)
+        .lineTo(triangleWidth, 0)
+        .endFill();
 
         triangle.x = xPos;
         triangle.y = yPos;
