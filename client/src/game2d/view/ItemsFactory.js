@@ -62,7 +62,38 @@ export default class ItemsFactory{
     }
 
     async char(unit) {
-        const body = new PIXI.Sprite(this.loader.getTexture(unit.viewSkin));
+        const body = new PIXI.Sprite(this.loader.getTexture("char"));
+        body.position.set(0, 0);
+
+        const weapon = new PIXI.Graphics();
+        weapon.beginFill(0x888888);
+        weapon.drawRect(0, 0, 2, 20);
+        weapon.endFill();
+        weapon.position.set(18, 12);
+        weapon.pivot.set(0, 20);
+
+        const container = new PIXI.Container();
+        container.unitId = unit.id;
+        container.isInteractive = unit.isInteractive;
+        unit.position && container.position.set(unit.position.x, unit.position.y);
+        unit.rotation && (container.rotation = unit.rotation);
+        container.pivot.set(10, 10);
+
+        container.addChild(body);
+        container.body = body;
+        container.addChild(weapon);
+        container.weapon = weapon;
+
+        if (unit.state.isDead) {
+            const deadMark = await this.deadMark();
+            container.addChild(deadMark);
+        }
+
+        return container;
+    }
+
+    async charBandit(unit) {
+        const body = new PIXI.Sprite(this.loader.getTexture("char"));
         body.position.set(0, 0);
 
         const weapon = new PIXI.Graphics();
@@ -83,6 +114,28 @@ export default class ItemsFactory{
         container.body = body;
         container.addChild(weapon);
         container.weapon = weapon;
+
+        if (unit.state.isDead) {
+            const deadMark = await this.deadMark();
+            container.addChild(deadMark);
+        }
+
+        return container;
+    }
+
+    async charMad(unit) {
+        const body = new PIXI.Sprite(this.loader.getTexture("char"));
+        body.position.set(0, 0);
+
+        const container = new PIXI.Container();
+        container.unitId = unit.id;
+        container.isInteractive = unit.isInteractive;
+        unit.position && container.position.set(unit.position.x, unit.position.y);
+        unit.rotation && (container.rotation = unit.rotation);
+        container.pivot.set(10, 10);
+
+        container.addChild(body);
+        container.body = body;
 
         if (unit.state.isDead) {
             const deadMark = await this.deadMark();

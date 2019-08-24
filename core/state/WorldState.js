@@ -124,18 +124,18 @@ class WorldState {
             },
             {
                 id: uniqueId(),
-                viewSkin: "char", name: "Bandit", position: { x: -100, y: 0 }, rotation: 0, isInteractive: true,
+                viewSkin: "charBandit", name: "Bandit", position: { x: -25, y: -670 }, rotation: 0, isInteractive: true,
                 canBeTarget: true,
                 canBeDamaged: true,
-                state: { hp: 100, isDead: false },
-                stats: { maxHp: 100, lvl: 1 },
+                state: { hp: 7800, isDead: false },
+                stats: { maxHp: 8000, lvl: 2 },
                 wishes: [
-                    { name: "AggressiveWish", agroRadius: 100 }
+                    { name: "AggressiveWish", agroRadius: 200, followRadius: 200 }
                 ],
             },
             {
                 id: uniqueId(),
-                viewSkin: "char", name: "Mad", position: { x: -50, y: 50 }, rotation: 0, isInteractive: true,
+                viewSkin: "charMad", name: "Mad", position: { x: -50, y: 50 }, rotation: 0, isInteractive: true,
                 canBeTarget: true,
                 canBeDamaged: true,
                 state: { hp: 100, isDead: false },

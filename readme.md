@@ -36,7 +36,7 @@ cd core && yarn test
 "UI" - UI
 "I" - Infrastructure
 
-- UI/S add bandits
+- wrap {position, rotation} with uPoint for all units
 - S - attack throttle
 - S - attack range
 - S - move speed
