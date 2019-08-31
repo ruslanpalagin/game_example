@@ -35,3 +35,4 @@ jobs:
 
       # run tests!
       - run: cd ~/repo/core && yarn test
+      
