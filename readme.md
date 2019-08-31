@@ -1,3 +1,6 @@
+[![CircleCI](https://circleci.com/gh/ruslanpalagin/game_example.svg?style=svg)](https://circleci.com/gh/ruslanpalagin/game_example)
+
+
 # Production URL 
 http://time-lancer.stage-env.info/
 
