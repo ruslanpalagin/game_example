@@ -11,6 +11,7 @@ class WorldState {
             units: [],
         };
         this.unitLibrary = new UnitLibrary(this);
+        this.uniqueId = uniqueId;
     }
 
     setState(state) {
@@ -88,17 +89,17 @@ class WorldState {
                 state: { hp: 10000, isDead: false },
                 stats: { maxHp: 10000, lvl: 1 },
                 wishes: [
-                    { name: "PatrolWish", points: [
-                        {position: {x: 0, y: -50}},
-                        {position: {x: 50, y: -100}},
-                        {position: {x: 100, y: -100}},
-                        {position: {x: 150, y: -50}},
-                        {position: {x: 150, y: 0}},
-                        {position: {x: 100, y: 50}},
-                        {position: {x: 50, y: 50}},
-                        {position: {x: 0, y: 0}},
-                        {position: {x: -30, y: 300}, rotation: 0},
-                    ] }
+                    // { name: "PatrolWish", points: [
+                    //     {position: {x: 0, y: -50}},
+                    //     {position: {x: 50, y: -100}},
+                    //     {position: {x: 100, y: -100}},
+                    //     {position: {x: 150, y: -50}},
+                    //     {position: {x: 150, y: 0}},
+                    //     {position: {x: 100, y: 50}},
+                    //     {position: {x: 50, y: 50}},
+                    //     {position: {x: 0, y: 0}},
+                    //     {position: {x: -30, y: 300}, rotation: 0},
+                    // ] }
                 ],
             },
             {
@@ -109,17 +110,17 @@ class WorldState {
                 state: { hp: 100, isDead: false },
                 stats: { maxHp: 100, lvl: 1 },
                 wishes: [
-                    { name: "PatrolWish", points: [
-                        {position: {x: 0, y: -50}},
-                        {position: {x: 50, y: -100}},
-                        {position: {x: 100, y: -100}},
-                        {position: {x: 150, y: -50}},
-                        {position: {x: 150, y: 0}},
-                        {position: {x: 100, y: 50}},
-                        {position: {x: 50, y: 50}},
-                        {position: {x: 0, y: 0}},
-                        {position: {x: 0, y: 300}, rotation: 0},
-                    ] }
+                    // { name: "PatrolWish", points: [
+                    //     {position: {x: 0, y: -50}},
+                    //     {position: {x: 50, y: -100}},
+                    //     {position: {x: 100, y: -100}},
+                    //     {position: {x: 150, y: -50}},
+                    //     {position: {x: 150, y: 0}},
+                    //     {position: {x: 100, y: 50}},
+                    //     {position: {x: 50, y: 50}},
+                    //     {position: {x: 0, y: 0}},
+                    //     {position: {x: 0, y: 300}, rotation: 0},
+                    // ] }
                 ],
             },
             {
@@ -130,7 +131,7 @@ class WorldState {
                 state: { hp: 7800, isDead: false },
                 stats: { maxHp: 8000, lvl: 2 },
                 wishes: [
-                    { name: "AggressiveWish", agroRadius: 200, followRadius: 200 }
+                    // { name: "AggressiveWish", agroRadius: 200, followRadius: 200 }
                 ],
             },
             {

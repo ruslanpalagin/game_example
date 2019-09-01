@@ -67,8 +67,8 @@ class AggressiveWish {
         target ? this._follow(target) : this._unFollow();
     }
 
-    isCompleted(){
-        return this.unit.state.isDead;
+    getPriority(){
+        return this.unit.state.isDead ? 0 : 1;
     }
 
     now() {
