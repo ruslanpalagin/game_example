@@ -17,7 +17,6 @@ class ServerCore {
         this.worldState = new (WorldState || DefaultWorldState)();
         this.unitLibrary = this.worldState.getUnitLibrary();
         this.lastLoopTime = null;
-        this.wishes = [];
         this.projectiles = [];
         this.loopActionsQ = new LoopActionsQ();
         this.wishManager = new WishManager(this.unitLibrary);
@@ -98,13 +97,9 @@ class ServerCore {
         const now = (new Date()).getTime();
         const delta = now - this.lastLoopTime;
         this.lastLoopTime = now;
-        this.wishes.forEach((wish) => {
-            const actions = wish.getActions(delta, this.unitLibrary);
-            actions && this.loopActionsQ.mergeActions(actions);
-        });
+        const { actions } = this.wishManager.getActions(delta);
         this._processActionsAndFlush(this.loopActionsQ);
         this._processProjectilesFlight(delta);
-        this.wishes = this.wishes.filter(wish => !wish.isCompleted());
     }
 
     _processProjectilesFlight(delta) {
@@ -173,19 +168,6 @@ class ServerCore {
             this.broadcast({ name: WS_ACTIONS.RANGE_ATTACK, sourceUnit: { id: action.sourceUnit.id }, distance, flightDuration: newProjectile.flightDuration })
         }
     }
-
-    // _instantiateWishesFromUnits(units){
-    //     for (let i in units) {
-    //         const unit = units[i];
-    //         if (!unit.wishes) {
-    //             continue;
-    //         }
-    //         unit.wishes.forEach((wishDescription) => {
-    //             const wish = this._instantiateWish(unit, wishDescription);
-    //             wish && this.wishes.push(wish);
-    //         });
-    //     }
-    // }
 
 
     initDisconnectedAction(){

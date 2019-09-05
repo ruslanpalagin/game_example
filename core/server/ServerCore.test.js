@@ -2,12 +2,12 @@ const ServerCore = require("./ServerCore");
 const WorldStateMock = require("../tests/WorldStateMock");
 const expect = require("expect");
 
-
 describe("ServerCore", () => {
+    it("should init", () => {
+        new ServerCore();
+    });
+
     describe("with wishManager", () => {
-        it("should init", () => {
-            new ServerCore();
-        });
         it("should not init wishes before load", () => {
             const core = new ServerCore();
             const count = core.wishManager.wishesCount();

@@ -6,11 +6,13 @@ class AnEmptyWish {
     }
 
     getPriority(){
-        return 0;
+        return this.wishDescription && this.wishDescription.meta && this.wishDescription.meta.mockPriority;
     }
 
     getActions(delta){
-        return [];
+        return [
+            { name: "AnEmptyAction", unitId: this.unit.id, meta: this.wishDescription.meta },
+        ];
     }
 }
 
