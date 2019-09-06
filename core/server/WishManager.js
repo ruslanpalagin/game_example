@@ -1,12 +1,10 @@
 const PatrolWish = require("./wishes/PatrolWish");
-const SayLaterWish = require("./wishes/SayLaterWish");
 const AggressiveWish = require("./wishes/AggressiveWish");
 const FollowWish = require("./wishes/FollowWish");
 const AnEmptyWish = require("./wishes/AnEmptyWish");
 
 const mapping = {
     "PatrolWish": PatrolWish,
-    "SayLaterWish": SayLaterWish,
     "AggressiveWish": AggressiveWish,
     "FollowWish": FollowWish,
     "AnEmptyWish": AnEmptyWish,

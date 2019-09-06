@@ -86,7 +86,7 @@ class WorldState {
                 viewSkin: "char", name: "Diego", position: { x: 220, y: 330 }, rotation: 1.57, isInteractive: true,
                 canBeTarget: true,
                 canBeDamaged: true,
-                state: { hp: 10000, isDead: false },
+                state: { hp: 10000, isDead: false, speed: 30 },
                 stats: { maxHp: 10000, lvl: 1 },
                 wishes: [
                     { name: "PatrolWish", points: [
@@ -107,7 +107,7 @@ class WorldState {
                 viewSkin: "char", name: "Jack", position: { x: 0, y: 0 }, rotation: 3.5, isInteractive: true,
                 canBeTarget: true,
                 canBeDamaged: true,
-                state: { hp: 100, isDead: false },
+                state: { hp: 100, isDead: false, speed: 30 },
                 stats: { maxHp: 100, lvl: 1 },
                 wishes: [
                     // { name: "PatrolWish", points: [
