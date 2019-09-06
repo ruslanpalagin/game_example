@@ -22,7 +22,7 @@ class WishManager{
             if (!unit.wishes || unit.wishes.length === 0) {
                 continue;
             }
-            this.whishesPerUnit[unit.id] = this._instantiateWishes(unit, unit.wishes);
+            this.whishesPerUnit[unit.id] = this._instantiateWishes(unit, unit.wishes, this.unitLibrary);
         }
     }
 
@@ -61,18 +61,18 @@ class WishManager{
         return { topPriority, wish: topWish };
     }
 
-    _instantiateWish(unit, wishDescription){
+    _instantiateWish(unit, wishDescription, unitLibrary){
         const Wish = mapping[wishDescription.name];
         if (!Wish) {
             console.log("Wish not found: " + wishDescription.name);
             return;
         }
-        return new Wish(unit, wishDescription, this.unitLibrary);
+        return new Wish(unit, wishDescription, unitLibrary);
     }
 
-    _instantiateWishes(unit, wishDescriptions){
+    _instantiateWishes(unit, wishDescriptions, unitLibrary){
         return wishDescriptions.map((wishDescription) => {
-            return this._instantiateWish(unit, wishDescription);
+            return this._instantiateWish(unit, wishDescription, unitLibrary);
         })
     }
 }

@@ -1,8 +1,8 @@
 class ABaseWish{
-    constructor(unit, wishDescription, unitsLibrary){
+    constructor(unit, wishDescription, unitLibrary){
         this.unit = unit;
         this.wishDescription = wishDescription;
-        this.unitsLibrary = unitsLibrary;
+        this.unitLibrary = unitLibrary;
     }
 
     getPriority(){

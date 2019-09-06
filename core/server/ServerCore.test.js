@@ -6,6 +6,10 @@ describe("ServerCore", () => {
     it("should init", () => {
         new ServerCore();
     });
+    it("should have unitLibrary", () => {
+        const core = new ServerCore();
+        expect(core.unitLibrary).toBeTruthy();
+    });
 
     describe("with wishManager", () => {
         it("should not init wishes before load", () => {
