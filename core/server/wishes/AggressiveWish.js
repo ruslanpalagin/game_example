@@ -1,9 +1,10 @@
 const collisions = require("../../utils/collisions");
+// const ABaseWish = require("./ABaseWish");
 const FollowWish = require("./FollowWish");
 
 const ATTACK_RANGE = 30;
 
-class AggressiveWish {
+class AggressiveWish{
     constructor(unit, wishDescription, unitLibrary){
         this.unit = unit;
         this.anchorUPoint = null;

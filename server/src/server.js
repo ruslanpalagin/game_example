@@ -4,7 +4,7 @@ const websockify = require('koa-websocket');
 // const ws = require('./instances/ws');
 const game = require('./http/game');
 
-const VERSION = "0.0.10";
+const VERSION = "0.0.13";
 const versionMsg = "HTTP Server v:" + VERSION;
 console.log(versionMsg);
 

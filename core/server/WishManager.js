@@ -21,7 +21,7 @@ class WishManager{
     initWishesFromUnits(units) {
         for (let i in units) {
             const unit = units[i];
-            if (!unit.wishes) {
+            if (!unit.wishes || unit.wishes.length === 0) {
                 continue;
             }
             this.whishesPerUnit[unit.id] = this._instantiateWishes(unit, unit.wishes);
@@ -32,7 +32,9 @@ class WishManager{
         let actions = [];
         Object.values(this.whishesPerUnit).forEach((unitWishes) => {
             const { wish } = this._findTopWish({ wishes: unitWishes, delta });
-            actions = actions.concat(wish.getActions(delta));
+            if (wish) {
+                actions = actions.concat(wish.getActions(delta));
+            }
         });
         return { actions };
     }
@@ -42,19 +44,23 @@ class WishManager{
     }
 
     _findTopWish({ wishes, delta }){
+        let topPriority = -Infinity;
+        let topWish = null;
         if (wishes.length === 0) {
-            return null;
+            return { topPriority, topWish };
         }
-        let priority = -Infinity;
-        let wish = wishes[0];
-        wishes.forEach((iWish) => {
-            const currentPriority = iWish.getPriority(delta);
-            if (currentPriority > priority) {
-                priority = currentPriority;
-                wish = iWish;
+        for (let i in wishes) {
+            const iWish = wishes[i];
+            if (!iWish.isActive()) {
+                continue;
             }
-        });
-        return { priority, wish };
+            const currentPriority = iWish.getPriority(delta);
+            if (currentPriority > topPriority) {
+                topPriority = currentPriority;
+                topWish = iWish;
+            }
+        }
+        return { topPriority, wish: topWish };
     }
 
     _instantiateWish(unit, wishDescription){

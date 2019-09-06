@@ -1,10 +1,10 @@
 const isEqual = require("lodash/isEqual");
 const collisions = require("../../utils/collisions");
+const ABaseWish = require("./ABaseWish");
 
-class PatrolWish {
-    constructor(unit, wishDescription){
-        this.unit = unit;
-        this.wishDescription = wishDescription;
+class PatrolWish extends ABaseWish {
+    constructor(unit, wishDescription, unitLibrary){
+        super(unit, wishDescription, unitLibrary);
         this.points = wishDescription.points;
         this.targetPoint = 0;
         this.isLast = false;
@@ -40,8 +40,8 @@ class PatrolWish {
         return actions;
     }
 
-    isCompleted(){
-        return this.unit.state.isDead || this.isLast;
+    isActive(){
+        return !this.unit.state.isDead;
     }
 }
 

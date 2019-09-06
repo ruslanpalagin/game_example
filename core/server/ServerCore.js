@@ -9,7 +9,7 @@ const ActionsConsumer = require("./ActionsConsumer");
 const isArray = require("lodash/isArray");
 const debug = require('debug')('ws');
 
-const VERSION = "0.0.10";
+const VERSION = "0.0.13";
 console.log("ServerCore v:" + VERSION);
 
 class ServerCore {
@@ -98,6 +98,7 @@ class ServerCore {
         const delta = now - this.lastLoopTime;
         this.lastLoopTime = now;
         const { actions } = this.wishManager.getActions(delta);
+        this.loopActionsQ.mergeActions(actions);
         this._processActionsAndFlush(this.loopActionsQ);
         this._processProjectilesFlight(delta);
     }

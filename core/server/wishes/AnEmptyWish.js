@@ -1,18 +1,14 @@
-class AnEmptyWish {
-    constructor(unit, wishDescription, unitsLibrary){
-        this.unit = unit;
-        this.wishDescription = wishDescription;
-        this.unitsLibrary = unitsLibrary;
-    }
+const ABaseWish = require("./ABaseWish");
 
-    getPriority(){
-        return this.wishDescription && this.wishDescription.meta && this.wishDescription.meta.mockPriority;
-    }
-
+class AnEmptyWish extends ABaseWish {
     getActions(delta){
         return [
             { name: "AnEmptyAction", unitId: this.unit.id, meta: this.wishDescription.meta },
         ];
+    }
+
+    isActive() {
+        return !this.wishDescription.isDisabled;
     }
 }
 
