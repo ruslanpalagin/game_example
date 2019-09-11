@@ -4,7 +4,7 @@ import Game2D from "./game2d/Game2D";
 import Login from "src/components/Login";
 import GameUi from "src/components/GameUi";
 
-const VERSION = "0.0.10";
+const VERSION = "0.0.13";
 console.log("Client v: " + VERSION);
 const game = new Game2D({ version: VERSION });
 

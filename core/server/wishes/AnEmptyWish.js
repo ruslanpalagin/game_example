@@ -1,15 +1,14 @@
-class AnEmptyWish {
-    constructor(unit, wishDescription){
-        this.unit = unit;
-        this.wishDescription = wishDescription;
-    }
+const ABaseWish = require("./ABaseWish");
 
+class AnEmptyWish extends ABaseWish {
     getActions(delta){
-        return [];
+        return [
+            { name: "AnEmptyAction", unitId: this.unit.id, meta: this.wishDescription.meta },
+        ];
     }
 
-    isCompleted(){
-        return true;
+    isActive() {
+        return !this.wishDescription.isDisabled;
     }
 }
 

@@ -1,39 +1,36 @@
 const collisions = require("../../utils/collisions");
+const ABaseWish = require("./ABaseWish");
 const FollowWish = require("./FollowWish");
 
 const ATTACK_RANGE = 30;
 
-class AggressiveWish {
+class AggressiveWish extends ABaseWish {
     constructor(unit, wishDescription, unitLibrary){
-        this.unit = unit;
+        super(unit, wishDescription, unitLibrary);
         this.anchorUPoint = null;
-        this.wishDescription = wishDescription;
-        this.unitLibrary = unitLibrary;
-        this.lastSayAt = this.now(); // debug only
+        this.lastSayAt = this._now(); // debug only
         this.status = ""; // debug only
         this.target = null;
-        this.wishes = []; // running in parallels
+        this.followWish = null;
     }
 
     _follow(target) {
-        const wish = new FollowWish(
+        this.followWish = new FollowWish(
             this.unit,
             { name: "FollowWish", unitId: this.unit.id, targetUnitId: target.id },
             this.unitLibrary,
         );
-        this.wishes.push(wish);
     }
 
     _unFollow() {
-        const wish = this.wishes.find((w) => w.wishDescription.name === "FollowWish");
-        wish && this.wishes.splice(this.wishes.indexOf(wish), 1);
+        this.followWish = null;
     }
 
     getActions(delta){
         let actions = [];
         // debug
-        if (this.lastSayAt + 2000 < this.now()) {
-            this.lastSayAt = this.now();
+        if (this.lastSayAt + 2000 < this._now()) {
+            this.lastSayAt = this._now();
             this.target && actions.push({ name: "SayAreaAction", message: this.status, unitId: this.unit.id });
         }
         // set target
@@ -43,7 +40,6 @@ class AggressiveWish {
             target && (!target.state.isDead) && this._setTarget(target);
         }
         if (this.target && Math.random() < 0.1 && collisions.getDistance(this.unit, this.target) <= ATTACK_RANGE) {
-            console.log("this.target", this.target);
             actions.push({ name: "MeleeAttackAction", unitId: this.unit.id, sourceUnit: this.unit });
         }
         if (this.target && this.target.state.isDead) {
@@ -53,9 +49,9 @@ class AggressiveWish {
             const distance = collisions.getDistance(this.unit, this.anchorUPoint);
             distance >= this.wishDescription.followRadius && this._setTarget(null);
         }
-        this.wishes.forEach((wish) => {
-            actions = actions.concat(wish.getActions(delta));
-        });
+        if (this.target && this.followWish && collisions.getDistance(this.unit, this.target) > ATTACK_RANGE / 2) {
+            actions = actions.concat(this.followWish.getActions(delta));
+        }
 
         return actions;
     }
@@ -67,11 +63,11 @@ class AggressiveWish {
         target ? this._follow(target) : this._unFollow();
     }
 
-    isCompleted(){
-        return this.unit.state.isDead;
+    isActive() {
+        return !this.unit.state.isDead;
     }
 
-    now() {
+    _now() {
         return (new Date()).getTime();
     }
 }

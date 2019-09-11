@@ -1,10 +1,9 @@
 const collisions = require("../../utils/collisions");
+const ABaseWish = require("./ABaseWish");
 
-class PatrolWish {
+class PatrolWish extends ABaseWish {
     constructor(unit, wishDescription, unitLibrary){
-        this.unit = unit;
-        this.wishDescription = wishDescription;
-        this.unitLibrary = unitLibrary;
+        super(unit, wishDescription, unitLibrary);
         this.targetUnit = unitLibrary.findUnit({id: wishDescription.targetUnitId });
     }
 
@@ -23,8 +22,8 @@ class PatrolWish {
         return actions;
     }
 
-    isCompleted(){
-        return this.unit.state.isDead;
+    isActive(){
+        return !this.unit.state.isDead;
     }
 }
 

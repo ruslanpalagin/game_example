@@ -8,6 +8,7 @@
     "jest": "^24.8.0"
   },
   "scripts": {
-    "test": "./node_modules/jest/bin/jest.js"
+    "test": "./node_modules/jest/bin/jest.js",
+    "test:watch": "./node_modules/jest/bin/jest.js --watchAll"
   }
 }
