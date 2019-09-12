@@ -12,6 +12,8 @@ const debug = require('debug')('ws');
 const VERSION = "0.0.13";
 console.log("ServerCore v:" + VERSION);
 
+const TIME_MULTIPLER = 550;
+
 class ServerCore {
     constructor({ WorldState } = {}) {
         this.worldState = new (WorldState || DefaultWorldState)();
@@ -96,6 +98,9 @@ class ServerCore {
     _doLoopTick() {
         const now = (new Date()).getTime();
         const delta = now - this.lastLoopTime;
+        this.worldState.incTime(delta * TIME_MULTIPLER);
+        const time = this.worldState.getTime();
+        console.log("time", time);1
         this.lastLoopTime = now;
         const { actions } = this.wishManager.getActions(delta);
         this.loopActionsQ.mergeActions(actions);
