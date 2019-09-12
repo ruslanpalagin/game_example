@@ -19,6 +19,10 @@ class UnitLibrary {
         const units = this.worldState.getHitableUnits();
         return collisions.findUnitsInArea(units, area);
     }
+
+    getTime() {
+        return this.worldState.getTime();
+    }
 }
 
 module.exports = UnitLibrary;

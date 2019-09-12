@@ -99,8 +99,8 @@ class ServerCore {
         const now = (new Date()).getTime();
         const delta = now - this.lastLoopTime;
         this.worldState.incTime(delta * TIME_MULTIPLER);
-        const time = this.worldState.getTime();
-        console.log("time", time);1
+        const time = this.unitLibrary.getTime();
+        console.log("time", time);
         this.lastLoopTime = now;
         const { actions } = this.wishManager.getActions(delta);
         this.loopActionsQ.mergeActions(actions);
