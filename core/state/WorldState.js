@@ -6,9 +6,8 @@ const UnitLibrary = require("./UnitLibrary");
 class WorldState {
     constructor() {
         this.state = {
-            realmUnits: [],
-            guestUnits: [],
             units: [],
+            time: (new Date()).getTime(),
         };
         this.unitLibrary = new UnitLibrary(this);
         this.uniqueId = uniqueId;
@@ -16,12 +15,24 @@ class WorldState {
 
     setState(state) {
         this.state = Object.assign(this.state, state);
-        console.log("this.state", this.state);
+        // console.log("this.state", this.state);
     }
 
     getUnits(){
         // console.log("deprecated - use unitLibrary");
         return this.state.units;
+    }
+
+    getTime(){
+        const date = new Date(this.state.time);
+        return {
+            h: date.getUTCHours(),
+            m: date.getUTCMinutes(),
+        };
+    }
+
+    incTime(ms) {
+        this.setState({ time: this.state.time + ms });
     }
 
     findUnit(q) {
@@ -58,7 +69,7 @@ class WorldState {
     loadSave() {
         const diegoId = uniqueId();
 
-        const realmUnits = [
+        const mapUnits = [
             { id: uniqueId(), viewSkin: "treesBurned", position: {x: -100, y: -650} },
             { id: uniqueId(), viewSkin: "treesBurned", position: {x: 20, y: -670} },
             { id: uniqueId(), viewSkin: "treesBurned", position: {x: -80, y: -730} },
@@ -81,6 +92,11 @@ class WorldState {
             { id: uniqueId(), viewSkin: "grass4items", position: {x: -150, y: 270} },
             { id: uniqueId(), viewSkin: "road", position: {x: 0, y: 0} },
 
+            { id: uniqueId(), viewSkin: "debugPoint", position: { x: 0, y: 0 }, rotation: 0 },
+            { id: uniqueId(), viewSkin: "debugArea", position: { x: 0, y: 0 }, rotation: 0, radius: 20 },
+        ];
+
+        const npcs = [
             {
                 id: diegoId,
                 viewSkin: "char", name: "Diego", position: { x: 220, y: 330 }, rotation: 1.57, isInteractive: true,
@@ -145,14 +161,8 @@ class WorldState {
                     { name: "FollowWish", targetUnitId: diegoId },
                 ],
             },
-            { id: uniqueId(), viewSkin: "debugPoint", position: { x: 0, y: 0 }, rotation: 0 },
-            { id: uniqueId(), viewSkin: "debugArea", position: { x: 0, y: 0 }, rotation: 0, radius: 20 },
         ];
-        const guestUnits = [];
-
-        this.state.realmUnits = realmUnits;
-        this.state.guestUnits = guestUnits;
-        this.state.units = [...realmUnits, ...guestUnits];
+        this.state.units = [...mapUnits, ...npcs];
 
         return Promise.resolve();
     }
