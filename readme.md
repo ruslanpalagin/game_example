@@ -1,8 +1,11 @@
+[![CircleCI](https://circleci.com/gh/ruslanpalagin/game_example.svg?style=svg)](https://circleci.com/gh/ruslanpalagin/game_example)
+
+
 # Production URL 
 http://time-lancer.stage-env.info/
 
 # ALL: Update packages, start server & client
-yarn dev
+`yarn dev` OR `DEBUG=ws yarn dev`
 
 # ALL: deploy
 ./deploy.sh [GIT_BRANCH]
@@ -27,13 +30,19 @@ init=1 - will start immediately
 # Client: deploy
 cd client && ./deploy.sh [GIT_BRANCH]
 
+# Tests
+cd core && yarn test
+
 # Roadmap 
 
 "S" - server
 "UI" - UI
 "I" - Infrastructure
 
-- UI/S add bandits
+- wrap {position, rotation} with uPoint for all units
+- S - attack throttle
+- S - attack range
+- S - move speed
 - UI add loading screen
 - UI add keymap reference
 - UI/S bulk WS actions transport

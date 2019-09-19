@@ -4,6 +4,7 @@ const RangeAttackAction = require("./actions/RangeAttackAction");
 const InteractWithAction = require("./actions/InteractWithAction");
 const SayAreaAction = require("./actions/SayAreaAction");
 const NewWishAction = require("./actions/NewWishAction");
+const AnEmptyAction = require("./actions/AnEmptyAction");
 
 const mapping = {
     "MoveUnitAction": MoveUnitAction,
@@ -12,6 +13,7 @@ const mapping = {
     "InteractWithAction": InteractWithAction,
     "SayAreaAction": SayAreaAction,
     "NewWishAction": NewWishAction,
+    "AnEmptyAction": AnEmptyAction,
 };
 
 class ActionsConsumer {

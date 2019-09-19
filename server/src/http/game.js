@@ -1,5 +1,6 @@
 const route = require('koa-route');
 // const ws = require('../instances/ws');
+const debug = require('debug')('ws');
 const ServerCore = require('../../../core/server/ServerCore');
 const serverCore = new ServerCore();
 const qs = require("qs");
@@ -35,7 +36,7 @@ module.exports = route.all('/game', function (ctx, next) {
 
 // TODO refactor - move to service
 const doSend = (client, action) => {
-    console.log(`> ${action.v}:sending to: ${client.sessionAccountId}: ${action.name}`);
+    debug(`> ${action.v}:sending to: ${client.sessionAccountId}: ${action.name}`);
     try {
         client.send(JSON.stringify(action));
     } catch (e) {

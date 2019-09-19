@@ -6,21 +6,33 @@ const UnitLibrary = require("./UnitLibrary");
 class WorldState {
     constructor() {
         this.state = {
-            realmUnits: [],
-            guestUnits: [],
             units: [],
+            time: (new Date()).getTime(),
         };
         this.unitLibrary = new UnitLibrary(this);
+        this.uniqueId = uniqueId;
     }
 
     setState(state) {
         this.state = Object.assign(this.state, state);
-        console.log("this.state", this.state);
+        // console.log("this.state", this.state);
     }
 
     getUnits(){
         // console.log("deprecated - use unitLibrary");
         return this.state.units;
+    }
+
+    getTime(){
+        const date = new Date(this.state.time);
+        return {
+            h: date.getUTCHours(),
+            m: date.getUTCMinutes(),
+        };
+    }
+
+    incTime(ms) {
+        this.setState({ time: this.state.time + ms });
     }
 
     findUnit(q) {
@@ -55,7 +67,9 @@ class WorldState {
     }
 
     loadSave() {
-        const realmUnits = [
+        const diegoId = uniqueId();
+
+        const mapUnits = [
             { id: uniqueId(), viewSkin: "treesBurned", position: {x: -100, y: -650} },
             { id: uniqueId(), viewSkin: "treesBurned", position: {x: 20, y: -670} },
             { id: uniqueId(), viewSkin: "treesBurned", position: {x: -80, y: -730} },
@@ -78,12 +92,17 @@ class WorldState {
             { id: uniqueId(), viewSkin: "grass4items", position: {x: -150, y: 270} },
             { id: uniqueId(), viewSkin: "road", position: {x: 0, y: 0} },
 
+            { id: uniqueId(), viewSkin: "debugPoint", position: { x: 0, y: 0 }, rotation: 0 },
+            { id: uniqueId(), viewSkin: "debugArea", position: { x: 0, y: 0 }, rotation: 0, radius: 20 },
+        ];
+
+        const npcs = [
             {
-                id: uniqueId(),
+                id: diegoId,
                 viewSkin: "char", name: "Diego", position: { x: 220, y: 330 }, rotation: 1.57, isInteractive: true,
                 canBeTarget: true,
                 canBeDamaged: true,
-                state: { hp: 10000, isDead: false },
+                state: { hp: 10000, isDead: false, speed: 30 },
                 stats: { maxHp: 10000, lvl: 1 },
                 wishes: [
                     { name: "PatrolWish", points: [
@@ -104,7 +123,7 @@ class WorldState {
                 viewSkin: "char", name: "Jack", position: { x: 0, y: 0 }, rotation: 3.5, isInteractive: true,
                 canBeTarget: true,
                 canBeDamaged: true,
-                state: { hp: 100, isDead: false },
+                state: { hp: 100, isDead: false, speed: 30 },
                 stats: { maxHp: 100, lvl: 1 },
                 wishes: [
                     { name: "PatrolWish", points: [
@@ -120,14 +139,30 @@ class WorldState {
                     ] }
                 ],
             },
-            { id: uniqueId(), viewSkin: "debugPoint", position: { x: 0, y: 0 }, rotation: 0 },
-            { id: uniqueId(), viewSkin: "debugArea", position: { x: 0, y: 0 }, rotation: 0, radius: 20 },
+            {
+                id: uniqueId(),
+                viewSkin: "charBandit", name: "Bandit", position: { x: -25, y: -670 }, rotation: 0, isInteractive: true,
+                canBeTarget: true,
+                canBeDamaged: true,
+                state: { hp: 7800, isDead: false },
+                stats: { maxHp: 8000, lvl: 2 },
+                wishes: [
+                    { name: "AggressiveWish", agroRadius: 200, followRadius: 200 }
+                ],
+            },
+            {
+                id: uniqueId(),
+                viewSkin: "charMad", name: "Mad", position: { x: -50, y: 50 }, rotation: 0, isInteractive: true,
+                canBeTarget: true,
+                canBeDamaged: true,
+                state: { hp: 100, isDead: false },
+                stats: { maxHp: 100, lvl: 1 },
+                wishes: [
+                    { name: "FollowWish", targetUnitId: diegoId },
+                ],
+            },
         ];
-        const guestUnits = [];
-
-        this.state.realmUnits = realmUnits;
-        this.state.guestUnits = guestUnits;
-        this.state.units = [...realmUnits, ...guestUnits];
+        this.state.units = [...mapUnits, ...npcs];
 
         return Promise.resolve();
     }

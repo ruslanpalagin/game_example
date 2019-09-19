@@ -14,12 +14,10 @@ class InteractWithAction extends BaseAction{
         } else {
             reply = "What do you want?";
         }
+        wsActions.push({ name: WS_ACTIONS.SAY_AREA, unitId: serverTargetUnit.id, message: reply });
 
         return {
             wsActions,
-            wishes: [
-                { unitId: serverTargetUnit.id, name: "SayLaterWish", message: reply, delay: 3000 }
-            ]
         };
     }
 }

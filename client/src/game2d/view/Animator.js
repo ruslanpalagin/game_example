@@ -7,10 +7,14 @@ setInterval(() => {
 
 class Animator {
     animateHit(char){
+        if (!char) {
+            console.warn("char item not loaded yet");
+            return;
+        }
         char.weapon.animationReset = char.weapon.animationReset || {
-            rotation: char.weapon.rotation,
-            position: char.weapon.position.clone(),
-        };
+                rotation: char.weapon.rotation,
+                position: char.weapon.position.clone(),
+            };
         const main = {
             rotation: char.weapon.rotation,
             x: char.weapon.position.x,
@@ -32,6 +36,10 @@ class Animator {
     }
 
     animateRangedHit(char, distance, duration = 1000) {
+        if (!char) {
+            console.warn("char item not loaded yet");
+            return;
+        }
         const projectile = Animator.createTriangle(char.position.x, char.position.y, (char.angle % 360) + 180);
         // console.log(char.position, projectile.position, projectile.getBounds());
 
@@ -49,6 +57,10 @@ class Animator {
     }
 
     animateCharDeath(char, deadMark){
+        if (!char) {
+            console.warn("char item not loaded yet");
+            return;
+        }
         char.addChild(deadMark);
         let line = new PIXI.Graphics();
         line.lineStyle(1, 0xFF0000, 1);
@@ -60,39 +72,42 @@ class Animator {
         line.y = 0;
         char.addChild(line);
 
-        const main = {
-            x: char.weapon.position.x,
-            rotation: char.weapon.rotation,
-        };
-        new TWEEN.Tween(main)
-        .to({
-            x: [main.x + 15],
-            rotation: [main.rotation + Math.PI / 6],
-        }, 2500)
-        .easing(TWEEN.Easing.Quadratic.Out)
-        .onUpdate(() => {
-            char.weapon.position.x = main.x;
-            char.weapon.rotation = main.rotation;
-        })
-        .start();
+        if (char.weapon) {
+            const main = {
+                x: char.weapon.position.x,
+                rotation: char.weapon.rotation,
+            };
+            new TWEEN.Tween(main)
+            .to({
+                x: [main.x + 15],
+                rotation: [main.rotation + Math.PI / 6],
+            }, 2500)
+            .easing(TWEEN.Easing.Quadratic.Out)
+            .onUpdate(() => {
+                char.weapon.position.x = main.x;
+                char.weapon.rotation = main.rotation;
+            })
+            .start();
+        }
     }
 
+    // TODO -v move to factories
     static createTriangle(xPos, yPos, angle = 0) {
         const color = 0xff6600;
-        
+
         const triangleWidth = 5,
             triangleHeight = 15,
             triangleHalfway = triangleWidth / 2;
-        
+
         // draw triangle 
         const triangle = new PIXI.Graphics()
-            .beginFill(color, 1)
-            .lineStyle(0, color, 1)
-            .moveTo(triangleWidth, 0)
-            .lineTo(triangleHalfway, triangleHeight)
-            .lineTo(0, 0)
-            .lineTo(triangleWidth, 0)
-            .endFill();
+        .beginFill(color, 1)
+        .lineStyle(0, color, 1)
+        .moveTo(triangleWidth, 0)
+        .lineTo(triangleHalfway, triangleHeight)
+        .lineTo(0, 0)
+        .lineTo(triangleWidth, 0)
+        .endFill();
 
         triangle.x = xPos;
         triangle.y = yPos;

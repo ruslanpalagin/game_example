@@ -1,32 +1,34 @@
-const WorldState = require("../state/WorldState");
+const DefaultWorldState = require("../state/WorldState");
 const collisions = require("../utils/collisions");
 const CharFactory = require("../state/CharFactory");
 const LoopActionsQ = require("./LoopActionsQ");
-const PatrolWish = require("./wishes/PatrolWish");
-const SayLaterWish = require("./wishes/SayLaterWish");
+const WishManager = require("./WishManager");
 const Projectile = require('./projectiles/Projectile');
 const WS_ACTIONS = require("../WS_ACTIONS");
 const PROJECTILES = require("../PROJECTILES.js");
 const ActionsConsumer = require("./ActionsConsumer");
 const isArray = require("lodash/isArray");
+const debug = require('debug')('ws');
 
-const VERSION = "0.0.10";
+const VERSION = "0.0.13";
 console.log("ServerCore v:" + VERSION);
 
+const TIME_MULTIPLER = 550;
+
 class ServerCore {
-    constructor() {
-        this.worldState = new WorldState();
+    constructor({ WorldState } = {}) {
+        this.worldState = new (WorldState || DefaultWorldState)();
         this.unitLibrary = this.worldState.getUnitLibrary();
         this.lastLoopTime = null;
-        this.wishes = [];
         this.projectiles = [];
         this.loopActionsQ = new LoopActionsQ();
+        this.wishManager = new WishManager(this.unitLibrary);
         this.broadcastHandler = null;
     }
 
     load() {
         return this.worldState.loadSave()
-        .then(() => this._instantiateWishesFromUnits(this.worldState.getUnits()))
+        .then(() => this.wishManager.initWishesFromUnits(this.worldState.getUnits()))
         .then(() => this._startGameLoop())
             ;
     }
@@ -44,7 +46,7 @@ class ServerCore {
     }
 
     pushActionRequest(wsAction, session) {
-        console.log(`< received:${wsAction.v} ${wsAction.name} from ${session.accountId}`);
+        debug(`< received:${wsAction.v} ${wsAction.name} from ${session.accountId}`);
         const wsActionName = wsAction.name;
         if (!wsActionName) {
             throw new Error("ServerCore: actionName must be defined");
@@ -97,14 +99,21 @@ class ServerCore {
     _doLoopTick() {
         const now = (new Date()).getTime();
         const delta = now - this.lastLoopTime;
+        this.worldState.incTime(delta * TIME_MULTIPLER);
+        const time = this.unitLibrary.getTime();
+        console.log("time", time);
         this.lastLoopTime = now;
-        this.wishes.forEach((wish) => {
-            const actions = wish.getActions(delta, this.unitLibrary);
-            actions && this.loopActionsQ.mergeActions(actions);
-        });
-        this._processActionsAndFlush();
+        /* OLD CODE */
+        // this.wishes.forEach((wish) => {
+        //     const actions = wish.getActions(delta, this.unitLibrary);
+        //     actions && this.loopActionsQ.mergeActions(actions);
+        // });
+        // this._processActionsAndFlush();
+        /* OLD CODE */
+        const { actions } = this.wishManager.getActions(delta);
+        this.loopActionsQ.mergeActions(actions);
+        this._processActionsAndFlush(this.loopActionsQ);
         this._processProjectilesFlight(delta);
-        this.wishes = this.wishes.filter(wish => !wish.isCompleted());
     }
 
     _processProjectilesFlight(delta) {
@@ -149,9 +158,8 @@ class ServerCore {
         for (let unitId in this.loopActionsQ.q) {
             const unitActions = this.loopActionsQ.q[unitId];
             for (let actionName in unitActions) {
-                const { wsActions, wishes } = ActionsConsumer.consume(unitActions[actionName], this.worldState);
+                const { wsActions } = ActionsConsumer.consume(unitActions[actionName], this.worldState);
                 wsActions && this.broadcast(wsActions);
-                wishes && this._instantiateWishesFromAction(wishes);
                 // TODO eliminate
                 if (action.name === 'rangedHit') {
                     this._instantiateProjectileFromAction(unitActions[actionName]);
@@ -179,39 +187,6 @@ class ServerCore {
         });
     }
 
-    _instantiateWishesFromUnits(units){
-        for (let i in units) {
-            const unit = units[i];
-            if (!unit.wishes) {
-                continue;
-            }
-            unit.wishes.forEach((wishDescription) => {
-                const wish = this._instantiateWish(unit, wishDescription);
-                wish && this.wishes.push(wish);
-            });
-        }
-    }
-
-    _instantiateWishesFromAction(wishDescriptions){
-        wishDescriptions.forEach((wishDescription) => {
-            const unit = this.worldState.findUnit({ id: wishDescription.unitId });
-            const wish = this._instantiateWish(unit, wishDescription);
-            wish && this.wishes.push(wish);
-        });
-    }
-
-    _instantiateWish(unit, wishDescription){
-        const mapping = {
-            "PatrolWish": PatrolWish,
-            "SayLaterWish": SayLaterWish,
-        };
-        const Wish = mapping[wishDescription.name];
-        if (!Wish) {
-            console.log("Wish not found: " + wishDescription.name);
-            return;
-        }
-        return new Wish(unit, wishDescription);
-    }
 
     initDisconnectedAction(){
         return { name: WS_ACTIONS.SYS_DISCONNECTED };
