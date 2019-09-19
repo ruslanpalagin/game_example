@@ -49,10 +49,9 @@ module.exports = {
      */
     USE_ABILITY: "USE_ABILITY",
     /**
-     * s -> c
      * sourceUnit: { id },
-     * distance,
-     * flightDuration
+     * projectileId
+     * [s -> c] flightDuration - optional
      */
     RANGE_ATTACK: "RANGE_ATTACK",
     /**

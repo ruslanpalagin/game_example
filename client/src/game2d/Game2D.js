@@ -3,6 +3,7 @@ import RemoteServerConnection from "./RemoteServerConnection";
 import keyMouseActions from "./keyMouseActions";
 import WorldState from "../../../core/state/WorldState";
 import WS_ACTIONS from "../../../core/WS_ACTIONS";
+import PROJECTILES from "../../../core/PROJECTILES.js";
 import decorateWithEvents from "src/../../core/utils/decorateWithEvents";
 
 const servers = {
@@ -126,7 +127,15 @@ class Game2D {
                 this.serverConnection.toServer({ name: WS_ACTIONS.INTERACT_WITH, sourceUnit, targetUnit })
             });
             this.view.on("useAbility", ({ slot }) => {
-                this.serverConnection.toServer({ name: WS_ACTIONS.USE_ABILITY, slot, sourceUnit: { id: this.view.controlledUnit.id } });
+                let projectileId;
+                if (slot === 2) { projectileId = PROJECTILES.SHOT.id; }
+                else if (slot === 3) { projectileId = PROJECTILES.GRENADE.id; }
+
+                if (projectileId) {
+                    this.serverConnection.toServer({ name: WS_ACTIONS.RANGE_ATTACK, sourceUnit: { id: this.view.controlledUnit.id }, projectileId });
+                } else {
+                    this.serverConnection.toServer({ name: WS_ACTIONS.USE_ABILITY, slot, sourceUnit: { id: this.view.controlledUnit.id } });
+                }
             });
             this.view.on("targetItem", (item) => {
                 this.serverConnection.toServer({ name: WS_ACTIONS.TARGET_UNIT, sourceUnitId: this.view.controlledUnit.id, targetUnitId: item.unitId });

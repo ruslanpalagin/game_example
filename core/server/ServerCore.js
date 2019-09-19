@@ -6,6 +6,7 @@ const PatrolWish = require("./wishes/PatrolWish");
 const SayLaterWish = require("./wishes/SayLaterWish");
 const Projectile = require('./projectiles/Projectile');
 const WS_ACTIONS = require("../WS_ACTIONS");
+const PROJECTILES = require("../PROJECTILES.js");
 const ActionsConsumer = require("./ActionsConsumer");
 const isArray = require("lodash/isArray");
 
@@ -77,12 +78,12 @@ class ServerCore {
             if (wsAction.slot === 1) {
                 this.loopActionsQ.setAction({ name: "MeleeAttackAction", unitId: sourceUnit.id, sourceUnit }); //meleeHit
             }
-            if (wsAction.slot === 2) {
-                this.loopActionsQ.setAction({ name: "rangedHit", unitId: sourceUnit.id, sourceUnit });
-            }
         }
         if (wsActionName === WS_ACTIONS.INTERACT_WITH) {
             this.loopActionsQ.setAction({ ...wsAction, name: "InteractWithAction", unitId: wsAction.sourceUnit.id });
+        }
+        if (wsActionName === WS_ACTIONS.RANGE_ATTACK) {
+            this.loopActionsQ.setAction({ name: "rangedHit", unitId: sourceUnit.id, sourceUnit, projectileId: wsAction.projectileId });
         }
     }
 
@@ -101,7 +102,7 @@ class ServerCore {
             const actions = wish.getActions(delta, this.unitLibrary);
             actions && this.loopActionsQ.mergeActions(actions);
         });
-        this._processActionsAndFlush(this.loopActionsQ);
+        this._processActionsAndFlush();
         this._processProjectilesFlight(delta);
         this.wishes = this.wishes.filter(wish => !wish.isCompleted());
     }
@@ -152,26 +153,30 @@ class ServerCore {
                 wsActions && this.broadcast(wsActions);
                 wishes && this._instantiateWishesFromAction(wishes);
                 // TODO eliminate
-                this._changeStateAndBroadcastByAction(unitActions[actionName]);
+                if (action.name === 'rangedHit') {
+                    this._instantiateProjectileFromAction(unitActions[actionName]);
+                }
             }
         }
         this.loopActionsQ.flush();
     }
 
-    _changeStateAndBroadcastByAction(action) {
-        if (action.name === 'rangedHit') {
-            // props for projectile
-            const distance = 270;
-            const speed = 0.2; // per ms
-            const bounds = { x: -2.5, y: -7.5, width: 5, height: 15 }; // calculated by PIXI
-            const newProjectile = new Projectile(action.sourceUnit, speed, distance, bounds);
-            newProjectile.startTime = new Date().getTime(); // for tests
-            // TODO -v do not affect vars. be functional
-            // action.distance = distance;
-            // action.flightDuration = newProjectile.flightDuration;
-            this.projectiles.push(newProjectile);
-            this.broadcast({ name: WS_ACTIONS.RANGE_ATTACK, sourceUnit: { id: action.sourceUnit.id }, distance, flightDuration: newProjectile.flightDuration })
-        }
+    _instantiateProjectileFromAction(action) {
+        // props for projectile
+        const { distance, speed, bounds} = PROJECTILES[action.projectileId];
+        
+        const newProjectile = new Projectile(action.sourceUnit, speed, distance, bounds);
+        newProjectile.startTime = new Date().getTime(); // for tests
+        // TODO -v do not affect vars. be functional
+        // action.distance = distance;
+        // action.flightDuration = newProjectile.flightDuration;
+        this.projectiles.push(newProjectile);
+        this.broadcast({
+            name: WS_ACTIONS.RANGE_ATTACK,
+            sourceUnit: { id: action.sourceUnit.id },
+            projectileId: action.projectileId,
+            flightDuration: newProjectile.flightDuration
+        });
     }
 
     _instantiateWishesFromUnits(units){

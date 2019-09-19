@@ -4,6 +4,7 @@ import UiActionGenerator from "./UiActionGenerator";
 import ItemsFactory from "./ItemsFactory";
 import Animator from "./Animator";
 import decorateWithEvents from "src/../../core/utils/decorateWithEvents";
+import PROJECTILES from "../../../../core/PROJECTILES.js";
 
 class View {
     constructor() {
@@ -85,9 +86,9 @@ class View {
         this.animator.animateHit(item);
     }
 
-    handleRangedHit({sourceUnit, distance, flightDuration}) {
+    handleRangedHit({ sourceUnit, projectileId, flightDuration }) {
         const unit = this._findItem({unitId: sourceUnit.id});
-        this.worldContainer.addChild(this.animator.animateRangedHit(unit, distance, flightDuration));
+        this.worldContainer.addChild(this.animator.animateRangedHit(unit, PROJECTILES[projectileId].distance, flightDuration));
     }
 
     handleDebugArea(unit) {

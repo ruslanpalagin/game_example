@@ -130,4 +130,10 @@ export default class ItemsFactory{
         line.y = 0;
         return line;
     }
+
+    async grenade() {
+        const graphics = new PIXI.Graphics()
+            .drawStar(0, 0, 3, 15);
+        return graphics;
+    }
 }
