@@ -1,6 +1,6 @@
 class Projectile {
   constructor(sourceEntity, speed, distance, bounds) {
-    this.sourceEntity = sourceEntity;
+    this.sourceEntityId = sourceEntity.id;
     this.speed = speed;
     this.distance = distance;
     this.bounds = bounds;

@@ -3,9 +3,7 @@ const collisions = require("../utils/collisions");
 const CharFactory = require("../state/CharFactory");
 const LoopActionsQ = require("./LoopActionsQ");
 const WishManager = require("./WishManager");
-const Projectile = require('./projectiles/Projectile');
 const WS_ACTIONS = require("../WS_ACTIONS");
-const PROJECTILES = require("../PROJECTILES.js");
 const ActionsConsumer = require("./ActionsConsumer");
 const isArray = require("lodash/isArray");
 const debug = require('debug')('ws');
@@ -20,7 +18,6 @@ class ServerCore {
         this.worldState = new (WorldState || DefaultWorldState)();
         this.unitLibrary = this.worldState.getUnitLibrary();
         this.lastLoopTime = null;
-        this.projectiles = [];
         this.loopActionsQ = new LoopActionsQ();
         this.wishManager = new WishManager(this.unitLibrary);
         this.broadcastHandler = null;
@@ -28,8 +25,8 @@ class ServerCore {
 
     load() {
         return this.worldState.loadSave()
-        .then(() => this.wishManager.initWishesFromUnits(this.worldState.getUnits()))
-        .then(() => this._startGameLoop())
+            .then(() => this.wishManager.initWishesFromUnits(this.worldState.getUnits()))
+            .then(() => this._startGameLoop())
             ;
     }
 
@@ -56,14 +53,14 @@ class ServerCore {
             this.broadcast({ name: WS_ACTIONS.SYS_LOAD_WORLD, worldState: { state: this.worldState.state } }, session);
         }
         if (wsActionName === WS_ACTIONS.TARGET_UNIT) {
-            const sourceUnit = this.worldState.findUnit({id: wsAction.sourceUnitId});
-            this.worldState.updateUnitStateById(sourceUnit.id, {targetUnitId: wsAction.targetUnitId});
+            const sourceUnit = this.worldState.findUnit({ id: wsAction.sourceUnitId });
+            this.worldState.updateUnitStateById(sourceUnit.id, { targetUnitId: wsAction.targetUnitId });
             this.broadcast(wsAction);
         }
         if (wsActionName === WS_ACTIONS.SEE_THE_WORLD) {
-            let controlledUnit = this.worldState.findUnit({accountId: session.accountId});
+            let controlledUnit = this.worldState.findUnit({ accountId: session.accountId });
             if (!controlledUnit) {
-                controlledUnit = CharFactory.initEmptyCharacter({accountId: session.accountId, name: `Account#${session.accountId}`});
+                controlledUnit = CharFactory.initEmptyCharacter({ accountId: session.accountId, name: `Account#${session.accountId}` });
                 this.worldState.addDynamicUnit(controlledUnit);
                 this.broadcast({ name: WS_ACTIONS.SYS_ADD_DYNAMIC_UNIT, unit: controlledUnit });
             };
@@ -85,7 +82,7 @@ class ServerCore {
             this.loopActionsQ.setAction({ ...wsAction, name: "InteractWithAction", unitId: wsAction.sourceUnit.id });
         }
         if (wsActionName === WS_ACTIONS.RANGE_ATTACK) {
-            this.loopActionsQ.setAction({ name: "rangedHit", unitId: sourceUnit.id, sourceUnit, projectileId: wsAction.projectileId });
+            this.loopActionsQ.setAction({ name: "RangeAttackAction", unitId: wsAction.sourceUnit.id, sourceUnit: wsAction.sourceUnit, projectileId: wsAction.projectileId });
         }
     }
 
@@ -110,23 +107,25 @@ class ServerCore {
         // });
         // this._processActionsAndFlush();
         /* OLD CODE */
+        /* NEW CODE */
         const { actions } = this.wishManager.getActions(delta);
         this.loopActionsQ.mergeActions(actions);
         this._processActionsAndFlush(this.loopActionsQ);
+        /* NEW CODE */
         this._processProjectilesFlight(delta);
     }
 
     _processProjectilesFlight(delta) {
-        this.projectiles.forEach((element, index) => {
+        this.worldState.state.projectiles.forEach((element, index) => {
             const futurePos = element.calcNextPosition(delta);
             const collisionArea = element.getCollisionArea(futurePos);
             const hitedUnits = collisions.findUnitsHittingByProjectile(this.worldState.getHitableUnits(), collisionArea);
             let smbdHitted = false;
             // if (hitedUnits) {
-            const sourceUnit = element.sourceEntity;
+            const sourceUnitId = element.sourceEntityId;
             //do some action
             hitedUnits.forEach((targetUnit) => {
-                if (targetUnit.id === sourceUnit.id) {
+                if (targetUnit.id === sourceUnitId) {
                     return;
                 }
                 if (targetUnit.state.isDead) {
@@ -137,7 +136,7 @@ class ServerCore {
                 const isDead = newHp <= 0;
                 const newState = Object.assign(targetUnit.state, { hp: newHp, isDead });
                 const updTargetUnit = this.worldState.updateUnitById(targetUnit.id, { state: newState });
-                this.broadcast({ name: WS_ACTIONS.DAMAGE_UNIT, sourceUnit, targetUnit: updTargetUnit });
+                this.broadcast({ name: WS_ACTIONS.DAMAGE_UNIT, sourceUnit: { id: sourceUnitId }, targetUnit: { id: updTargetUnit.id, state: updTargetUnit.state } });
             });
             // if (smbdHitted) this.broadcast({ name: 'projectileHit' }, { accountId: sourceUnit.accountId });
             // }
@@ -149,7 +148,7 @@ class ServerCore {
                     new Date().getTime() - element.startTime <= element.flightDuration,
                     'warn! projectile\' flight time prediction failed'
                 );
-                this.projectiles.splice(index, 1);
+                this.worldState.state.projectiles.splice(index, 1);
             }
         });
     }
@@ -160,35 +159,12 @@ class ServerCore {
             for (let actionName in unitActions) {
                 const { wsActions } = ActionsConsumer.consume(unitActions[actionName], this.worldState);
                 wsActions && this.broadcast(wsActions);
-                // TODO eliminate
-                if (action.name === 'rangedHit') {
-                    this._instantiateProjectileFromAction(unitActions[actionName]);
-                }
             }
         }
         this.loopActionsQ.flush();
     }
 
-    _instantiateProjectileFromAction(action) {
-        // props for projectile
-        const { distance, speed, bounds} = PROJECTILES[action.projectileId];
-        
-        const newProjectile = new Projectile(action.sourceUnit, speed, distance, bounds);
-        newProjectile.startTime = new Date().getTime(); // for tests
-        // TODO -v do not affect vars. be functional
-        // action.distance = distance;
-        // action.flightDuration = newProjectile.flightDuration;
-        this.projectiles.push(newProjectile);
-        this.broadcast({
-            name: WS_ACTIONS.RANGE_ATTACK,
-            sourceUnit: { id: action.sourceUnit.id },
-            projectileId: action.projectileId,
-            flightDuration: newProjectile.flightDuration
-        });
-    }
-
-
-    initDisconnectedAction(){
+    initDisconnectedAction() {
         return { name: WS_ACTIONS.SYS_DISCONNECTED };
     }
 }
