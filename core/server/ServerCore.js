@@ -98,7 +98,7 @@ class ServerCore {
         const delta = now - this.lastLoopTime;
         this.worldState.incTime(delta * TIME_MULTIPLER);
         const time = this.unitLibrary.getTime();
-        console.log("time", time);
+        // console.log("time", time);
         this.lastLoopTime = now;
         /* OLD CODE */
         // this.wishes.forEach((wish) => {
@@ -144,10 +144,8 @@ class ServerCore {
             element.move(futurePos);
             if (element.flightLimitsReached || smbdHitted) {
                 //debug
-                console.assert(
-                    new Date().getTime() - element.startTime <= element.flightDuration,
-                    'warn! projectile\' flight time prediction failed'
-                );
+                if (new Date().getTime() - element.startTime <= element.flightDuration)
+                    console.log('warn! projectile\' flight time prediction failed');
                 this.worldState.state.projectiles.splice(index, 1);
             }
         });

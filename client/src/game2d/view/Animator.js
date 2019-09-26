@@ -35,25 +35,20 @@ class Animator {
         .start();
     }
 
-    animateRangedHit(char, distance, duration = 1000) {
-        if (!char) {
-            console.warn("char item not loaded yet");
-            return;
-        }
-        const projectile = Animator.createTriangle(char.position.x, char.position.y, (char.angle % 360) + 180);
+    animateRangedHit(projectileGraphic, char, distance, duration = 1000) {
         // console.log(char.position, projectile.position, projectile.getBounds());
 
-        new TWEEN.Tween(projectile)
+        new TWEEN.Tween(projectileGraphic)
         .to({
-            x: projectile.position.x + Math.cos(char.rotation - Math.PI / 2) * distance,
-            y: projectile.position.y + Math.sin(char.rotation - Math.PI / 2) * distance,
+            x: projectileGraphic.position.x + Math.cos(char.rotation - Math.PI / 2) * distance,
+            y: projectileGraphic.position.y + Math.sin(char.rotation - Math.PI / 2) * distance,
         }, duration)
         // .easing(TWEEN.Easing.Quadratic.Out)
         .onComplete((tweensTarget) => {
             tweensTarget.parent.removeChild(tweensTarget);
         })
         .start();
-        return projectile;
+        return projectileGraphic;
     }
 
     animateCharDeath(char, deadMark){
@@ -89,32 +84,6 @@ class Animator {
             })
             .start();
         }
-    }
-
-    // TODO -v move to factories
-    static createTriangle(xPos, yPos, angle = 0) {
-        const color = 0xff6600;
-
-        const triangleWidth = 5,
-            triangleHeight = 15,
-            triangleHalfway = triangleWidth / 2;
-
-        // draw triangle 
-        const triangle = new PIXI.Graphics()
-        .beginFill(color, 1)
-        .lineStyle(0, color, 1)
-        .moveTo(triangleWidth, 0)
-        .lineTo(triangleHalfway, triangleHeight)
-        .lineTo(0, 0)
-        .lineTo(triangleWidth, 0)
-        .endFill();
-
-        triangle.x = xPos;
-        triangle.y = yPos;
-        triangle.pivot.set(triangleHalfway, triangleHeight / 2);
-        triangle.angle = angle;
-
-        return triangle;
     }
 }
 
