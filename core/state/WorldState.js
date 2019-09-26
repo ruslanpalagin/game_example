@@ -7,6 +7,7 @@ class WorldState {
     constructor() {
         this.state = {
             units: [],
+            projectiles: [],
             time: (new Date()).getTime(),
         };
         this.unitLibrary = new UnitLibrary(this);
@@ -62,7 +63,7 @@ class WorldState {
     }
 
     addDynamicUnit(unit) {
-        this.state.guestUnits.push(unit);
+        // this.state.guestUnits.push(unit);
         this.state.units.push(unit);
     }
 

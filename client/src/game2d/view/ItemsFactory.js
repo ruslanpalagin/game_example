@@ -183,4 +183,43 @@ export default class ItemsFactory{
         line.y = 0;
         return line;
     }
+
+    grenade(xPos, yPos, angle = 0) {
+        const color = 0xCC3300;
+
+        const graphics = new PIXI.Graphics()
+            .beginFill(color, 1)
+            .drawStar(0, 0, 4, 7)
+            .endFill();
+        graphics.x = xPos;
+        graphics.y = yPos;
+        graphics.angle = angle;
+
+        return graphics;
+    }
+
+    createTriangle(xPos, yPos, angle = 0) {
+        const color = 0xff6600;
+
+        const triangleWidth = 5,
+            triangleHeight = 15,
+            triangleHalfway = triangleWidth / 2;
+
+        // draw triangle 
+        const triangle = new PIXI.Graphics()
+        .beginFill(color, 1)
+        .lineStyle(0, color, 1)
+        .moveTo(triangleWidth, 0)
+        .lineTo(triangleHalfway, triangleHeight)
+        .lineTo(0, 0)
+        .lineTo(triangleWidth, 0)
+        .endFill();
+
+        triangle.x = xPos;
+        triangle.y = yPos;
+        triangle.pivot.set(triangleHalfway, triangleHeight / 2);
+        triangle.angle = angle;
+
+        return triangle;
+    }
 }

@@ -4,6 +4,7 @@ import UiActionGenerator from "./UiActionGenerator";
 import ItemsFactory from "./ItemsFactory";
 import Animator from "./Animator";
 import decorateWithEvents from "src/../../core/utils/decorateWithEvents";
+import PROJECTILES from "../../../../core/PROJECTILES.js";
 
 class View {
     constructor() {
@@ -85,9 +86,28 @@ class View {
         this.animator.animateHit(item);
     }
 
-    handleRangedHit({sourceUnit, distance, flightDuration}) {
-        const unit = this._findItem({unitId: sourceUnit.id});
-        this.worldContainer.addChild(this.animator.animateRangedHit(unit, distance, flightDuration));
+    handleRangedHit({ sourceUnit, projectileId, flightDuration }) {
+        const unit = this._findItem({ unitId: sourceUnit.id });
+        if (!unit) {    
+            console.warn("char item not loaded yet");
+            return;
+        }
+
+        let projectileGraphic;
+        switch (projectileId) {
+            case PROJECTILES.GRENADE.id:
+                projectileGraphic = this.itemsFactory.grenade(unit.position.x, unit.position.y, (unit.angle % 360) + 180);
+                break;
+            case PROJECTILES.SHOT.id:
+            default:
+                projectileGraphic = this.itemsFactory.createTriangle(unit.position.x, unit.position.y, (unit.angle % 360) + 180);
+                break;
+        }
+        // console.log(projectileGraphic.getBounds());
+        // console.log(projectileGraphic.getLocalBounds());
+        this.worldContainer.addChild(
+            this.animator.animateRangedHit(projectileGraphic, unit, PROJECTILES[projectileId].distance, flightDuration)
+        );
     }
 
     handleDebugArea(unit) {
