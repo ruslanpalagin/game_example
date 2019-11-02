@@ -9,6 +9,7 @@ import tree3items from "./textures/tree3items.png";
 import treeApple from "./textures/treeApple.png";
 import treesBurned from "./textures/treesBurned.png";
 import lake from "./textures/lake.png";
+import house1 from "./textures/house1.png";
 
 const typesMap = {
     char,
@@ -21,6 +22,7 @@ const typesMap = {
     treeApple,
     treesBurned,
     lake,
+    house1,
 };
 
 class Loader {

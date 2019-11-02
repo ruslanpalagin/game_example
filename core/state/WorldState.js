@@ -95,6 +95,18 @@ class WorldState {
 
             { id: uniqueId(), viewSkin: "debugPoint", position: { x: 0, y: 0 }, rotation: 0 },
             { id: uniqueId(), viewSkin: "debugArea", position: { x: 0, y: 0 }, rotation: 0, radius: 20 },
+
+            { id: uniqueId(), viewSkin: "house1", position: { x: -100, y: 0 } },
+            { id: uniqueId(), viewSkin: "house1", position: { x: -120, y: 40 } },
+            { id: uniqueId(), viewSkin: "house1", position: { x: 120, y: 20 } },
+            { id: uniqueId(), viewSkin: "house1", position: { x: -100, y: 110 } },
+            { id: uniqueId(), viewSkin: "house1", position: { x: 120, y: 100 } },
+
+
+            { id: uniqueId(), viewSkin: "house1", position: { x: -100, y: 350 } },
+            { id: uniqueId(), viewSkin: "house1", position: { x: 120, y: 340 } },
+            { id: uniqueId(), viewSkin: "house1", position: { x: 100, y: 380 } },
+            { id: uniqueId(), viewSkin: "grass4items", position: {x: -20, y: 420} },
         ];
 
         const npcs = [
