@@ -70,6 +70,9 @@ class App extends React.Component {
         if (action.name === "updateTargetUnit") {
             this.updateUiState((uiState) => ({ targetUnit: action.targetUnit }));
         }
+        if (action.name === "updateGameTime") {
+            this.updateUiState((uiState) => ({ time: action.time }));
+        }
     };
 
     updateUiState = (cb) => {
