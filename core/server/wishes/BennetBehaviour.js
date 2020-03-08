@@ -20,7 +20,7 @@ class BennetBehaviour extends ABaseWish {
             const moveAction = {
                 name: "MoveUnitAction",
                 unitId: this.unit.id,
-                uPoint: collisions.movementPointBetween(this.unit, { position: this.workPlace }, { speed: this.unit.state.speed, delta }),
+                uPoint: collisions.movementPointBetween(this.unit, this.wishDescription.work, { speed: this.unit.state.speed, delta }),
             };
 
             actions.push(moveAction);
@@ -28,7 +28,7 @@ class BennetBehaviour extends ABaseWish {
             const moveAction = {
                 name: "MoveUnitAction",
                 unitId: this.unit.id,
-                uPoint: collisions.movementPointBetween(this.unit, { position: this.homePlace }, { speed: this.unit.state.speed, delta }),
+                uPoint: collisions.movementPointBetween(this.unit, this.wishDescription.home, { speed: this.unit.state.speed, delta }),
             };
 
             actions.push(moveAction);

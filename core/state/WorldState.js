@@ -171,7 +171,11 @@ class WorldState {
                 state: { hp: 100, isDead: false, speed: 40 },
                 stats: { maxHp: 100, lvl: 1 },
                 wishes: [
-                    { name: "BennetBehaviour" }
+                    {
+                        name: "BennetBehaviour",
+                        work: { position: { x: -300, y: 100} },
+                        home: { position: { x: 100, y: 90} },
+                    }
                 ],
             },
             {
