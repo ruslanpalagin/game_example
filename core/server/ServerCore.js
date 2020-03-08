@@ -24,6 +24,9 @@ class ServerCore {
     }
 
     load() {
+        setInterval(() => {
+            this.broadcast({ name: WS_ACTIONS.GAME_TIME_UPDATE, time: this.worldState.getTime() });
+        }, 1000);
         return this.worldState.loadSave()
             .then(() => this.wishManager.initWishesFromUnits(this.worldState.getUnits()))
             .then(() => this._startGameLoop())

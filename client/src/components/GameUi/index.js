@@ -2,6 +2,7 @@ import "./style.css";
 import PropTypes from "prop-types";
 import React from "react";
 import HpBarBig from "./HpBarBig";
+import GameTime from "./GameTime";
 
 const calcHpBarWidth = (controlledUnit) => {
     const width = (controlledUnit.state.hp / controlledUnit.stats.maxHp) * 100;
@@ -15,7 +16,7 @@ class GameUi extends React.Component {
     }
 
     render = () => {
-        const { messageBoxes, controlledUnit, targetUnit } = this.props;
+        const { messageBoxes, controlledUnit, targetUnit, time } = this.props;
 
         return <div className="game-ui">
             <div className="message-panel">
@@ -44,6 +45,10 @@ class GameUi extends React.Component {
                     label={`${targetUnit.name}: ${targetUnit.state.hp}/${targetUnit.stats.maxHp}`}
                     theme="target"
                 />
+            }
+            {
+                time &&
+                <GameTime time={time} />
             }
         </div>;
     };

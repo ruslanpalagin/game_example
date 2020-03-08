@@ -73,4 +73,8 @@ module.exports = {
      * radius
      */
     DEBUG_AREA: "DEBUG_AREA",
+    /**
+     * time: {m, h}
+     */
+    GAME_TIME_UPDATE: "GAME_TIME_UPDATE",
 };

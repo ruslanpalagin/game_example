@@ -95,6 +95,18 @@ class WorldState {
 
             { id: uniqueId(), viewSkin: "debugPoint", position: { x: 0, y: 0 }, rotation: 0 },
             { id: uniqueId(), viewSkin: "debugArea", position: { x: 0, y: 0 }, rotation: 0, radius: 20 },
+
+            { id: uniqueId(), viewSkin: "house1", position: { x: -100, y: 0 } },
+            { id: uniqueId(), viewSkin: "house1", position: { x: -120, y: 40 } },
+            { id: uniqueId(), viewSkin: "house1", position: { x: 120, y: 20 } },
+            { id: uniqueId(), viewSkin: "house1", position: { x: -100, y: 110 } },
+            { id: uniqueId(), viewSkin: "house1", position: { x: 120, y: 100 } },
+
+
+            { id: uniqueId(), viewSkin: "house1", position: { x: -100, y: 350 } },
+            { id: uniqueId(), viewSkin: "house1", position: { x: 120, y: 340 } },
+            { id: uniqueId(), viewSkin: "house1", position: { x: 100, y: 380 } },
+            { id: uniqueId(), viewSkin: "grass4items", position: {x: -20, y: 420} },
         ];
 
         const npcs = [
@@ -145,10 +157,25 @@ class WorldState {
                 viewSkin: "charBandit", name: "Bandit", position: { x: -25, y: -670 }, rotation: 0, isInteractive: true,
                 canBeTarget: true,
                 canBeDamaged: true,
-                state: { hp: 7800, isDead: false },
+                state: { hp: 7800, isDead: false, speed: 40 },
                 stats: { maxHp: 8000, lvl: 2 },
                 wishes: [
                     { name: "AggressiveWish", agroRadius: 200, followRadius: 200 }
+                ],
+            },
+            {
+                id: uniqueId(),
+                viewSkin: "char", name: "Bennet", position: { x: -50, y: 50 }, rotation: 0, isInteractive: true,
+                canBeTarget: true,
+                canBeDamaged: true,
+                state: { hp: 100, isDead: false, speed: 40 },
+                stats: { maxHp: 100, lvl: 1 },
+                wishes: [
+                    {
+                        name: "BennetBehaviour",
+                        work: { position: { x: -300, y: 100} },
+                        home: { position: { x: 100, y: 90} },
+                    }
                 ],
             },
             {

@@ -2,12 +2,14 @@ const PatrolWish = require("./wishes/PatrolWish");
 const AggressiveWish = require("./wishes/AggressiveWish");
 const FollowWish = require("./wishes/FollowWish");
 const AnEmptyWish = require("./wishes/AnEmptyWish");
+const BennetBehaviour = require("./wishes/BennetBehaviour");
 
 const mapping = {
     "PatrolWish": PatrolWish,
     "AggressiveWish": AggressiveWish,
     "FollowWish": FollowWish,
     "AnEmptyWish": AnEmptyWish,
+    "BennetBehaviour": BennetBehaviour,
 };
 
 class WishManager{

@@ -105,6 +105,10 @@ class Game2D {
             this.emit("uiStateAction", { name: "updateControlledUnit", controlledUnit: this.view.controlledUnit });
             this.emit("uiStateAction", { name: "updateTargetUnit", targetUnit: this.view.targetUnit });
         }
+        if (wsActionName === WS_ACTIONS.GAME_TIME_UPDATE) {
+            const { time } = wsAction;
+            this.emit("uiStateAction", { name: "updateGameTime", time });
+        }
     };
 
     loadWorld(worldFromServer){
