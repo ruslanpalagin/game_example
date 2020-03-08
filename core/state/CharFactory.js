@@ -14,7 +14,7 @@ class CharFactory {
             viewSkin: "char", name: `r#${Math.random()}`, position: { x: 0, y: 0 }, rotation: 1.57, isInteractive: true,
             canBeTarget: true,
             canBeDamaged: true,
-            state: { hp: 100, isDead: false },
+            state: { hp: 100, isDead: false, speed: 90 },
             stats: { maxHp: 100, lvl: 1 },
             targetUnitId: null,
         }, data);

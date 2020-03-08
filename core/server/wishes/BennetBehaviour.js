@@ -1,12 +1,9 @@
 const ABaseWish = require("./ABaseWish");
 const collisions = require("../../utils/collisions");
-// const FollowWish = require("./FollowWish");
 
 class BennetBehaviour extends ABaseWish {
     constructor(unit, wishDescription, unitLibrary){
         super(unit, wishDescription, unitLibrary);
-        this.workPlace = { x: 100, y: 100 };
-        this.homePlace = { x: 1, y: 1 };
     }
 
     getActions(delta){

@@ -67,7 +67,7 @@ class UiActionGenerator {
     _checkMoveAndRotate(controls){
         const controlledUnit = this.controlledUnit;
         this.lastLoopTime = this.lastLoopTime || (new Date()).getTime();
-        const MOVE_SPEED = 90;
+        const MOVE_SPEED = this.controlledUnit.state.speed;
         const ROTATION_SPEED = 3;
         const newV = {
             position: { x: controlledUnit.position.x, y: controlledUnit.position.y },

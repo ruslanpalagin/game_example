@@ -140,6 +140,11 @@ class Game2D {
                 } else {
                     this.serverConnection.toServer({ name: WS_ACTIONS.USE_ABILITY, slot, sourceUnit: { id: this.view.controlledUnit.id } });
                 }
+
+                if (slot === 0) {
+                    console.log("this.view.controlledUnit", this.view.controlledUnit);
+                    this.emit("uiStateAction", { name: "say", message: JSON.stringify({...this.view.controlledUnit.position, rotation: this.view.controlledUnit.rotation}), unit: this.view.controlledUnit });
+                }
             });
             this.view.on("targetItem", (item) => {
                 this.serverConnection.toServer({ name: WS_ACTIONS.TARGET_UNIT, sourceUnitId: this.view.controlledUnit.id, targetUnitId: item.unitId });
