@@ -71,6 +71,12 @@ const collisions = {
         return point;
     },
     movementPointBetween(unit, destination, {speed, delta}) {
+        if (!speed) {
+            throw new Error("speed is invalid: " + JSON.stringify(speed));
+        }
+        if (!delta) {
+            throw new Error("delta is invalid: " + JSON.stringify(delta));
+        }
         const from = unit.position;
         const to = destination.position;
         const angle = this.calcAngleBetween(from, to);

@@ -157,10 +157,21 @@ class WorldState {
                 viewSkin: "charBandit", name: "Bandit", position: { x: -25, y: -670 }, rotation: 0, isInteractive: true,
                 canBeTarget: true,
                 canBeDamaged: true,
-                state: { hp: 7800, isDead: false },
+                state: { hp: 7800, isDead: false, speed: 40 },
                 stats: { maxHp: 8000, lvl: 2 },
                 wishes: [
                     { name: "AggressiveWish", agroRadius: 200, followRadius: 200 }
+                ],
+            },
+            {
+                id: uniqueId(),
+                viewSkin: "char", name: "Bennet", position: { x: -50, y: 50 }, rotation: 0, isInteractive: true,
+                canBeTarget: true,
+                canBeDamaged: true,
+                state: { hp: 100, isDead: false, speed: 40 },
+                stats: { maxHp: 100, lvl: 1 },
+                wishes: [
+                    { name: "BennetBehaviour" }
                 ],
             },
             {
