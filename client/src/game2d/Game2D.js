@@ -22,7 +22,6 @@ class Game2D {
     init ({ elId, serverName = "production", accountId, addPing } = {}) {
         this.session.accountId = accountId;
         // init
-        this.view.createCanvas(document, { elId });
 
         // connect to server & get the world
         this.serverConnection.onMessageFromServer((action) => {
@@ -33,10 +32,14 @@ class Game2D {
             }
             this.handleMessageFromServer(action);
         });
-        this.serverConnection.connect(this.session, servers[serverName])
-        .then(() => {
-            this.serverConnection.toServer({ name: WS_ACTIONS.SYS_LOAD_USER });
-        });
+
+        this.view.createCanvas(document, { elId })
+            .then(() => {
+                return this.serverConnection.connect(this.session, servers[serverName])
+            })
+            .then(() => {
+                this.serverConnection.toServer({ name: WS_ACTIONS.SYS_LOAD_USER });
+            });
     }
 
     handleMessageFromServer = (wsAction) => {
@@ -60,6 +63,9 @@ class Game2D {
         }
 
         // game messages
+        if (!this.worldState.isLoaded()) {
+            return;
+        }
         if (wsActionName === WS_ACTIONS.MOVE_UNIT) {
             if (this.view.controlledUnit && this.view.controlledUnit.id !== wsAction.unitId) {
                 const unit = this.worldState.updateUnitById(wsAction.unitId, wsAction.uPoint);
@@ -116,46 +122,46 @@ class Game2D {
 
         // load view
         return this.view.loadAndAddItemsToStage(this.worldState.state.units)
-        .then(() => {
-            // bind keys & mouse
-            keyMouseActions.sub(window);
-            this.view.listenToInput(keyMouseActions);
+            .then(() => {
+                // bind keys & mouse
+                keyMouseActions.sub(window);
+                this.view.listenToInput(keyMouseActions);
 
-            // send data to server
-            this.view.on("moveUnit", (data) => {
-                const unit = this.worldState.updateUnitById(data.unitId, data.uPoint);
-                this.view.moveControlledUnit(unit);
-                this.serverConnection.toServer({ name: WS_ACTIONS.MOVE_UNIT, unitId: data.unitId, uPoint: data.uPoint });
-            });
-            this.view.on("interactWith", ({sourceUnit, targetUnit}) => {
-                this.serverConnection.toServer({ name: WS_ACTIONS.INTERACT_WITH, sourceUnit, targetUnit })
-            });
-            this.view.on("useAbility", ({ slot }) => {
-                let projectileId;
-                if (slot === 2) { projectileId = PROJECTILES.SHOT.id; }
-                else if (slot === 3) { projectileId = PROJECTILES.GRENADE.id; }
+                // send data to server
+                this.view.on("moveUnit", (data) => {
+                    const unit = this.worldState.updateUnitById(data.unitId, data.uPoint);
+                    this.view.moveControlledUnit(unit);
+                    this.serverConnection.toServer({ name: WS_ACTIONS.MOVE_UNIT, unitId: data.unitId, uPoint: data.uPoint });
+                });
+                this.view.on("interactWith", ({sourceUnit, targetUnit}) => {
+                    this.serverConnection.toServer({ name: WS_ACTIONS.INTERACT_WITH, sourceUnit, targetUnit })
+                });
+                this.view.on("useAbility", ({ slot }) => {
+                    let projectileId;
+                    if (slot === 2) { projectileId = PROJECTILES.SHOT.id; }
+                    else if (slot === 3) { projectileId = PROJECTILES.GRENADE.id; }
 
-                if (projectileId) {
-                    this.serverConnection.toServer({ name: WS_ACTIONS.RANGE_ATTACK, sourceUnit: { id: this.view.controlledUnit.id }, projectileId });
-                } else {
-                    this.serverConnection.toServer({ name: WS_ACTIONS.USE_ABILITY, slot, sourceUnit: { id: this.view.controlledUnit.id } });
-                }
+                    if (projectileId) {
+                        this.serverConnection.toServer({ name: WS_ACTIONS.RANGE_ATTACK, sourceUnit: { id: this.view.controlledUnit.id }, projectileId });
+                    } else {
+                        this.serverConnection.toServer({ name: WS_ACTIONS.USE_ABILITY, slot, sourceUnit: { id: this.view.controlledUnit.id } });
+                    }
 
-                if (slot === 0) {
-                    console.log("this.view.controlledUnit", this.view.controlledUnit);
-                    this.emit("uiStateAction", { name: "say", message: JSON.stringify({...this.view.controlledUnit.position, rotation: this.view.controlledUnit.rotation}), unit: this.view.controlledUnit });
-                }
-            });
-            this.view.on("targetItem", (item) => {
-                this.serverConnection.toServer({ name: WS_ACTIONS.TARGET_UNIT, sourceUnitId: this.view.controlledUnit.id, targetUnitId: item.unitId });
-            });
+                    if (slot === 0) {
+                        console.log("this.view.controlledUnit", this.view.controlledUnit);
+                        this.emit("uiStateAction", { name: "say", message: JSON.stringify({...this.view.controlledUnit.position, rotation: this.view.controlledUnit.rotation}), unit: this.view.controlledUnit });
+                    }
+                });
+                this.view.on("targetItem", (item) => {
+                    this.serverConnection.toServer({ name: WS_ACTIONS.TARGET_UNIT, sourceUnitId: this.view.controlledUnit.id, targetUnitId: item.unitId });
+                });
 
-            this.view.setUnitLibrary(this.worldState.getUnitLibrary());
-            this.view.resize();
-        })
-        .then(() => {
-            this.serverConnection.toServer({name: WS_ACTIONS.SEE_THE_WORLD})
-        });
+                this.view.setUnitLibrary(this.worldState.getUnitLibrary());
+                this.view.resize();
+            })
+            .then(() => {
+                this.serverConnection.toServer({name: WS_ACTIONS.SEE_THE_WORLD})
+            });
     }
 }
 

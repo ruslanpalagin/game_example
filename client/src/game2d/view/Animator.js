@@ -8,7 +8,7 @@ setInterval(() => {
 class Animator {
     animateHit(char){
         if (!char) {
-            console.warn("char item not loaded yet");
+            console.log("animateHit: char item not loaded yet");
             return;
         }
         char.weapon.animationReset = char.weapon.animationReset || {

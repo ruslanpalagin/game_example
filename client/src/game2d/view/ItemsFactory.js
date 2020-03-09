@@ -1,10 +1,9 @@
 import PIXI from "src/vendor/PIXI.js";
-import Loader from "./Loader";
 
 export default class ItemsFactory{
 
-    constructor(){
-        this.loader = new Loader();
+    constructor(loader){
+        this.loader = loader;
     }
 
     async createFromUnit(unit) {

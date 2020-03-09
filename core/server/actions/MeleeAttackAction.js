@@ -11,6 +11,7 @@ class MeleeAttackAction extends BaseAction{
         const hitUnits = collisions.findUnitsInArea(worldState.getHitableUnits(), hitArea);
         // wsActions.push({ name: WS_ACTIONS.DEBUG_AREA, ...hitArea });
         wsActions.push({ name: WS_ACTIONS.MELEE_ATTACK, sourceUnit: { id: sourceUnit.id } });
+        worldState.writeUnitCoolDown(sourceUnit.id, "melee");
 
         hitUnits.forEach((hitUnit) => {
             if (hitUnit.id === sourceUnit.id) {

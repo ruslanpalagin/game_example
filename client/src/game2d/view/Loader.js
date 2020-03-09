@@ -26,15 +26,20 @@ const typesMap = {
 };
 
 class Loader {
+    globalLoadingPromise = null;
+
     async loadTextures(){
-        return new Promise(resolve => {
-            PIXI.loader = PIXI.loader || new PIXI.Loader();
-            PIXI.loader
-            .add(Object.values(typesMap))
-            .load(() => {
-                resolve();
-            })
-        });
+        if (!this.globalLoadingPromise) {
+            this.globalLoadingPromise = new Promise(resolve => {
+                PIXI.loader = PIXI.loader || new PIXI.Loader();
+                PIXI.loader
+                    .add(Object.values(typesMap))
+                    .load(() => {
+                        resolve();
+                    })
+            });
+        }
+        return this.globalLoadingPromise;
     }
 
     getTexture(viewSkin) {

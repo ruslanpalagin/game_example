@@ -10,14 +10,15 @@ class PatrolWish extends ABaseWish {
     getActions(delta){
         const actions = [];
 
-        const UNIT_SPEED = 25;
-        const moveAction = {
-            name: "MoveUnitAction",
-            unitId: this.unit.id,
-            uPoint: collisions.movementPointBetween(this.unit, { position: this.targetUnit.position }, { speed: UNIT_SPEED, delta }),
-        };
-
-        actions.push(moveAction);
+        const distance = collisions.getDistance(this.unit, this.targetUnit);
+        if (distance > 15) {
+            const moveAction = {
+                name: "MoveUnitAction",
+                unitId: this.unit.id,
+                uPoint: collisions.movementPointBetween(this.unit, { position: this.targetUnit.position }, { speed: this.unit.state.speed, delta }),
+            };
+            actions.push(moveAction);
+        }
 
         return actions;
     }

@@ -3,6 +3,7 @@ import PIXI from "src/vendor/PIXI.js";
 import UiActionGenerator from "./UiActionGenerator";
 import ItemsFactory from "./ItemsFactory";
 import Animator from "./Animator";
+import Loader from "./Loader";
 import decorateWithEvents from "src/../../core/utils/decorateWithEvents";
 import PROJECTILES from "../../../../core/PROJECTILES.js";
 
@@ -13,10 +14,11 @@ class View {
         this.worldContainer = null;
         this.centeredUnit = null;
         this.controlledUnit = null;
-        this.itemsFactory = new ItemsFactory();
+        this.loader = new Loader();
+        this.itemsFactory = new ItemsFactory(this.loader);
         this.uiActionGenerator = new UiActionGenerator();
         this.unitLibrary = null;
-        this.animator = new Animator();
+        this.animator = new Animator(this.loader);
     }
 
     setUnitLibrary(unitLibrary) {
@@ -33,6 +35,7 @@ class View {
         this.worldContainer = new PIXI.Container();
         this.uiActionGenerator.worldContainer = this.worldContainer;
         this.app.stage.addChild(this.worldContainer);
+        return this.loader.loadTextures();
     }
 
     loadAndAddItemsToStage(units) {

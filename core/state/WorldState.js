@@ -2,6 +2,7 @@ const find = require("lodash/find");
 const filter = require("lodash/filter");
 const uniqueId = require("lodash/uniqueId");
 const UnitLibrary = require("./UnitLibrary");
+const CharFactory = require("./CharFactory");
 
 class WorldState {
     constructor() {
@@ -12,6 +13,10 @@ class WorldState {
         };
         this.unitLibrary = new UnitLibrary(this);
         this.uniqueId = uniqueId;
+    }
+
+    isLoaded() {
+        return this.state.units.length > 0;
     }
 
     setState(state) {
@@ -48,7 +53,17 @@ class WorldState {
 
     updateUnitById(id, props) {
         const unit = this.findUnit({id});
+        if (!unit) {
+            console.log("Unit not found: " + id);
+            return null;
+        }
         Object.assign(unit, props);
+        return unit;
+    }
+
+    writeUnitCoolDown(id, coolDownName) {
+        const unit = this.findUnit({id});
+        unit.state.coolDownsUntil[coolDownName] = unit.stats.coolDowns[coolDownName] + (new Date()).getTime();
         return unit;
     }
 
@@ -102,70 +117,81 @@ class WorldState {
             { id: uniqueId(), viewSkin: "house1", position: { x: -100, y: 110 } },
             { id: uniqueId(), viewSkin: "house1", position: { x: 120, y: 100 } },
 
-
             { id: uniqueId(), viewSkin: "house1", position: { x: -100, y: 350 } },
             { id: uniqueId(), viewSkin: "house1", position: { x: 120, y: 340 } },
             { id: uniqueId(), viewSkin: "house1", position: { x: 100, y: 380 } },
             { id: uniqueId(), viewSkin: "grass4items", position: {x: -20, y: 420} },
         ];
 
+        const diego = CharFactory.initEmptyCharacter({
+            id: diegoId,
+            viewSkin: "char",
+            name: "Diego",
+            position: { x: 150, y: -700 },
+            wishes: [
+                {
+                    name: "DefendBehaviour",
+                    enemyFactions: ["bandit"],
+                },
+            ],
+        });
+        diego.state.hp = 10000;
+        diego.state.speed = 30;
+        diego.state.faction = "villager";
+        diego.stats.maxHp = 10000;
+        diego.stats.coolDowns.melee = 1000;
+
+        const bandit = CharFactory.initEmptyCharacter({
+            viewSkin: "charBandit",
+            name: "Bandit",
+            position: { x: 50, y: -700 },
+            wishes: [
+                {
+                    name: "DefendBehaviour",
+                    enemyFactions: ["villager"],
+                },
+            ],
+        });
+        bandit.state.hp = 8000;
+        bandit.state.speed = 30;
+        bandit.state.faction = "bandit";
+        bandit.stats.maxHp = 10000;
+
         const npcs = [
-            {
-                id: diegoId,
-                viewSkin: "char", name: "Diego", position: { x: 220, y: 330 }, rotation: 1.57, isInteractive: true,
-                canBeTarget: true,
-                canBeDamaged: true,
-                state: { hp: 10000, isDead: false, speed: 30 },
-                stats: { maxHp: 10000, lvl: 1 },
-                wishes: [
-                    { name: "PatrolWish", points: [
-                        {position: {x: 0, y: -50}},
-                        {position: {x: 50, y: -100}},
-                        {position: {x: 100, y: -100}},
-                        {position: {x: 150, y: -50}},
-                        {position: {x: 150, y: 0}},
-                        {position: {x: 100, y: 50}},
-                        {position: {x: 50, y: 50}},
-                        {position: {x: 0, y: 0}},
-                        {position: {x: -30, y: 300}, rotation: 0},
-                    ] }
-                ],
-            },
-            {
-                id: uniqueId(),
-                viewSkin: "char", name: "Jack", position: { x: 0, y: 0 }, rotation: 3.5, isInteractive: true,
-                canBeTarget: true,
-                canBeDamaged: true,
-                state: { hp: 100, isDead: false, speed: 30 },
-                stats: { maxHp: 100, lvl: 1 },
-                wishes: [
-                    { name: "PatrolWish", points: [
-                        {position: {x: 0, y: -50}},
-                        {position: {x: 50, y: -100}},
-                        {position: {x: 100, y: -100}},
-                        {position: {x: 150, y: -50}},
-                        {position: {x: 150, y: 0}},
-                        {position: {x: 100, y: 50}},
-                        {position: {x: 50, y: 50}},
-                        {position: {x: 0, y: 0}},
-                        {position: {x: 0, y: 300}, rotation: 0},
-                    ] }
-                ],
-            },
+            diego,
+            bandit,
+            // {
+            //     id: uniqueId(),
+            //     viewSkin: "char", name: "Jack", position: { x: 0, y: 0 }, rotation: 3.5, isInteractive: true,
+            //     canBeTarget: true,
+            //     canBeDamaged: true,
+            //     state: {
+            //         hp: 100,
+            //         isDead: false,
+            //         speed: 30
+            //     },
+            //     stats: { maxHp: 100, lvl: 1 },
+            //     wishes: [
+            //         { name: "PatrolWish", points: [
+            //             {position: {x: 0, y: -50}},
+            //             {position: {x: 50, y: -100}},
+            //             {position: {x: 100, y: -100}},
+            //             {position: {x: 150, y: -50}},
+            //             {position: {x: 150, y: 0}},
+            //             {position: {x: 100, y: 50}},
+            //             {position: {x: 50, y: 50}},
+            //             {position: {x: 0, y: 0}},
+            //             {position: {x: 0, y: 300}, rotation: 0},
+            //         ] }
+            //     ],
+            // },
             {
                 id: uniqueId(),
-                viewSkin: "charBandit", name: "Bandit", position: { x: -25, y: -670 }, rotation: 0, isInteractive: true,
-                canBeTarget: true,
-                canBeDamaged: true,
-                state: { hp: 7800, isDead: false, speed: 40 },
-                stats: { maxHp: 8000, lvl: 2 },
-                wishes: [
-                    { name: "AggressiveWish", agroRadius: 200, followRadius: 200 }
-                ],
-            },
-            {
-                id: uniqueId(),
-                viewSkin: "char", name: "Bennet", position: { x: -50, y: 50 }, rotation: 0, isInteractive: true,
+                viewSkin: "char",
+                name: "Bennet",
+                position: { x: -50, y: 50 },
+                rotation: 0,
+                isInteractive: true,
                 canBeTarget: true,
                 canBeDamaged: true,
                 state: { hp: 100, isDead: false, speed: 40 },
@@ -175,15 +201,19 @@ class WorldState {
                         name: "BennetBehaviour",
                         work: { position: { x: -300, y: 100} },
                         home: { position: { x: 100, y: 90} },
-                    }
+                    },
                 ],
             },
             {
                 id: uniqueId(),
-                viewSkin: "charMad", name: "Mad", position: { x: -50, y: 50 }, rotation: 0, isInteractive: true,
+                viewSkin: "charMad",
+                name: "Mad",
+                position: { x: -50, y: 50 },
+                rotation: 0,
+                isInteractive: true,
                 canBeTarget: true,
                 canBeDamaged: true,
-                state: { hp: 100, isDead: false },
+                state: { hp: 100, isDead: false, speed: 40 },
                 stats: { maxHp: 100, lvl: 1 },
                 wishes: [
                     { name: "FollowWish", targetUnitId: diegoId },

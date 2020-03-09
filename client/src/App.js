@@ -76,6 +76,8 @@ class App extends React.Component {
     };
 
     updateUiState = (cb) => {
+        console.timeEnd();
+        console.time();
         this.setState(({uiState}) => {
             // console.log("uiState1", uiState);
             const newUiState = Object.assign(uiState, cb(uiState));
