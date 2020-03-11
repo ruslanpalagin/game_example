@@ -127,7 +127,7 @@ class WorldState {
             id: diegoId,
             viewSkin: "char",
             name: "Diego",
-            position: { x: 150, y: -700 },
+            position: { x: 150, y: -400 },
             wishes: [
                 {
                     name: "DefendBehaviour",
@@ -135,10 +135,10 @@ class WorldState {
                 },
             ],
         });
-        diego.state.hp = 10000;
+        diego.state.hp = 100;
         diego.state.speed = 30;
         diego.state.faction = "villager";
-        diego.stats.maxHp = 10000;
+        diego.stats.maxHp = 100;
         diego.stats.coolDowns.melee = 1000;
 
         const bandit = CharFactory.initEmptyCharacter({
@@ -148,14 +148,14 @@ class WorldState {
             wishes: [
                 {
                     name: "DefendBehaviour",
-                    enemyFactions: ["villager"],
+                    enemyFactions: ["villager", "newPlayer"],
                 },
             ],
         });
-        bandit.state.hp = 8000;
+        bandit.state.hp = 80;
         bandit.state.speed = 30;
         bandit.state.faction = "bandit";
-        bandit.stats.maxHp = 10000;
+        bandit.stats.maxHp = 100;
 
         const npcs = [
             diego,

@@ -25,6 +25,7 @@ class CharFactory {
                 coolDownsUntil: {
                     melee: null,
                 },
+                faction: "newPlayer",
             },
             stats: {
                 maxHp: 100,

@@ -5,12 +5,14 @@ class ABaseWish{
         this.unitLibrary = unitLibrary;
     }
 
-    getPriority(){
-        return this.wishDescription.priority || 0;
-    }
-
     isActive() {
         return true;
+    }
+
+    beforeGetPriority(delta){}
+
+    getPriority(){
+        return this.wishDescription.priority || 0;
     }
 
     getActions(delta){

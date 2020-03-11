@@ -28,6 +28,7 @@ class CombatBehaviour extends ABaseWish {
     }
 
     isActive(){
+        console.log("!this.unit.state.isDead && !this.targetUnit.state.isDead", !this.unit.state.isDead && !this.targetUnit.state.isDead);
         return !this.unit.state.isDead && !this.targetUnit.state.isDead;
     }
 

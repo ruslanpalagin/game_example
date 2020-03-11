@@ -56,6 +56,7 @@ class WishManager{
             if (!iWish.isActive()) {
                 continue;
             }
+            iWish.beforeGetPriority(delta);
             const currentPriority = iWish.getPriority(delta);
             if (currentPriority > topPriority) {
                 topPriority = currentPriority;
